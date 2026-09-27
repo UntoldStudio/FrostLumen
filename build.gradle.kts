@@ -1,6 +1,4 @@
-import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.tasks.TaskAction
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
@@ -27,6 +25,8 @@ subprojects {
         }
     }
 
+    tasks.named("build") { dependsOn(tasks.named("spotlessApply")) }
+
     extra["id"] = rootProject.findProperty("id")?.toString()
     extra["version"] = rootProject.version.toString()
     extra["group_id"] = rootProject.findProperty("group_id")?.toString()
@@ -41,7 +41,6 @@ subprojects {
 
 tasks.build {
     dependsOn(subprojects.map { it.tasks.named("build") })
-    dependsOn(tasks.named("spotlessApply"))
 }
 tasks.named<JavaCompile>("compileJava") {
     enabled = false
@@ -54,56 +53,43 @@ tasks.named<Jar>("jar") {
 }
 tasks.withType<Javadoc>().configureEach { enabled = false }
 
-abstract class PushChangesTask : DefaultTask() {
-    @TaskAction
-    fun push() {
-        val projectDir = project.rootProject.projectDir
-        val status = runGit(projectDir, "git", "status", "--porcelain")
-        if (status.trim().isEmpty()) {
-            println("工作区没有需要提交的更改,直接推送")
-        } else {
-            println("当前更改的文件:")
-            println(status)
-            println("请输入提交信息:")
-            val reader = BufferedReader(InputStreamReader(System.`in`))
-            val message = reader.readLine()
-            if (message == null || message.trim().isEmpty()) {
-                throw GradleException("提交信息不能为空")
-            }
-            runGit(projectDir, "git", "add", ".")
-            runGit(projectDir, "git", "commit", "-m", message)
-        }
-        runGit(projectDir, "git", "push", "main", "HEAD")
-        println("推送完成")
-    }
+val gitTargetBranch: String = "main"
 
-    private fun runGit(dir: File, vararg args: String): String {
-        val proc = ProcessBuilder(*args)
-            .directory(dir)
-            .redirectErrorStream(true)
-            .start()
-        val output = proc.inputStream.bufferedReader().use { it.readText() }
-        val exit = proc.waitFor()
-        if (exit != 0) {
-            throw RuntimeException("Git command failed: ${args.joinToString(" ")}\nError: $output")
-        }
-        return output
-    }
-}
-
-tasks.register<PushChangesTask>("pushChanges") {
+tasks.register("pushChanges") {
     dependsOn(tasks.named("spotlessApply"))
     notCompatibleWithConfigurationCache("任务需要交互式输入并访问项目目录")
     description = "自动add,commit并推送当前分支"
+    doLast {
+        val projectDir = project.rootProject.projectDir
+        val status = runGit(projectDir, "git", "status", "--porcelain")
+        if (status.trim().isEmpty()) {
+            println("工作区没有需要提交的更改,直接推送")
+        } else {
+            println("当前更改的文件:")
+            println(status)
+            println("请输入提交信息:")
+            val reader = BufferedReader(InputStreamReader(System.`in`))
+            val message = reader.readLine()
+            if (message == null || message.trim().isEmpty()) {
+                throw GradleException("提交信息不能为空")
+            }
+            runGit(projectDir, "git", "add", ".")
+            runGit(projectDir, "git", "commit", "-m", message)
+        }
+        runGit(projectDir, "git", "push", gitTargetBranch, "HEAD")
+        println("推送完成")
+    }
 }
 
-abstract class ReleaseVersionTask : DefaultTask() {
-    @TaskAction
-    fun release() {
+tasks.register("releaseVersion") {
+    dependsOn(tasks.named("spotlessApply"))
+    notCompatibleWithConfigurationCache("任务需要交互式输入并访问项目目录")
+    description = "自动add,commit,push并创建发布标签"
+    doLast {
         val projectDir = project.rootProject.projectDir
         val tagName = project.version.toString()
         if (tagName.isEmpty() || tagName.contains("unspecified")) {
-            throw GradleException("版本号无效:'$tagName', 请设置gradle.properties中的version")
+            throw GradleException("版本号无效:'${tagName}', 请设置gradle.properties中的version")
         }
         val status = runGit(projectDir, "git", "status", "--porcelain")
         if (status.trim().isEmpty()) {
@@ -120,32 +106,36 @@ abstract class ReleaseVersionTask : DefaultTask() {
             runGit(projectDir, "git", "add", ".")
             runGit(projectDir, "git", "commit", "-m", message)
         }
-        runGit(projectDir, "git", "push", "main", "HEAD")
-        val remoteTags = runGit(projectDir, "git", "ls-remote", "--tags", "main")
-        if (remoteTags.contains("refs/tags/$tagName")) {
-            throw GradleException("远程仓库已存在标签'$tagName', 请更新version后再试")
+        runGit(projectDir, "git", "push", gitTargetBranch, "HEAD")
+        val remoteTags = runGit(projectDir, "git", "ls-remote", "--tags", gitTargetBranch)
+        if (remoteTags.contains("refs/tags/${tagName}")) {
+            throw GradleException("远程仓库已存在标签'${tagName}', 请更新version后再试")
         }
         runGit(projectDir, "git", "tag", "-a", tagName, "-m", "Release $tagName")
-        runGit(projectDir, "git", "push", "main", tagName)
+        runGit(projectDir, "git", "push", gitTargetBranch, tagName)
         println("发布完成,标签${tagName}已推送")
-    }
-
-    private fun runGit(dir: File, vararg args: String): String {
-        val proc = ProcessBuilder(*args)
-            .directory(dir)
-            .redirectErrorStream(true)
-            .start()
-        val output = proc.inputStream.bufferedReader().use { it.readText() }
-        val exit = proc.waitFor()
-        if (exit != 0) {
-            throw RuntimeException("Git command failed: ${args.joinToString(" ")}\nError: $output")
-        }
-        return output
     }
 }
 
-tasks.register<ReleaseVersionTask>("releaseVersion") {
-    dependsOn(tasks.named("spotlessApply"))
-    notCompatibleWithConfigurationCache("任务需要交互式输入并访问项目目录")
-    description = "自动add,commit,push并创建发布标签"
+fun runGit(dir: File, vararg args: String): String {
+    val proc = ProcessBuilder(*args)
+        .directory(dir)
+        .redirectErrorStream(true)
+        .apply {
+            environment()["GIT_TERMINAL_PROMPT"] = "0"
+            environment()["GIT_SSH_COMMAND"] = "ssh -o BatchMode=yes"
+            environment()["GIT_EDITOR"] = "true"
+            environment()["GIT_ASKPASS"] = "echo"
+        }
+        .start()
+
+    proc.outputStream.close()
+
+    val output = proc.inputStream.bufferedReader().use { it.readText() }
+    val exit = proc.waitFor()
+
+    if (exit != 0) {
+        throw GradleException("Git command failed: ${args.joinToString(" ")}\n$output")
+    }
+    return output
 }
