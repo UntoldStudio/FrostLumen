@@ -9,7 +9,7 @@ repositories {
 }
 
 base {
-    archivesName = "rimeui-neoforge"
+    archivesName = "frostlumen-neoforge"
 }
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)

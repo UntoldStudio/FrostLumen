@@ -19,14 +19,23 @@ import net.minecraft.client.Minecraft;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import top.untoldstudio.rimeui.core.RimeUI;
+import top.untoldstudio.frostlumen.core.data.RGBA;
+import top.untoldstudio.frostlumen.core.data.ScaleOffset;
+import top.untoldstudio.frostlumen.core.gui.Window;
+import top.untoldstudio.frostlumen.core.gui.node.Frame;
+import top.untoldstudio.frostlumen.core.render.RenderProviderType;
 
 public class ModEventHandler {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientSetup(FMLClientSetupEvent event) {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.execute(() -> {
-            RimeUI.initOpenGL(minecraft.getWindow().handle());
+            Window window = Window.from(minecraft.getWindow().handle(), RenderProviderType.OPENGL);
+            Frame frame = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+                    .setAnchor(0.5, 0.5).setBackgroundColor(RGBA.BLUE.withAlpha(100));
+            Frame frame1 = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+                    .setBackgroundColor(RGBA.BLUE.withAlpha(100));
+            window.getNodeRoot().addChildren(frame, frame1);
         });
     }
 }

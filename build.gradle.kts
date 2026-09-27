@@ -13,6 +13,9 @@ plugins {
 val versionString: String = project.property("version") as String
 val groupId: String = project.property("group_id") as String
 
+group = groupId
+version = versionString
+
 subprojects {
     pluginManager.apply("java")
     pluginManager.apply("com.diffplug.spotless")
@@ -100,7 +103,7 @@ abstract class ReleaseVersionTask : DefaultTask() {
         val projectDir = project.rootProject.projectDir
         val tagName = project.version.toString()
         if (tagName.isEmpty() || tagName.contains("unspecified")) {
-            throw GradleException("版本号无效:'$tagName', 请设置gradle.properties中的mod_version")
+            throw GradleException("版本号无效:'$tagName', 请设置gradle.properties中的version")
         }
         val status = runGit(projectDir, "git", "status", "--porcelain")
         if (status.trim().isEmpty()) {
@@ -120,11 +123,11 @@ abstract class ReleaseVersionTask : DefaultTask() {
         runGit(projectDir, "git", "push", "origin", "HEAD")
         val remoteTags = runGit(projectDir, "git", "ls-remote", "--tags", "origin")
         if (remoteTags.contains("refs/tags/$tagName")) {
-            throw GradleException("远程仓库已存在标签'$tagName', 请更新mod_version后再试")
+            throw GradleException("远程仓库已存在标签'$tagName', 请更新version后再试")
         }
         runGit(projectDir, "git", "tag", "-a", tagName, "-m", "Release $tagName")
         runGit(projectDir, "git", "push", "origin", tagName)
-        println(">>> 发布完成,标签${tagName}已推送,JitPack将开始构建")
+        println("发布完成,标签${tagName}已推送,JitPack将开始构建")
     }
 
     private fun runGit(dir: File, vararg args: String): String {

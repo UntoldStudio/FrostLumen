@@ -17,18 +17,24 @@ package top.untoldstudio.rimeui.neoforge.mixin;
 
 import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.platform.cursor.CursorType;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.untoldstudio.rimeui.core.ui.MainGui;
 
 @Mixin(Window.class)
 public abstract class WindowMixin {
+    @Final
+    @Shadow
+    private long handle;
+
     @Inject(method = "selectCursor", at = @At("HEAD"))
     private void beforeSelectCursor(CursorType type, CallbackInfo ci) {
-        if (MainGui.getInstance() == null) return;
         long handle = ((CursorTypeAccessor) type).getHandle();
-        MainGui.getInstance().setExternalSettingCursor(handle);
+        if (top.untoldstudio.frostlumen.core.gui.Window.get(this.handle) != null) {
+            top.untoldstudio.frostlumen.core.gui.Window.get(this.handle).getNodeRoot().getRender().setExternalSettingCursor(handle);
+        }
     }
 }

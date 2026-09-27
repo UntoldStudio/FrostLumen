@@ -5,18 +5,16 @@ plugins {
 val id: String = project.property("id") as String
 
 dependencies {
-    compileOnly(libs.bundles.log.all)
+    compileOnly(rootProject.libs.bundles.log.all)
 
     compileOnly(platform(rootProject.libs.lwjgl.bom))
     compileOnly(rootProject.libs.bundles.lwjgl.all)
 
     compileOnly(rootProject.libs.joml)
-
-    compileOnly(rootProject.libs.gson)
 }
 
 tasks.jar {
-    archiveBaseName.set("rimeui-core")
+    archiveBaseName.set("frostlumen-core")
 }
 
 publishing {

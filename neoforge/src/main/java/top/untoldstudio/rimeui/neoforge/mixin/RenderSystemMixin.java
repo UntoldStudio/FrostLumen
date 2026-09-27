@@ -20,7 +20,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import top.untoldstudio.rimeui.core.ui.MainGui;
+import top.untoldstudio.frostlumen.core.gui.NodeRoot;
+import top.untoldstudio.frostlumen.core.gui.Window;
+import top.untoldstudio.frostlumen.core.render.GuiRender;
 
 @Mixin(RenderSystem.class)
 public abstract class RenderSystemMixin {
@@ -29,8 +31,12 @@ public abstract class RenderSystemMixin {
             at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwSwapBuffers(J)V")
     )
     private static void beforeSwap(long windowHandle, Operation<Void> original) {
-        if (MainGui.getInstance() != null) {
-            MainGui.getInstance().render();
+        if (Window.get(windowHandle) != null) {
+            NodeRoot root = Window.get(windowHandle).getNodeRoot();
+            GuiRender render = root.getRender();
+            render.saveContext();
+            root.render();
+            render.restoreContext();
         }
         original.call(windowHandle);
     }

@@ -1,4 +1,4 @@
-rootProject.name = "RimeUI"
+rootProject.name = "FrostLumen"
 
 pluginManagement {
     repositories {
@@ -7,4 +7,4 @@ pluginManagement {
     }
 }
 
-include("core", "application", "neoforge")
+include("core", "example", "neoforge")
