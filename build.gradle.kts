@@ -73,8 +73,8 @@ abstract class PushChangesTask : DefaultTask() {
             runGit(projectDir, "git", "add", ".")
             runGit(projectDir, "git", "commit", "-m", message)
         }
-        runGit(projectDir, "git", "push", "origin", "HEAD")
-        println(">>>推送完成")
+        runGit(projectDir, "git", "push", "main", "HEAD")
+        println("推送完成")
     }
 
     private fun runGit(dir: File, vararg args: String): String {
@@ -120,14 +120,14 @@ abstract class ReleaseVersionTask : DefaultTask() {
             runGit(projectDir, "git", "add", ".")
             runGit(projectDir, "git", "commit", "-m", message)
         }
-        runGit(projectDir, "git", "push", "origin", "HEAD")
-        val remoteTags = runGit(projectDir, "git", "ls-remote", "--tags", "origin")
+        runGit(projectDir, "git", "push", "main", "HEAD")
+        val remoteTags = runGit(projectDir, "git", "ls-remote", "--tags", "main")
         if (remoteTags.contains("refs/tags/$tagName")) {
             throw GradleException("远程仓库已存在标签'$tagName', 请更新version后再试")
         }
         runGit(projectDir, "git", "tag", "-a", tagName, "-m", "Release $tagName")
-        runGit(projectDir, "git", "push", "origin", tagName)
-        println("发布完成,标签${tagName}已推送,JitPack将开始构建")
+        runGit(projectDir, "git", "push", "main", tagName)
+        println("发布完成,标签${tagName}已推送")
     }
 
     private fun runGit(dir: File, vararg args: String): String {
