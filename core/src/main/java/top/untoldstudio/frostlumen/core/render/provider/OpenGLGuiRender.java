@@ -322,7 +322,9 @@ public class OpenGLGuiRender extends GuiRender {
         colorWriteMask[1] = int4Array[1] == GL_TRUE;
         colorWriteMask[2] = int4Array[2] == GL_TRUE;
         colorWriteMask[3] = int4Array[3] == GL_TRUE;
+
         glGetIntegerv(GL_VIEWPORT, savedGLState.viewport);
+        glGetIntegerv(GL_SCISSOR_BOX, savedGLState.scissorTestBox);
 
         savedGLStateState.push(savedGLState);
     }
@@ -342,10 +344,12 @@ public class OpenGLGuiRender extends GuiRender {
         glBindVertexArray(savedGLState.vertexArrayBinding);
         glBindBuffer(GL_ARRAY_BUFFER, savedGLState.arrayBufferBinding);
         glColorMask(savedGLState.colorWriteMask[0], savedGLState.colorWriteMask[1], savedGLState.colorWriteMask[2], savedGLState.colorWriteMask[3]);
-        glViewport(savedGLState.viewport[0], savedGLState.viewport[1], savedGLState.viewport[2], savedGLState.viewport[3]);
         glBlendFuncSeparate(savedGLState.blendSrcRgb, savedGLState.blendDstRgb, savedGLState.blendSrcAlpha, savedGLState.blendDstAlpha);
         glLogicOp(savedGLState.logicOpMode);
         glBlendEquationSeparate(savedGLState.blendEquationRgb, savedGLState.blendEquationAlpha);
+
+        glViewport(savedGLState.viewport[0], savedGLState.viewport[1], savedGLState.viewport[2], savedGLState.viewport[3]);
+        glScissor(savedGLState.scissorTestBox[0], savedGLState.scissorTestBox[1], savedGLState.scissorTestBox[2], savedGLState.scissorTestBox[3]);
 
         savedGLStatePool.push(savedGLState);
     }
@@ -493,6 +497,7 @@ public class OpenGLGuiRender extends GuiRender {
         boolean colorLogicOp;
 
         int[] viewport = new int[4];
+        int[] scissorTestBox = new int[4];
         public boolean[] colorWriteMask = new boolean[4];
     }
 }
