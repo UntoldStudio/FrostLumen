@@ -15,8 +15,8 @@
  */
 package top.untoldstudio.frostlumen.core.exception;
 
-public class ResourceError extends RuntimeException {
-    public ResourceError(String message) {
+public class ResourceException extends RuntimeException {
+    public ResourceException(String message) {
         super(message);
     }
 }

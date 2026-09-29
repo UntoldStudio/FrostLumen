@@ -7,6 +7,8 @@
 
 FrostLumen is an embedded UI library that only requires calling one rendering callback and one window handle per frame. The core module is the module you need to rely on, and the neoforge module is a Minecraft Mod bind, application Module is a Independent Editor
 
+This library currently does not support multiple windows
+
 Note: This library requires the host to provide dependencies for LWJGL and JOML and GSON
 
 To use this library, add the following to your build script:

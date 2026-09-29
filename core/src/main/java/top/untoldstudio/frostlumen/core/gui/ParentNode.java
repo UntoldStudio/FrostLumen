@@ -17,6 +17,7 @@ package top.untoldstudio.frostlumen.core.gui;
 
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.event.*;
+import top.untoldstudio.frostlumen.core.listener.LongListenerRegistry;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
 
 import java.util.ArrayList;
@@ -24,8 +25,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.LongConsumer;
 
 public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoot, GuiNode {
+    private final LongListenerRegistry prerenderListenerRegistry = new LongListenerRegistry();
+
     @SuppressWarnings("unchecked")
     protected final T self = (T) this;
     protected ScaleOffset position;
@@ -63,8 +67,16 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
         return realSizeY;
     }
 
-    public void dispatchRender(GuiRender render) {
-        reverseFor(node -> node.dispatchRender(render));
+    public void registerRenderListener(LongConsumer consumer) {
+        prerenderListenerRegistry.register(consumer);
+    }
+    public void unregisterRenderListener(LongConsumer consumer) {
+        prerenderListenerRegistry.unregister(consumer);
+    }
+
+    public void dispatchRender(GuiRender render, long delta) {
+        prerenderListenerRegistry.trigger(delta);
+        reverseFor(node -> node.dispatchRender(render, delta));
     }
     public void dispatchKeyEvent(KeyEvent event) {
         reverseFor(node -> node.dispatchKeyEvent(event));

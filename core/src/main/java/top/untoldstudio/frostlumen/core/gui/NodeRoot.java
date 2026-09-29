@@ -22,6 +22,7 @@ import top.untoldstudio.frostlumen.core.render.GuiRender;
 public final class NodeRoot extends ParentNode<NodeRoot> {
     private final Window window;
     private final GuiRender render;
+    private long lastRenderTime = 0;
 
     @Override
     public void dispatchFrameBufferSizeChangeEvent(FrameBufferSizeChangeEvent event) {
@@ -34,9 +35,11 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
 
     public void render() {
         render.beginFrame();
-        dispatchRender(render);
+        long now = System.currentTimeMillis();
+        dispatchRender(render, now - lastRenderTime);
         render.submitBuffer();
         render.endFrame();
+        lastRenderTime = now;
     }
 
     @Override

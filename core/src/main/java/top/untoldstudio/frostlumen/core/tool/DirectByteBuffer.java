@@ -25,7 +25,11 @@ public class DirectByteBuffer {
         tryExpansion(4);
         buffer.putFloat(value);
     }
-    public void writeFloats(float v1, float v2, float v3, float v4) {
+    public void writeFloat(float v1, float v2) {
+        writeFloat(v1);
+        writeFloat(v2);
+    }
+    public void writeFloat(float v1, float v2, float v3, float v4) {
         writeFloat(v1);
         writeFloat(v2);
         writeFloat(v3);
@@ -35,11 +39,11 @@ public class DirectByteBuffer {
         tryExpansion(4);
         buffer.putInt(value);
     }
-    public void writeInts(int v1, int v2) {
+    public void writeInt(int v1, int v2) {
         writeInt(v1);
         writeInt(v2);
     }
-    public void writeInts(int v1, int v2, int v3, int v4) {
+    public void writeInt(int v1, int v2, int v3, int v4) {
         writeInt(v1);
         writeInt(v2);
         writeInt(v3);
@@ -49,11 +53,14 @@ public class DirectByteBuffer {
         tryExpansion(1);
         buffer.put(value);
     }
-    public void writeBytes(byte v1, byte v2, byte v3, byte v4) {
+    public void writeByte(byte v1, byte v2, byte v3, byte v4) {
         writeByte(v1);
         writeByte(v2);
         writeByte(v3);
         writeByte(v4);
+    }
+    public void writeBytesFromIntsWithForcedConversion(int v1, int v2, int v3, int v4) {
+        writeByte((byte) v1, (byte) v2, (byte) v3, (byte) v4);
     }
 
     public ByteBuffer getNioDirectByteBuffer() {

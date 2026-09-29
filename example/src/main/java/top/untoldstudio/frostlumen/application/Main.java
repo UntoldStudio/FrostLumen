@@ -16,11 +16,14 @@
 package top.untoldstudio.frostlumen.application;
 
 import org.lwjgl.opengl.GL;
+import top.untoldstudio.frostlumen.core.data.ImageAlignment;
 import top.untoldstudio.frostlumen.core.data.RGBA;
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.data.ThicknessPosition;
 import top.untoldstudio.frostlumen.core.gui.Window;
 import top.untoldstudio.frostlumen.core.gui.node.Frame;
+import top.untoldstudio.frostlumen.core.gui.node.ImageLabel;
+import top.untoldstudio.frostlumen.core.render.IResourceManager;
 import top.untoldstudio.frostlumen.core.render.RenderProviderType;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -36,16 +39,10 @@ public class Main {
 
         Window window = Window.from(windowHandle, RenderProviderType.OPENGL);
 
-        Frame frame = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
-                .setAnchor(0.5, 0.5).setBackgroundColor(RGBA.BLUE)//.setBackgroundCornerRadius(100)
-                .setBackgroundBorderThickness(10).setBackgroundBorderThicknessPosition(ThicknessPosition.INSIDE).setBackgroundCornerRadius(50).setBackgroundBorderColor(RGBA.RED.withAlpha(100))
-                ;
-        window.getNodeRoot().addChildren(frame);
-
         while (!glfwWindowShouldClose(windowHandle)) {
             glfwPollEvents();
 
-            glClearColor(1f, 1f, 1f, 1f);
+            glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
             glClear(GL_COLOR_BUFFER_BIT);
 
             window.getNodeRoot().render();

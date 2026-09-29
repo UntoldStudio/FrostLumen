@@ -51,8 +51,9 @@ void main() {
     vec2 outerHalf = vHalfSize + outerOffset;
 
     vec4 radii = vec4(vCornerRadii);
+    vec4 offset = vec4(innerOffset + outerOffset);
     vec4 innerRadii = radii;
-    vec4 outerRadii = radii + vec4(innerOffset + outerOffset);
+    vec4 outerRadii = mix(vec4(0.0), radii + offset, step(vec4(0.001), radii));
 
     float dInner = sdRoundRect(vLocalPos, innerHalf, innerRadii);
     float dOuter = sdRoundRect(vLocalPos, outerHalf, outerRadii);

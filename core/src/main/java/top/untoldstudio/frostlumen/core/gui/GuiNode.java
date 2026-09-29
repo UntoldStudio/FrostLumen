@@ -41,7 +41,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     protected double xAnchor;
     protected double yAnchor;
 
-    protected void renderDefaultFrameBackground(GuiRender render) {
+    protected void drawDefaultFrameBackground(GuiRender render) {
         if (backgroundLeftBorderThickness == 0 && backgroundRightBorderThickness == 0 && backgroundTopBorderThickness == 0 && backgroundBottomBorderThickness == 0 && backgroundLeftTopCornerRadius == 0 && backgroundRightTopCornerRadius == 0 && backgroundLeftBottomCornerRadius == 0 && backgroundRightBottomCornerRadius == 0) {
             render.drawRectangle(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY,
                     backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha());
@@ -106,15 +106,15 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     }
 
     @Override
-    public void dispatchRender(GuiRender render) {
+    public void dispatchRender(GuiRender render, long delta) {
         if (clipChildren) {
             render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY);
-            super.dispatchRender(render);
-            render(render);
+            super.dispatchRender(render, delta);
+            render(render, delta);
             render.disableScissor();
         } else {
-            super.dispatchRender(render);
-            render(render);
+            super.dispatchRender(render, delta);
+            render(render, delta);
         }
     }
     @Override
@@ -194,7 +194,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         super.dispatchWindowMoveEvent(event);
     }
 
-    protected abstract void render(GuiRender render);
+    protected abstract void render(GuiRender render, long delta);
     protected void onKeyEvent(KeyEvent event) {}
     protected void onMouseButtonEvent(MouseButtonEvent event) {}
     protected void onMouseMoveEvent(MouseMoveEvent event) {}
