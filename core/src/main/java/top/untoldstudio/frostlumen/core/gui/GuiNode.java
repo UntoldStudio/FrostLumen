@@ -16,14 +16,18 @@
 package top.untoldstudio.frostlumen.core.gui;
 
 import top.untoldstudio.frostlumen.core.data.*;
+import top.untoldstudio.frostlumen.core.listener.OneArgListenerRegistry;
 import top.untoldstudio.frostlumen.core.tool.MathTool;
 import top.untoldstudio.frostlumen.core.event.*;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNode<T> {
+    private final OneArgListenerRegistry<MouseMoveEvent> mouseEnterListenerRegistry = new OneArgListenerRegistry<>();
+    private final OneArgListenerRegistry<MouseMoveEvent> mouseLeaveListenerRegistry = new OneArgListenerRegistry<>();
     protected NodeRoot root;
     protected ParentNode<?> parent;
     protected int renderLevel = 0;
@@ -45,6 +49,23 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     protected Set<MouseButton> currentMouseClickButtons = new HashSet<>();
     protected boolean mouseInNode;
     protected float backgroundBlurStrength = 0;
+
+    public T registerMouseEnterListener(Consumer<MouseMoveEvent> listener) {
+        mouseEnterListenerRegistry.register(listener);
+        return self;
+    }
+    public T unregisterMouseEnterListener(Consumer<MouseMoveEvent> listener) {
+        mouseEnterListenerRegistry.unregister(listener);
+        return self;
+    }
+    public T registerMouseLeaveListener(Consumer<MouseMoveEvent> listener) {
+        mouseLeaveListenerRegistry.register(listener);
+        return self;
+    }
+    public T unregisterMouseLeaveListener(Consumer<MouseMoveEvent> listener) {
+        mouseLeaveListenerRegistry.unregister(listener);
+        return self;
+    }
 
     protected void drawDefaultFrameBackground(GuiRender render) {
         if (backgroundBlurStrength != 0 && backgroundColor.alpha() != 255) {
@@ -141,7 +162,16 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     }
     @Override
     public void dispatchMouseMoveEvent(MouseMoveEvent event) {
-        mouseInNode = isMouseInNode(root);
+        boolean current = isMouseInNode(root);
+        if (current != mouseInNode) {
+            if (current) {
+                mouseEnterListenerRegistry.trigger(event);
+            } else {
+                mouseLeaveListenerRegistry.trigger(event);
+            }
+
+            mouseInNode = current;
+        }
         super.dispatchMouseMoveEvent(event);
         onMouseMoveEvent(event);
     }

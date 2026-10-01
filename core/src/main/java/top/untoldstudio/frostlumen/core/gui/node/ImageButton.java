@@ -3,14 +3,18 @@ package top.untoldstudio.frostlumen.core.gui.node;
 import top.untoldstudio.frostlumen.core.data.CursorShape;
 import top.untoldstudio.frostlumen.core.data.MouseButton;
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
+import top.untoldstudio.frostlumen.core.event.MouseButtonEvent;
+import top.untoldstudio.frostlumen.core.listener.OneArgListenerRegistry;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
 import top.untoldstudio.frostlumen.core.texture.Texture;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
 
 public class ImageButton extends ImageNode<ImageButton> {
+    private final OneArgListenerRegistry<MouseButtonEvent> mouseButtonEventListenerRegistry = new OneArgListenerRegistry<>();
     private final Set<MouseButton> canTriggerMouseButtons = new HashSet<>();
     private final ImageNode<ImageButton>.ImageRenderDescription normal;
     private final ImageNode<ImageButton>.ImageRenderDescription onHover = new ImageRenderDescription();
@@ -45,6 +49,22 @@ public class ImageButton extends ImageNode<ImageButton> {
             render.setCursorShape(CursorShape.HAND);
         } else {
             normal.render(render);
+        }
+    }
+
+    public ImageButton registerMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+        mouseButtonEventListenerRegistry.register(callback);
+        return this;
+    }
+    public ImageButton unregisterMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+        mouseButtonEventListenerRegistry.unregister(callback);
+        return this;
+    }
+
+    @Override
+    protected void onMouseButtonEvent(MouseButtonEvent event) {
+        if (!Collections.disjoint(canTriggerMouseButtons, currentMouseClickButtons)) {
+            mouseButtonEventListenerRegistry.trigger(event);
         }
     }
 
