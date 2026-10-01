@@ -15,8 +15,8 @@
  */
 package top.untoldstudio.frostlumen.core.data;
 
-import java.util.HashMap;
-import java.util.Map;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -31,7 +31,7 @@ public enum MouseButton {
     BUTTON_8(GLFW_MOUSE_BUTTON_8),
     UNKNOWN(-1);
 
-    private static final Map<Integer, MouseButton> MAP = new HashMap<Integer, MouseButton>();
+    private static final Int2ObjectMap<MouseButton> MAP = new Int2ObjectOpenHashMap<>();
 
     static {
         for (MouseButton button : MouseButton.values()) {

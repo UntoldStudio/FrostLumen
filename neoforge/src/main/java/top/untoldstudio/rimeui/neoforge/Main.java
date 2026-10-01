@@ -26,7 +26,7 @@ public final class Main {
 
     public Main(IEventBus modEventBus, ModContainer modContainer) {
         instance = this;
-        modEventBus.register(new ModEventHandler());
+        modEventBus.register(FrostLumenModBootstrap.INSTANCE);
     }
 
     public static Main getInstance() {

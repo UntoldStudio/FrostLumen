@@ -15,8 +15,8 @@
  */
 package top.untoldstudio.frostlumen.core.data;
 
-import java.util.HashMap;
-import java.util.Map;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -143,12 +143,12 @@ public enum Key {
     WORLD_2(GLFW_KEY_WORLD_2),
     UNKNOWN(GLFW_KEY_UNKNOWN);
 
-    private static final Map<Integer, Key> KEY_MAP = new HashMap<>();
+    private static final Int2ObjectMap<Key> MAP = new Int2ObjectOpenHashMap<>();
     private final int glfwValue;
 
     static {
         for (Key key : Key.values()) {
-            KEY_MAP.put(key.glfwValue, key);
+            MAP.put(key.glfwValue, key);
         }
     }
     
@@ -160,6 +160,6 @@ public enum Key {
         return glfwValue;
     }
     public static Key fromGLFWValue(int glfwValue){
-        return KEY_MAP.getOrDefault(glfwValue, UNKNOWN);
+        return MAP.getOrDefault(glfwValue, UNKNOWN);
     }
 }

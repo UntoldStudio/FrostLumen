@@ -21,7 +21,7 @@ import top.untoldstudio.frostlumen.core.render.GuiRender;
 
 public class Frame extends GuiNode<Frame> {
     @Override
-    public void render(GuiRender render, long delta) {
+    protected void render(GuiRender render, long delta) {
         super.drawDefaultFrameBackground(render);
     }
 

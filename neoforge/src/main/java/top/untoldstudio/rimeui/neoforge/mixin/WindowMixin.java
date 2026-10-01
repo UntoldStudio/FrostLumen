@@ -34,7 +34,7 @@ public abstract class WindowMixin {
     private void beforeSelectCursor(CursorType type, CallbackInfo callbackInfo) {
         long handle = ((CursorTypeAccessor) type).getHandle();
         if (top.untoldstudio.frostlumen.core.gui.Window.get(this.handle) != null) {
-            top.untoldstudio.frostlumen.core.gui.Window.get(this.handle).getNodeRoot().getRender().setExternalSettingCursor(handle);
+            top.untoldstudio.frostlumen.core.gui.Window.get(this.handle).getNodeRoot().setExternalSettingCursor(handle);
         }
     }
 }

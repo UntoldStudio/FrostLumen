@@ -15,12 +15,13 @@
  */
 package top.untoldstudio.frostlumen.core.gui;
 
+import top.untoldstudio.frostlumen.core.data.*;
 import top.untoldstudio.frostlumen.core.tool.MathTool;
-import top.untoldstudio.frostlumen.core.data.RGBA;
-import top.untoldstudio.frostlumen.core.data.ScaleOffset;
-import top.untoldstudio.frostlumen.core.data.ThicknessPosition;
 import top.untoldstudio.frostlumen.core.event.*;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNode<T> {
     protected NodeRoot root;
@@ -41,6 +42,8 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     protected double xAnchor = 0;
     protected double yAnchor = 0;
     protected float angle = 0;
+    protected Set<MouseButton> currentMouseClickButtons = new HashSet<>();
+    protected boolean mouseInNode;
 
     protected void drawDefaultFrameBackground(GuiRender render) {
         if (backgroundLeftBorderThickness == 0 && backgroundRightBorderThickness == 0 && backgroundTopBorderThickness == 0 && backgroundBottomBorderThickness == 0 && backgroundLeftTopCornerRadius == 0 && backgroundRightTopCornerRadius == 0 && backgroundLeftBottomCornerRadius == 0 && backgroundRightBottomCornerRadius == 0) {
@@ -124,11 +127,17 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         onKeyEvent(event);
     }
     public void dispatchMouseButtonEvent(MouseButtonEvent event) {
+        if (event.getAction() == InputAction.PRESS && mouseInNode) {
+            currentMouseClickButtons.add(event.getButton());
+        } else if (event.getAction() == InputAction.RELEASE) {
+            currentMouseClickButtons.remove(event.getButton());
+        }
         super.dispatchMouseButtonEvent(event);
         onMouseButtonEvent(event);
     }
     @Override
     public void dispatchMouseMoveEvent(MouseMoveEvent event) {
+        mouseInNode = isMouseInNode(root);
         super.dispatchMouseMoveEvent(event);
         onMouseMoveEvent(event);
     }
@@ -375,9 +384,25 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         return backgroundBottomBorderThickness;
     }
 
-    public boolean isMouseInRange() {
-        if (root == null) return false;
-        return root.getWindow().isMouseInRange(realPositionX, realPositionY, realPositionX, realPositionY);
+    public boolean isMouseInNode() {
+        return mouseInNode;
+    }
+    public Set<MouseButton> getCurrentMouseClickButtons() {
+        return currentMouseClickButtons;
+    }
+
+    private boolean isMouseInNode(NodeRoot root) {
+        int centerX = (realPositionX + realPositionMaxX) / 2;
+        int centerY = (realPositionY + realPositionMaxY) / 2;
+
+        double dx = root.getWindow().getMouseX() - centerX;
+        double dy = root.getWindow().getMouseY() - centerY;
+        double rad = Math.toRadians(-angle);
+        double cos = Math.cos(rad);
+        double sin = Math.sin(rad);
+        double localX = centerX + dx * cos - dy * sin;
+        double localY = centerY + dx * sin + dy * cos;
+        return localX >= realPositionX && localX <= realPositionMaxX && localY >= realPositionY && localY <= realPositionMaxY;
     }
 
     public GuiNode(ScaleOffset position, ScaleOffset size) {

@@ -38,9 +38,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="Record" />
         <option value="Exception" />
+        <option value="Interface" />
         <option value="Enum" />
         <option value="Class" />
       </list>
@@ -95,15 +95,17 @@
       <recent name="D:\Develop\FrostLumen" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Develop\FrostLumen\example\src\main\resources" />
       <recent name="D:\Develop\FrostLumen\core\src\main\resources\shader\" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Push Changes">
+  <component name="RunManager" selected="应用程序.Run">
     <configuration name="Run" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="ms-21" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="MAIN_CLASS_NAME" value="top.untoldstudio.frostlumen.application.Main" />
       <module name="FrostLumen.example.main" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>

@@ -15,14 +15,24 @@
  */
 package top.untoldstudio.frostlumen.core.gui;
 
+import top.untoldstudio.frostlumen.core.data.CursorShape;
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.event.FrameBufferSizeChangeEvent;
+import top.untoldstudio.frostlumen.core.event.MouseMoveEvent;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
 
 public final class NodeRoot extends ParentNode<NodeRoot> {
     private final Window window;
     private final GuiRender render;
+    private long externalSettingCursor = -1;
+    private boolean isLastMouseMoveEventCanceled = false;
     private long lastRenderTime = 0;
+
+    @Override
+    public void dispatchMouseMoveEvent(MouseMoveEvent event) {
+        super.dispatchMouseMoveEvent(event);
+        isLastMouseMoveEventCanceled = event.isCancel();
+    }
 
     @Override
     public void dispatchFrameBufferSizeChangeEvent(FrameBufferSizeChangeEvent event) {
@@ -35,6 +45,11 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
 
     public void render() {
         render.beginFrame();
+        if (externalSettingCursor != -1 && !isLastMouseMoveEventCanceled) {
+            render.setCursorShape(externalSettingCursor);
+        } else {
+            render.setCursorShape(CursorShape.ARROW);
+        }
         long now = System.currentTimeMillis();
         dispatchRender(render, now - lastRenderTime);
         render.submitBuffer();
@@ -62,6 +77,10 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
 
     public GuiRender getRender() {
         return render;
+    }
+
+    public void setExternalSettingCursor(long handle) {
+        this.externalSettingCursor = handle;
     }
 
     public NodeRoot(Window window, GuiRender render) {

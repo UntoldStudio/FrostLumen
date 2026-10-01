@@ -72,6 +72,7 @@ public class Window {
     private double mouseY = -1;
     private boolean mouseInWindow;
     private ParentNode<?> focusNode;
+    private boolean mouseClick;
     private boolean focus;
     private boolean maximize;
     private boolean minimize;
@@ -158,6 +159,7 @@ public class Window {
         }));
         mouseButtonCallback = GLFWMouseButtonCallback.create(((currentWindow, button, action, modifiers) -> {
             MouseButtonEvent event = new MouseButtonEvent(MouseButton.fromGLFWValue(button), InputAction.fromGLFWValue(action), InputModifiers.fromGLFWValue(modifiers));
+            mouseClick = event.getAction() != InputAction.RELEASE;
             root.dispatchMouseButtonEvent(event);
             if (oldMouseButtonCallback != null && !event.isCancel()) {
                 oldMouseButtonCallback.invoke(currentWindow, button, action, modifiers);
@@ -341,5 +343,8 @@ public class Window {
     }
     public boolean isMaximize() {
         return maximize;
+    }
+    public boolean isMouseClick() {
+        return mouseClick;
     }
 }

@@ -16,10 +16,10 @@
 package top.untoldstudio.frostlumen.application;
 
 import org.lwjgl.opengl.GL;
-import top.untoldstudio.frostlumen.core.data.RGBA;
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.gui.Window;
-import top.untoldstudio.frostlumen.core.gui.node.TextLabel;
+import top.untoldstudio.frostlumen.core.gui.node.ImageButton;
+import top.untoldstudio.frostlumen.core.render.IResourceManager;
 import top.untoldstudio.frostlumen.core.render.RenderProviderType;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -35,14 +35,15 @@ public class Main {
 
         Window window = Window.from(windowHandle, RenderProviderType.OPENGL);
 
-        TextLabel label = new TextLabel("114514", ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
-                .setTextColor(RGBA.BLUE)
-                .setDrawBackground(true)
+        IResourceManager resourceManager = IResourceManager.getIResourceManagerFromThreadLocal();
+        ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-blue.jpg"), ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+                .getOnHover().setTexture(resourceManager.loadTexture("/oiiaioiiai-red.jpg")).getNode()
+                .getOnClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
                 .setAnchor(0.5, 0.5)
-                .setBackgroundCornerRadius(10)
-                .setAngle(10f)
+                .setDrawBackground(true)
+                .setAngle(90)
                 ;
-        window.getNodeRoot().addChild(label);
+        window.getNodeRoot().addChild(button);
 
         while (!glfwWindowShouldClose(windowHandle)) {
             glfwPollEvents();

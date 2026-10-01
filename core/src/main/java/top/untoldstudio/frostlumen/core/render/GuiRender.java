@@ -17,6 +17,8 @@ package top.untoldstudio.frostlumen.core.render;
 
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2LongMap;
+import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 import org.lwjgl.CLongBuffer;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
@@ -24,6 +26,8 @@ import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.util.freetype.FT_Face;
 import org.lwjgl.util.freetype.FT_Matrix;
 import org.lwjgl.util.freetype.FT_Vector;
+import top.untoldstudio.frostlumen.core.data.CursorMode;
+import top.untoldstudio.frostlumen.core.data.CursorShape;
 import top.untoldstudio.frostlumen.core.data.ThicknessPosition;
 import top.untoldstudio.frostlumen.core.exception.ResourceException;
 import top.untoldstudio.frostlumen.core.font.Font;
@@ -41,21 +45,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.util.freetype.FreeType.*;
 import static org.lwjgl.stb.STBImage.*;
 
 public abstract class GuiRender implements IResourceManager {
-    private static final Cleaner CLEANER = Cleaner.create();
-    private static final ThreadLocal<FT_Vector> vector = ThreadLocal.withInitial(() -> {
+    protected static final Cleaner CLEANER = Cleaner.create();
+    protected static final ThreadLocal<FT_Vector> vector = ThreadLocal.withInitial(() -> {
         FT_Vector ftVector = FT_Vector.malloc();
         CLEANER.register(Thread.currentThread(), ftVector::free);
         return ftVector;
     });
-    private final Map<Font, Int2FloatMap> ascenderCache = new HashMap<>();
-    private final Map<Double, FT_Matrix> italicDegreesCache = new LruCacheMap<>(128, (key, value) -> value.free());
+    protected final Map<Font, Int2FloatMap> ascenderCache = new HashMap<>();
+    protected final Map<Double, FT_Matrix> italicDegreesCache = new LruCacheMap<>(128, (key, value) -> value.free());
     protected final long windowHandle;
     protected final Map<String, Font> fontMap = new HashMap<>();
     protected long ftLibrary;
+    protected long cursorShapeInThisFrame;
+    protected int cursorModeInThisFrame;
+    protected final Int2LongMap cursorShapeMap = new Int2LongOpenHashMap();
 
     public void drawRectangle(int minX, int minY, int maxX, int maxY, float angle, int red, int green, int blue, int alpha) {
         drawRectangle(minX, minY, maxX, maxY, angle, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha);
@@ -344,11 +352,19 @@ public abstract class GuiRender implements IResourceManager {
 
     public void beginFrame() {
         IResourceManager.THREAD_LOCAL.set(this);
+        cursorShapeInThisFrame = -1;
+        cursorModeInThisFrame = -1;
         begin();
     }
 
     public void endFrame() {
         end();
+        if (cursorShapeInThisFrame != -1) {
+            glfwSetCursor(windowHandle, cursorShapeInThisFrame);
+        }
+        if (cursorModeInThisFrame != -1) {
+            glfwSetInputMode(windowHandle, GLFW_CURSOR, cursorModeInThisFrame);
+        }
     }
 
     public abstract void enableScissor(int x, int y, int width, int height);
@@ -582,14 +598,28 @@ public abstract class GuiRender implements IResourceManager {
         return loadTexture(path, true, left, right, top, bottom);
     }
 
+    public void setCursorShape(CursorShape cursorShapeInThisFrame) {
+        this.cursorShapeInThisFrame = cursorShapeMap.get(cursorShapeInThisFrame.getGLFWValue());
+    }
+    public void setCursorMode(int cursorModeInThisFrame) {
+        this.cursorModeInThisFrame = cursorModeInThisFrame;
+    }
+    public void setCursorMode(CursorMode cursorModeInThisFrame) {
+        this.cursorModeInThisFrame = cursorModeInThisFrame.getGLFWValue();
+    }
+    public void setCursorShape(long cursorShapeInThisFrame) {
+        this.cursorShapeInThisFrame = cursorShapeInThisFrame;
+    }
+
     protected abstract int loadTexture(ByteBuffer data, int width, int height);
 
     public abstract RenderProviderType getProviderType();
 
-    public void setExternalSettingCursor(long handle) {
-    }
-
     public GuiRender(long windowHandle) {
         this.windowHandle = windowHandle;
+
+        for (CursorShape shape : CursorShape.values()) {
+            cursorShapeMap.put(shape.getGLFWValue(), glfwCreateStandardCursor(shape.getGLFWValue()));
+        }
     }
 }

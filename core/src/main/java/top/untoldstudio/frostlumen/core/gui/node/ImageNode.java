@@ -1,0 +1,126 @@
+package top.untoldstudio.frostlumen.core.gui.node;
+
+import top.untoldstudio.frostlumen.core.data.ImageAlignment;
+import top.untoldstudio.frostlumen.core.data.RGBA;
+import top.untoldstudio.frostlumen.core.data.ScaleOffset;
+import top.untoldstudio.frostlumen.core.gui.GuiNode;
+import top.untoldstudio.frostlumen.core.render.GuiRender;
+import top.untoldstudio.frostlumen.core.texture.Texture;
+import top.untoldstudio.frostlumen.core.tool.MathTool;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
+    private final List<ImageRenderDescription> selfRenderDescriptions = new ArrayList<>();
+
+    @Override
+    protected void operationPosition(GuiNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
+        super.operationPosition(parentFrame, parentRealPositionX, parentRealPositionY);
+        for (ImageRenderDescription renderDescription : selfRenderDescriptions) {
+            renderDescription.operationImageAlignment();
+        }
+    }
+
+    public class ImageRenderDescription {
+        private Texture texture;
+        private RGBA color = RGBA.WHITE;
+        private ImageAlignment imageAlignment = ImageAlignment.STRETCH;
+        private int imagePositionX;
+        private int imagePositionY;
+        private int imagePositionMaxX;
+        private int imagePositionMaxY;
+
+        public boolean canRender() {
+            return texture != null;
+        }
+
+        public void render(GuiRender render) {
+            render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY);
+            render.drawTexture(texture, imagePositionX, imagePositionY, imagePositionMaxX, imagePositionMaxY, angle, 0, 0, 1, 1, color.red(), color.green(), color.blue(), color.alpha());
+            render.disableScissor();
+        }
+
+        /**
+         * {@link top.untoldstudio.frostlumen.core.render.IResourceManager:getIResourceManagerFromThreadLocal()}
+         */
+        public ImageRenderDescription setTexture(Texture texture) {
+            this.texture = texture;
+            return this;
+        }
+        public ImageRenderDescription setColor(RGBA color) {
+            this.color = color;
+            return this;
+        }
+        public ImageRenderDescription setImageAlignment(ImageAlignment imageAlignment) {
+            this.imageAlignment = imageAlignment;
+            operationImageAlignment();
+            return this;
+        }
+
+        public Texture getTexture() {
+            return texture;
+        }
+        public RGBA getColor() {
+            return color;
+        }
+        public ImageAlignment getImageAlignment() {
+            return imageAlignment;
+        }
+
+        public T getNode() {
+            return self;
+        }
+
+        public void operationImageAlignment() {
+            switch (imageAlignment) {
+                case STRETCH -> {
+                    imagePositionX = realPositionX;
+                    imagePositionY = realPositionY;
+                    imagePositionMaxX = realPositionMaxX;
+                    imagePositionMaxY = realPositionMaxY;
+                }
+                case FIT -> {
+                    int width = texture.width();
+                    int height = texture.height();
+
+                    double scaleX = (double) realSizeX / width;
+                    double scaleY = (double) realSizeY / height;
+                    double scale = Math.min(scaleX, scaleY);
+
+                    int newWidth = MathTool.round(width * scale);
+                    int newHeight = MathTool.round(height * scale);
+
+                    imagePositionX = realPositionX + (realSizeX - newWidth) / 2;
+                    imagePositionY = realPositionY + (realSizeY - newHeight) / 2;
+                    imagePositionMaxX = imagePositionX + newWidth;
+                    imagePositionMaxY = imagePositionY + newHeight;
+                }
+                case FILL -> {
+                    int width = texture.width();
+                    int height = texture.height();
+
+                    double scaleX = (double) realSizeX / width;
+                    double scaleY = (double) realSizeY / height;
+                    double scale = Math.max(scaleX, scaleY);
+
+                    int newWidth = MathTool.round(width * scale);
+                    int newHeight = MathTool.round(height * scale);
+
+                    imagePositionX = realPositionX + (realSizeX - newWidth) / 2;
+                    imagePositionY = realPositionY + (realSizeY - newHeight) / 2;
+                    imagePositionMaxX = imagePositionX + newWidth;
+                    imagePositionMaxY = imagePositionY + newHeight;
+                }
+            }
+        }
+
+        public ImageRenderDescription() {
+            selfRenderDescriptions.add(this);
+        }
+    }
+
+    public ImageNode(ScaleOffset position, ScaleOffset size) {
+        super(position, size);
+    }
+}

@@ -19,24 +19,34 @@ import net.minecraft.client.Minecraft;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import top.untoldstudio.frostlumen.core.data.RGBA;
-import top.untoldstudio.frostlumen.core.data.ScaleOffset;
-import top.untoldstudio.frostlumen.core.data.ThicknessPosition;
+import top.untoldstudio.frostlumen.core.gui.NodeRoot;
 import top.untoldstudio.frostlumen.core.gui.Window;
-import top.untoldstudio.frostlumen.core.gui.node.Frame;
+import top.untoldstudio.frostlumen.core.listener.OneArgListenerRegistry;
 import top.untoldstudio.frostlumen.core.render.RenderProviderType;
 
-public class ModEventHandler {
+import java.util.function.Consumer;
+
+public class FrostLumenModBootstrap {
+    public static final FrostLumenModBootstrap INSTANCE = new FrostLumenModBootstrap();
+    private final OneArgListenerRegistry<NodeRoot> bootstrapRegistry = new OneArgListenerRegistry<>();
+
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onClientSetup(FMLClientSetupEvent event) {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.execute(() -> {
             Window window = Window.from(minecraft.getWindow().handle(), RenderProviderType.OPENGL);
-            Frame frame = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
-                    .setAnchor(0.5, 0.5).setBackgroundColor(RGBA.BLUE)//.setBackgroundCornerRadius(100)
-                    .setBackgroundBorderThickness(10).setBackgroundBorderThicknessPosition(ThicknessPosition.INSIDE).setBackgroundCornerRadius(50).setBackgroundBorderColor(RGBA.RED.withAlpha(100))
-                    ;
-            window.getNodeRoot().addChildren(frame);
+            NodeRoot root = window.getNodeRoot();
+            bootstrapRegistry.trigger(root);
         });
+    }
+
+    public void registerBootstrapConsumer(Consumer<NodeRoot> consumer) {
+        bootstrapRegistry.register(consumer);
+    }
+    public void unregisterBootstrapConsumer(Consumer<NodeRoot> consumer) {
+        bootstrapRegistry.unregister(consumer);
+    }
+
+    private FrostLumenModBootstrap() {
     }
 }
