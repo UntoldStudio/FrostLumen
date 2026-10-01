@@ -66,6 +66,7 @@
     "Gradle.FrostLumen [:neoforge:net.neoforged.devlaunch.Main.main()].executor": "Run",
     "Gradle.FrostLumen [build].executor": "Run",
     "Gradle.Push Changes.executor": "Run",
+    "Gradle.Release Version.executor": "Run",
     "Gradle.构建 FrostLumen.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -100,7 +101,7 @@
       <recent name="D:\Develop\FrostLumen\core\src\main\resources\shader\" />
     </key>
   </component>
-  <component name="RunManager" selected="应用程序.Run">
+  <component name="RunManager" selected="Gradle.Release Version">
     <configuration name="Run" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="ms-21" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />

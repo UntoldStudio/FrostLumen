@@ -302,10 +302,10 @@ public class OpenGLGuiRender extends GuiRender {
     @Override
     public void onFrameBufferSizeChange(int width, int height) {
         glViewport(0, 0, width, height);
-        int halfW = Math.max(1, width / BLUR_DOWNSCALE);
-        int halfH = Math.max(1, height / BLUR_DOWNSCALE);
-        if (halfW > blurTextureWidth || halfH > blurTextureHeight) {
-            rebuildBlurTextures(Math.max(halfW, blurTextureWidth), Math.max(halfH, blurTextureHeight));
+        int halfWidth = Math.max(1, width / BLUR_DOWNSCALE);
+        int halfHeight = Math.max(1, height / BLUR_DOWNSCALE);
+        if (halfWidth > blurTextureWidth || halfHeight > blurTextureHeight) {
+            rebuildBlurTextures(Math.max(halfWidth, blurTextureWidth), Math.max(halfHeight, blurTextureHeight));
         }
     }
 
@@ -694,11 +694,11 @@ public class OpenGLGuiRender extends GuiRender {
         int windowWidth = window.getFrameBufferWidth();
         int windowHeight = window.getFrameBufferHeight();
 
-        int halfW = Math.max(1, width / BLUR_DOWNSCALE);
-        int halfH = Math.max(1, height / BLUR_DOWNSCALE);
+        int halfWidth = Math.max(1, width / BLUR_DOWNSCALE);
+        int halfHeight = Math.max(1, height / BLUR_DOWNSCALE);
 
-        if (halfW > blurTextureWidth || halfH > blurTextureHeight) {
-            rebuildBlurTextures(Math.max(halfW, blurTextureWidth), Math.max(halfH, blurTextureHeight));
+        if (halfWidth > blurTextureWidth || halfHeight > blurTextureHeight) {
+            rebuildBlurTextures(Math.max(halfWidth, blurTextureWidth), Math.max(halfHeight, blurTextureHeight));
         }
 
         int glY0 = windowHeight - (y + height);
@@ -708,13 +708,13 @@ public class OpenGLGuiRender extends GuiRender {
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, blurFbo[0]);
-        glBlitFramebuffer(x, glY0, x + width, glY1, 0, 0, halfW, halfH, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+        glBlitFramebuffer(x, glY0, x + width, glY1, 0, 0, halfWidth, halfHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         glBindVertexArray(blurVao);
         glUseProgram(blurShaderProgram);
         glUniform2f(blurTexelSizeLocation, 1f / blurTextureWidth, 1f / blurTextureHeight);
-        glUniform2f(blurUVScaleLocation, (float) halfW / blurTextureWidth, (float) halfH / blurTextureHeight);
+        glUniform2f(blurUVScaleLocation, (float) halfWidth / blurTextureWidth, (float) halfHeight / blurTextureHeight);
         glActiveTexture(GL_TEXTURE0);
         glUniform1i(blurSamplerLocation, 0);
 
@@ -723,13 +723,13 @@ public class OpenGLGuiRender extends GuiRender {
 
         for (int i = 0; i < BLUR_PASSES; i++) {
             glBindFramebuffer(GL_FRAMEBUFFER, blurFbo[1]);
-            glViewport(0, 0, halfW, halfH);
+            glViewport(0, 0, halfWidth, halfHeight);
             glUniform1i(blurDirectionLocation, 0);
             glBindTexture(GL_TEXTURE_2D, blurTexture[0]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             glBindFramebuffer(GL_FRAMEBUFFER, blurFbo[0]);
-            glViewport(0, 0, halfW, halfH);
+            glViewport(0, 0, halfWidth, halfHeight);
             glUniform1i(blurDirectionLocation, 1);
             glBindTexture(GL_TEXTURE_2D, blurTexture[1]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -748,8 +748,8 @@ public class OpenGLGuiRender extends GuiRender {
 
         int centerX = x + width / 2;
         int centerY = y + height / 2;
-        float uMax = (float) halfW / blurTextureWidth;
-        float vMax = (float) halfH / blurTextureHeight;
+        float uMax = (float) halfWidth / blurTextureWidth;
+        float vMax = (float) halfHeight / blurTextureHeight;
 
         DirectByteBuffer temp = blurTempBuffer;
         temp.clear();
