@@ -55,8 +55,14 @@ tasks.withType<Javadoc>().configureEach { enabled = false }
 
 val gitTargetBranch: String = "main"
 
+val spotlessApplyAll = tasks.register("spotlessApplyAll") {
+    group = "verification"
+    description = "对所有子项目执行spotlessApply"
+    dependsOn(subprojects.map { it.tasks.matching { t -> t.name == "spotlessApply" } })
+}
+
 tasks.register("pushChanges") {
-    dependsOn(tasks.named("spotlessApply"))
+    dependsOn(spotlessApplyAll)
     notCompatibleWithConfigurationCache("任务需要交互式输入并访问项目目录")
     description = "自动add,commit并推送当前分支"
     doLast {
@@ -82,7 +88,7 @@ tasks.register("pushChanges") {
 }
 
 tasks.register("releaseVersion") {
-    dependsOn(tasks.named("spotlessApply"))
+    dependsOn(spotlessApplyAll)
     notCompatibleWithConfigurationCache("任务需要交互式输入并访问项目目录")
     description = "自动add,commit,push并创建发布标签"
     doLast {
