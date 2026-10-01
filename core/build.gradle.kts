@@ -11,6 +11,8 @@ dependencies {
     compileOnly(rootProject.libs.bundles.lwjgl.all)
 
     compileOnly(rootProject.libs.joml)
+
+    compileOnly(rootProject.libs.fastutil.core)
 }
 
 tasks.jar {

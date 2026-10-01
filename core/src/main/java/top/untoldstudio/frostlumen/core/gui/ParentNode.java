@@ -17,7 +17,8 @@ package top.untoldstudio.frostlumen.core.gui;
 
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.event.*;
-import top.untoldstudio.frostlumen.core.listener.LongListenerRegistry;
+import top.untoldstudio.frostlumen.core.listener.GuiRenderAndLongListenerRegistry;
+import top.untoldstudio.frostlumen.core.listener.consumer.GuiRenderAndLongConsumer;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
 
 import java.util.ArrayList;
@@ -25,10 +26,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.LongConsumer;
 
 public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoot, GuiNode {
-    private final LongListenerRegistry prerenderListenerRegistry = new LongListenerRegistry();
+    private final GuiRenderAndLongListenerRegistry beforeRenderListenerRegistry = new GuiRenderAndLongListenerRegistry();
+    private final GuiRenderAndLongListenerRegistry afterRenderListenerRegistry = new GuiRenderAndLongListenerRegistry();
 
     @SuppressWarnings("unchecked")
     protected final T self = (T) this;
@@ -67,16 +68,21 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
         return realSizeY;
     }
 
-    public void registerRenderListener(LongConsumer consumer) {
-        prerenderListenerRegistry.register(consumer);
+    public void registerBeforeRenderListener(GuiRenderAndLongConsumer consumer) {
+        beforeRenderListenerRegistry.register(consumer);
     }
-    public void unregisterRenderListener(LongConsumer consumer) {
-        prerenderListenerRegistry.unregister(consumer);
+    public void unregisterBeforeRenderListener(GuiRenderAndLongConsumer consumer) {
+        beforeRenderListenerRegistry.unregister(consumer);
     }
+    public void registerAfterRenderListener(GuiRenderAndLongConsumer consumer) {
+        afterRenderListenerRegistry.register(consumer);
+    }
+    public void unregisterAfterRenderListener(GuiRenderAndLongConsumer consumer) {}
 
     public void dispatchRender(GuiRender render, long delta) {
-        prerenderListenerRegistry.trigger(delta);
+        beforeRenderListenerRegistry.trigger(render, delta);
         reverseFor(node -> node.dispatchRender(render, delta));
+        afterRenderListenerRegistry.trigger(render, delta);
     }
     public void dispatchKeyEvent(KeyEvent event) {
         reverseFor(node -> node.dispatchKeyEvent(event));

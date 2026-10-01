@@ -26,6 +26,8 @@ dependencies {
 
     implementation(rootProject.libs.joml)
 
+    implementation(rootProject.libs.fastutil.core)
+
     runtimeOnly("org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}")
     runtimeOnly("org.lwjgl:lwjgl-opengl:${lwjglVersion}:${lwjglNatives}")
     runtimeOnly("org.lwjgl:lwjgl-glfw:${lwjglVersion}:${lwjglNatives}")

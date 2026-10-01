@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(Main.class)
 public class MainMixin {
     @Inject(method = "<init>", at = @At(value = "HEAD"))
-    private static void init(CallbackInfo ci) {
+    private static void init(CallbackInfo callbackInfo) {
         System.setProperty("org.lwjgl.system.stackSize", "1024");
     }
 }

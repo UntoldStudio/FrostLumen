@@ -6,6 +6,7 @@ log4j = "2.24.1"
 slf4j-api = "2.0.9"
 jansi = "1.18"
 gson = "2.10.1"
+fast-util = "8.5.19"
 
 [libraries]
 joml = { module = "org.joml:joml", version.ref = "joml" }
@@ -16,6 +17,7 @@ lwjgl-glfw = { module = "org.lwjgl:lwjgl-glfw" }
 lwjgl-stb = { module = "org.lwjgl:lwjgl-stb" }
 lwjgl-freetype = { module = "org.lwjgl:lwjgl-freetype" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+fastutil-core = { module = "it.unimi.dsi:fastutil", version.ref = "fast-util" }
 
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }

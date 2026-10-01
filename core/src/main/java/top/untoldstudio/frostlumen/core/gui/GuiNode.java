@@ -15,7 +15,7 @@
  */
 package top.untoldstudio.frostlumen.core.gui;
 
-import top.untoldstudio.frostlumen.core.MathTool;
+import top.untoldstudio.frostlumen.core.tool.MathTool;
 import top.untoldstudio.frostlumen.core.data.RGBA;
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.data.ThicknessPosition;
@@ -38,15 +38,16 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     protected int backgroundRightBottomCornerRadius = 0;
     protected ThicknessPosition backgroundBorderThicknessPosition = ThicknessPosition.OUTSIDE;
     protected boolean clipChildren = false;
-    protected double xAnchor;
-    protected double yAnchor;
+    protected double xAnchor = 0;
+    protected double yAnchor = 0;
+    protected float angle = 0;
 
     protected void drawDefaultFrameBackground(GuiRender render) {
         if (backgroundLeftBorderThickness == 0 && backgroundRightBorderThickness == 0 && backgroundTopBorderThickness == 0 && backgroundBottomBorderThickness == 0 && backgroundLeftTopCornerRadius == 0 && backgroundRightTopCornerRadius == 0 && backgroundLeftBottomCornerRadius == 0 && backgroundRightBottomCornerRadius == 0) {
-            render.drawRectangle(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY,
+            render.drawRectangle(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY, angle,
                     backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha());
         } else {
-            render.drawShape(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY,
+            render.drawShape(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY, angle,
                     backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha(),
                     backgroundLeftTopCornerRadius, backgroundRightTopCornerRadius, backgroundLeftBottomCornerRadius, backgroundRightBottomCornerRadius,
                     backgroundLeftBorderThickness, backgroundRightBorderThickness, backgroundTopBorderThickness, backgroundBottomBorderThickness,
@@ -241,6 +242,10 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         return renderLevel;
     }
 
+    public T setAngle(float angle) {
+        this.angle = angle;
+        return self;
+    }
     public T setPosition(ScaleOffset position) {
         this.position = position;
         operationPosition();
@@ -329,6 +334,9 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
 
     public boolean isClipChildren() {
         return clipChildren;
+    }
+    public float getAngle() {
+        return angle;
     }
     public RGBA getBackgroundColor() {
         return backgroundColor;

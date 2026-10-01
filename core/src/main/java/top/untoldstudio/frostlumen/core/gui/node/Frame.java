@@ -19,7 +19,7 @@ import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.gui.GuiNode;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
 
-public final class Frame extends GuiNode<Frame> {
+public class Frame extends GuiNode<Frame> {
     @Override
     public void render(GuiRender render, long delta) {
         super.drawDefaultFrameBackground(render);

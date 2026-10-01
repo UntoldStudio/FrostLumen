@@ -13,11 +13,11 @@ out vec4 vColor;
 
 void main() {
     vec2 p = vec2(aScreenPos);
+    vec2 c = vec2(aCenterPos);
     if (aAngle != 0.0) {
         float rad = radians(aAngle);
         float s = sin(rad);
         float co = cos(rad);
-        vec2 c = vec2(aCenterPos);
         vec2 d = p - c;
         p = c + vec2(d.x * co - d.y * s, d.x * s + d.y * co);
     }

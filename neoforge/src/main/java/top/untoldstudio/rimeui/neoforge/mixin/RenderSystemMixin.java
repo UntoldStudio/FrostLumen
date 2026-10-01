@@ -22,7 +22,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import top.untoldstudio.frostlumen.core.gui.NodeRoot;
 import top.untoldstudio.frostlumen.core.gui.Window;
-import top.untoldstudio.frostlumen.core.render.GuiRender;
 
 @Mixin(RenderSystem.class)
 public abstract class RenderSystemMixin {
@@ -33,10 +32,7 @@ public abstract class RenderSystemMixin {
     private static void beforeSwap(long windowHandle, Operation<Void> original) {
         if (Window.get(windowHandle) != null) {
             NodeRoot root = Window.get(windowHandle).getNodeRoot();
-            GuiRender render = root.getRender();
-            render.saveContext();
             root.render();
-            render.restoreContext();
         }
         original.call(windowHandle);
     }

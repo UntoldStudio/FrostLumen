@@ -15,7 +15,7 @@
  */
 package top.untoldstudio.frostlumen.core.data;
 
-import top.untoldstudio.frostlumen.core.MathTool;
+import top.untoldstudio.frostlumen.core.tool.MathTool;
 import top.untoldstudio.frostlumen.core.gui.ParentNode;
 
 public record ScaleOffset(

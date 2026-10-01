@@ -1,6 +1,8 @@
 #version 150 core
 
 in ivec2 aScreenPos;
+in ivec2 aCenterPos;
+in float aAngle;
 in vec2 aLocalPos;
 in vec2 aHalfSize;
 in vec4 aFillColor;
@@ -20,7 +22,16 @@ flat out ivec4 vEdgeThickness;
 flat out int vBorderPosition;
 
 void main() {
-    gl_Position = uProjection * vec4(vec2(aScreenPos), 0.0, 1.0);
+    vec2 p = vec2(aScreenPos);
+    vec2 c = vec2(aCenterPos);
+    if (aAngle != 0.0) {
+        float rad = radians(aAngle);
+        float s = sin(rad);
+        float co = cos(rad);
+        vec2 d = p - c;
+        p = c + vec2(d.x * co - d.y * s, d.x * s + d.y * co);
+    }
+    gl_Position = uProjection * vec4(p, 0.0, 1.0);
 
     vLocalPos = aLocalPos;
     vHalfSize = aHalfSize;

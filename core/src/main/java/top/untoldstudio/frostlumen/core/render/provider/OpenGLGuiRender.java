@@ -15,13 +15,23 @@
  */
 package top.untoldstudio.frostlumen.core.render.provider;
 
+import it.unimi.dsi.fastutil.doubles.Double2ObjectMap;
+import it.unimi.dsi.fastutil.doubles.Double2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.joml.Matrix4f;
+import org.lwjgl.system.MemoryUtil;
+import org.lwjgl.util.freetype.*;
 import top.untoldstudio.frostlumen.core.data.ThicknessPosition;
+import top.untoldstudio.frostlumen.core.exception.RenderException;
 import top.untoldstudio.frostlumen.core.exception.ResourceException;
+import top.untoldstudio.frostlumen.core.font.Font;
 import top.untoldstudio.frostlumen.core.gui.Window;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
 import top.untoldstudio.frostlumen.core.render.IResourceManager;
+import top.untoldstudio.frostlumen.core.render.RenderProviderType;
 import top.untoldstudio.frostlumen.core.tool.DirectByteBuffer;
+import top.untoldstudio.frostlumen.core.tool.MathTool;
 import top.untoldstudio.frostlumen.core.tool.ResourceReader;
 
 import java.io.IOException;
@@ -30,9 +40,11 @@ import java.util.*;
 import java.util.function.Supplier;
 
 import static org.lwjgl.opengl.GL32C.*;
+import static org.lwjgl.util.freetype.FreeType.*;
 
 public class OpenGLGuiRender extends GuiRender {
     private final Deque<RenderCommand> commands = new ArrayDeque<>();
+    private final Long2ObjectMap<Double2ObjectOpenHashMap<GlyphInfo>> glyphCache = new Long2ObjectOpenHashMap<>();
 
     private final Matrix4f projectionMatrix = new Matrix4f();
     private final float[] projectionMatrixArray = new float[16];
@@ -59,6 +71,20 @@ public class OpenGLGuiRender extends GuiRender {
     private final int textureVbo;
     private int textureVboCapacity;
 
+    private final int stringStride;
+    private final int stringProjectLocation;
+    private final int stringSamplerLocation;
+    private final int stringShaderProgram;
+    private final int stringVao;
+    private final int stringVbo;
+    private int stringVboCapacity;
+    private int fontAtlasTextureId;
+    private int atlasWidth;
+    private int atlasHeight;
+    private int atlasCursorX;
+    private int atlasCursorY;
+    private int atlasRowHeight;
+
     private final Deque<SavedGLState> savedGLStateState = new ArrayDeque<>();
     private final Deque<SavedGLState> savedGLStatePool = new ArrayDeque<>();
 
@@ -77,6 +103,8 @@ public class OpenGLGuiRender extends GuiRender {
         String shapeFragSource;
         String textureVertSource;
         String textureFragSource;
+        String stringVertSource;
+        String stringFragSource;
         try {
             triangleVertSource = ResourceReader.readString("/shader/triangle/vert.glsl");
             triangleFragSource = ResourceReader.readString("/shader/triangle/frag.glsl");
@@ -84,85 +112,145 @@ public class OpenGLGuiRender extends GuiRender {
             shapeFragSource = ResourceReader.readString("/shader/shape/frag.glsl");
             textureVertSource = ResourceReader.readString("/shader/texture/vert.glsl");
             textureFragSource = ResourceReader.readString("/shader/texture/frag.glsl");
+            stringVertSource = ResourceReader.readString("/shader/string/vert.glsl");
+            stringFragSource = ResourceReader.readString("/shader/string/frag.glsl");
         } catch (IOException e) {
             throw new ResourceException("Cannot read shader source!");
         }
         triangleShaderProgram = createProgram(triangleVertSource, triangleFragSource, Map.of(
-                0, "aPos",
-                1, "aColor"
+                0, "aScreenPos",
+                1, "aCenterPos",
+                2, "aAngle",
+                3, "aColor"
         ));
         shapeShaderProgram = createProgram(shapeVertSource, shapeFragSource, Map.of(
                 0, "aScreenPos",
-                1, "aLocalPos",
-                2, "aHalfSize",
-                3, "aFillColor",
-                4, "aBorderColor",
-                5, "aCornerRadii",
-                6, "aEdgeThickness",
-                7, "aBorderPosition"
+                1, "aCenterPos",
+                2, "aAngle",
+                3, "aLocalPos",
+                4, "aHalfSize",
+                5, "aFillColor",
+                6, "aBorderColor",
+                7, "aCornerRadii",
+                8, "aEdgeThickness",
+                9, "aBorderPosition"
         ));
         textureShaderProgram = createProgram(textureVertSource, textureFragSource, Map.of(
                 0, "aScreenPos",
-                1, "aTexCoord",
-                2, "aColor"
+                1, "aCenterPos",
+                2, "aAngle",
+                3, "aTexCoord",
+                4, "aColor"
+        ));
+        stringShaderProgram = createProgram(stringVertSource, stringFragSource, Map.of(
+                0, "aScreenPos",
+                1, "aCenterPos",
+                2, "aAngle",
+                3, "aTexCoord",
+                4, "aColor"
         ));
 
         triangleVao = glGenVertexArrays();
         triangleVbo = glGenBuffers();
         glBindVertexArray(triangleVao);
         glBindBuffer(GL_ARRAY_BUFFER, triangleVbo);
-        triangleStride = 2 * Integer.BYTES + 4 * Byte.BYTES;
+        triangleStride = 2 * Integer.BYTES + 2 * Integer.BYTES + Float.BYTES + 4 * Byte.BYTES;
         int triangleOffset = 0;
         triangleVboCapacity = triangleStride * 1024;
         glBufferData(GL_ARRAY_BUFFER, triangleVboCapacity, GL_STREAM_DRAW);
         glVertexAttribIPointer(0, 2, GL_INT, triangleStride, triangleOffset);
         triangleOffset += 2 * Integer.BYTES;
-        glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, true, triangleStride, triangleOffset);
-        enableVertexAttributes(1);
+        glVertexAttribIPointer(1, 2, GL_INT, triangleStride, triangleOffset);
+        triangleOffset += 2 * Integer.BYTES;
+        glVertexAttribPointer(2, 1, GL_FLOAT, false, triangleStride, triangleOffset);
+        triangleOffset += Float.BYTES;
+        glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, true, triangleStride, triangleOffset);
+        enableVertexAttributes(3);
         triangleProjectLocation = glGetUniformLocation(triangleShaderProgram, "uProjection");
 
         shapeVao = glGenVertexArrays();
         shapeVbo = glGenBuffers();
         glBindVertexArray(shapeVao);
         glBindBuffer(GL_ARRAY_BUFFER, shapeVbo);
-        shapeStride = 10 * Integer.BYTES + 4 * Float.BYTES + 9 * Byte.BYTES + 3 * Byte.BYTES;
+        shapeStride = 2 * Integer.BYTES + 2 * Integer.BYTES + Float.BYTES + 2 * Float.BYTES + 2 * Float.BYTES + 4 * Byte.BYTES + 4 * Byte.BYTES + 4 * Integer.BYTES + 4 * Integer.BYTES + Integer.BYTES;
         int shapeOffset = 0;
         shapeVboCapacity = shapeStride * 512;
         glBufferData(GL_ARRAY_BUFFER, shapeVboCapacity, GL_STREAM_DRAW);
         glVertexAttribIPointer(0, 2, GL_INT, shapeStride, shapeOffset);
         shapeOffset += 2 * Integer.BYTES;
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, shapeStride, shapeOffset);
+        glVertexAttribIPointer(1, 2, GL_INT, shapeStride, shapeOffset);
+        shapeOffset += 2 * Integer.BYTES;
+        glVertexAttribPointer(2, 1, GL_FLOAT, false, shapeStride, shapeOffset);
+        shapeOffset += Float.BYTES;
+        glVertexAttribPointer(3, 2, GL_FLOAT, false, shapeStride, shapeOffset);
         shapeOffset += 2 * Float.BYTES;
-        glVertexAttribPointer(2, 2, GL_FLOAT, false, shapeStride, shapeOffset);
+        glVertexAttribPointer(4, 2, GL_FLOAT, false, shapeStride, shapeOffset);
         shapeOffset += 2 * Float.BYTES;
-        glVertexAttribPointer(3, 4, GL_UNSIGNED_BYTE, true, shapeStride, shapeOffset);
+        glVertexAttribPointer(5, 4, GL_UNSIGNED_BYTE, true, shapeStride, shapeOffset);
         shapeOffset += 4 * Byte.BYTES;
-        glVertexAttribPointer(4, 4, GL_UNSIGNED_BYTE, true, shapeStride, shapeOffset);
+        glVertexAttribPointer(6, 4, GL_UNSIGNED_BYTE, true, shapeStride, shapeOffset);
         shapeOffset += 4 * Byte.BYTES;
-        glVertexAttribIPointer(5, 4, GL_INT, shapeStride, shapeOffset);
+        glVertexAttribIPointer(7, 4, GL_INT, shapeStride, shapeOffset);
         shapeOffset += 4 * Integer.BYTES;
-        glVertexAttribIPointer(6, 4, GL_INT, shapeStride, shapeOffset);
+        glVertexAttribIPointer(8, 4, GL_INT, shapeStride, shapeOffset);
         shapeOffset += 4 * Integer.BYTES;
-        glVertexAttribIPointer(7, 1, GL_INT, shapeStride, shapeOffset);
-        enableVertexAttributes(7);
+        glVertexAttribIPointer(9, 1, GL_INT, shapeStride, shapeOffset);
+        enableVertexAttributes(9);
         shapeProjectLocation = glGetUniformLocation(shapeShaderProgram, "uProjection");
 
         textureVao = glGenVertexArrays();
         textureVbo = glGenBuffers();
         glBindVertexArray(textureVao);
         glBindBuffer(GL_ARRAY_BUFFER, textureVbo);
-        textureStride = 2 * Integer.BYTES + 2 * Float.BYTES + 4 * Byte.BYTES;
+        textureStride = 2 * Integer.BYTES + 2 * Integer.BYTES + Float.BYTES + 2 * Float.BYTES + 4 * Byte.BYTES;
         int textureOffset = 0;
         textureVboCapacity = textureStride * 1024;
         glBufferData(GL_ARRAY_BUFFER, textureVboCapacity, GL_STREAM_DRAW);
         glVertexAttribIPointer(0, 2, GL_INT, textureStride, textureOffset);
         textureOffset += 2 * Integer.BYTES;
-        glVertexAttribPointer(1, 2, GL_FLOAT, false, textureStride, textureOffset);
+        glVertexAttribIPointer(1, 2, GL_INT, textureStride, textureOffset);
+        textureOffset += 2 * Integer.BYTES;
+        glVertexAttribPointer(2, 1, GL_FLOAT, false, textureStride, textureOffset);
+        textureOffset += Float.BYTES;
+        glVertexAttribPointer(3, 2, GL_FLOAT, false, textureStride, textureOffset);
         textureOffset += 2 * Float.BYTES;
-        glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, true, textureStride, textureOffset);
-        enableVertexAttributes(2);
+        glVertexAttribPointer(4, 4, GL_UNSIGNED_BYTE, true, textureStride, textureOffset);
+        enableVertexAttributes(4);
         textureProjectLocation = glGetUniformLocation(textureShaderProgram, "uProjection");
         textureSamplerLocation = glGetUniformLocation(textureShaderProgram, "uTexture");
+
+        stringVao = glGenVertexArrays();
+        stringVbo = glGenBuffers();
+        glBindVertexArray(stringVao);
+        glBindBuffer(GL_ARRAY_BUFFER, stringVbo);
+        stringStride = 2 * Integer.BYTES + 2 * Integer.BYTES + Float.BYTES + 2 * Float.BYTES + 4 * Byte.BYTES;
+        int stringOffset = 0;
+        stringVboCapacity = stringStride * 1024;
+        glBufferData(GL_ARRAY_BUFFER, stringVboCapacity, GL_STREAM_DRAW);
+        glVertexAttribIPointer(0, 2, GL_INT, stringStride, stringOffset);
+        stringOffset += 2 * Integer.BYTES;
+        glVertexAttribIPointer(1, 2, GL_INT, stringStride, stringOffset);
+        stringOffset += 2 * Integer.BYTES;
+        glVertexAttribPointer(2, 1, GL_FLOAT, false, stringStride, stringOffset);
+        stringOffset += Float.BYTES;
+        glVertexAttribPointer(3, 2, GL_FLOAT, false, stringStride, stringOffset);
+        stringOffset += 2 * Float.BYTES;
+        glVertexAttribPointer(4, 4, GL_UNSIGNED_BYTE, true, stringStride, stringOffset);
+        enableVertexAttributes(4);
+        stringProjectLocation = glGetUniformLocation(stringShaderProgram, "uProjection");
+        stringSamplerLocation = glGetUniformLocation(stringShaderProgram, "uTexture");
+        fontAtlasTextureId = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, fontAtlasTextureId);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        atlasCursorX = 0;
+        atlasCursorY = 0;
+        atlasRowHeight = 0;
+        atlasWidth = 2048;
+        atlasHeight = 2048;
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, atlasWidth, atlasHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (ByteBuffer) null);
 
         restoreContext();
     }
@@ -171,6 +259,10 @@ public class OpenGLGuiRender extends GuiRender {
         for (int i = 0; i <= target; i++) {
             glEnableVertexAttribArray(i);
         }
+    }
+
+    @Override
+    public void init() {
     }
 
     @Override
@@ -190,6 +282,8 @@ public class OpenGLGuiRender extends GuiRender {
         glUniformMatrix4fv(shapeProjectLocation, false, projectionMatrixArray);
         glUseProgram(textureShaderProgram);
         glUniformMatrix4fv(textureProjectLocation, false, projectionMatrixArray);
+        glUseProgram(stringShaderProgram);
+        glUniformMatrix4fv(stringProjectLocation, false, projectionMatrixArray);
 
         glColorMask(true, true, true, true);
         glEnable(GL_BLEND);
@@ -256,7 +350,7 @@ public class OpenGLGuiRender extends GuiRender {
     }
 
     @Override
-    public void drawTriangle(int ax, int ay, int bx, int by, int cx, int cy,
+    public void drawTriangle(int ax, int ay, int bx, int by, int cx, int cy, int centerX, int centerY, float angle,
                              int aRed, int aGreen, int aBlue, int aAlpha,
                              int bRed, int bGreen, int bBlue, int bAlpha,
                              int cRed, int cGreen, int cBlue, int cAlpha
@@ -275,12 +369,18 @@ public class OpenGLGuiRender extends GuiRender {
         }
 
         buffer.writeInt(ax, ay);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
         buffer.writeBytesFromIntsWithForcedConversion(aRed, aGreen, aBlue, aAlpha);
 
         buffer.writeInt(bx, by);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
         buffer.writeBytesFromIntsWithForcedConversion(bRed, bGreen, bBlue, bAlpha);
 
         buffer.writeInt(cx, cy);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
         buffer.writeBytesFromIntsWithForcedConversion(cRed, cGreen, cBlue, cAlpha);
 
         if (shouldPush) {
@@ -289,7 +389,7 @@ public class OpenGLGuiRender extends GuiRender {
     }
 
     @Override
-    public void drawShape(int minX, int minY, int maxX, int maxY,
+    public void drawShape(int minX, int minY, int maxX, int maxY, float angle,
                           int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
                           int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha,
                           int aCornerRadii, int bCornerRadii, int cCornerRadii, int dCornerRadii,
@@ -298,16 +398,15 @@ public class OpenGLGuiRender extends GuiRender {
                           ThicknessPosition position
     ) {
         boolean shouldPush = true;
-        DirectByteBuffer buffer;
         ShapeBatch batch;
         if (commands.peek() instanceof ShapeBatch currentBatch) {
-            buffer = currentBatch.buffer;
             batch = currentBatch;
             shouldPush = false;
         } else {
             batch = allocShapeBatch();
-            buffer = batch.buffer;
         }
+
+        DirectByteBuffer buffer = batch.buffer;
 
         byte positionOrder = position.getOrder();
         float halfWidth  = (maxX - minX) * 0.5f;
@@ -328,7 +427,12 @@ public class OpenGLGuiRender extends GuiRender {
         int exMaxX = maxX + expand;
         int exMaxY = maxY + expand;
 
+        int centerX = (minX + maxX) / 2;
+        int centerY = (minY + maxY) / 2;
+
         buffer.writeInt(exMinX, exMinY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
         buffer.writeFloat(-exHalfWidth, -exHalfHeight, halfWidth, halfHeight);
         buffer.writeBytesFromIntsWithForcedConversion(aRed, aGreen, aBlue, aAlpha);
         buffer.writeBytesFromIntsWithForcedConversion(borderRed, borderGreen, borderBlue, borderAlpha);
@@ -337,6 +441,8 @@ public class OpenGLGuiRender extends GuiRender {
         buffer.writeInt(positionOrder);
 
         buffer.writeInt(exMaxX, exMinY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
         buffer.writeFloat(exHalfWidth, -exHalfHeight, halfWidth, halfHeight);
         buffer.writeBytesFromIntsWithForcedConversion(bRed, bGreen, bBlue, bAlpha);
         buffer.writeBytesFromIntsWithForcedConversion(borderRed, borderGreen, borderBlue, borderAlpha);
@@ -345,6 +451,8 @@ public class OpenGLGuiRender extends GuiRender {
         buffer.writeInt(positionOrder);
 
         buffer.writeInt(exMaxX, exMaxY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
         buffer.writeFloat(exHalfWidth, exHalfHeight, halfWidth, halfHeight);
         buffer.writeBytesFromIntsWithForcedConversion(dRed, dGreen, dBlue, dAlpha);
         buffer.writeBytesFromIntsWithForcedConversion(borderRed, borderGreen, borderBlue, borderAlpha);
@@ -353,6 +461,8 @@ public class OpenGLGuiRender extends GuiRender {
         buffer.writeInt(positionOrder);
 
         buffer.writeInt(exMinX, exMaxY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
         buffer.writeFloat(-exHalfWidth, exHalfHeight, halfWidth, halfHeight);
         buffer.writeBytesFromIntsWithForcedConversion(cRed, cGreen, cBlue, cAlpha);
         buffer.writeBytesFromIntsWithForcedConversion(borderRed, borderGreen, borderBlue, borderAlpha);
@@ -366,40 +476,209 @@ public class OpenGLGuiRender extends GuiRender {
     }
 
     @Override
-    public void drawTexture(int textureId, int minX, int minY, int maxX, int maxY, float u0, float v0, float u1, float v1,
+    public void drawTexture(int textureId, int minX, int minY, int maxX, int maxY, int centerX, int centerY, float angle, float u0, float v0, float u1, float v1,
                             int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
                             int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha
     ) {
         boolean shouldPush = true;
-        DirectByteBuffer buffer;
         TextureBatch batch;
         if (commands.peek() instanceof TextureBatch currentBatch && currentBatch.textureId == textureId) {
-            buffer = currentBatch.buffer;
             batch = currentBatch;
             shouldPush = false;
         } else {
             batch = allocTextureBatch(textureId);
-            buffer = batch.buffer;
         }
 
+        DirectByteBuffer buffer = batch.buffer;
+
         buffer.writeInt(minX, minY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
         buffer.writeFloat(u0, v0);
         buffer.writeBytesFromIntsWithForcedConversion(aRed, aGreen, aBlue, aAlpha);
 
         buffer.writeInt(maxX, minY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
         buffer.writeFloat(u1, v0);
         buffer.writeBytesFromIntsWithForcedConversion(bRed, bGreen, bBlue, bAlpha);
 
         buffer.writeInt(maxX, maxY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
         buffer.writeFloat(u1, v1);
         buffer.writeBytesFromIntsWithForcedConversion(dRed, dGreen, dBlue, dAlpha);
 
         buffer.writeInt(minX, maxY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
         buffer.writeFloat(u0, v1);
         buffer.writeBytesFromIntsWithForcedConversion(cRed, cGreen, cBlue, cAlpha);
 
         if (shouldPush) {
             commands.push(batch);
+        }
+    }
+
+    @Override
+    public float drawGlyph(Font font, int glyphIndex, int fontSize, double italicDegrees, int boldStrength, FT_Matrix italicMatrix, float x, float y, int centerX, int centerY, float angle,
+                           int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
+                           int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha
+    ) {
+        Double2ObjectMap<GlyphInfo> map = glyphCache.computeIfAbsent(((long) font.id() << 41) | ((long) fontSize << 28) | ((long) glyphIndex << 10) | boldStrength, key -> new Double2ObjectOpenHashMap<>());
+        GlyphInfo info = map.get(italicDegrees);
+        if (info == null) {
+            FT_Face face = font.face();
+            if (FT_Load_Glyph(face, glyphIndex, FT_LOAD_NO_BITMAP) != 0) throw new ResourceException("Failed to load glyph!");
+            FT_GlyphSlot slot = face.glyph();
+            assert slot != null;
+
+            if (italicMatrix != null) {
+                FT_Outline_Transform(slot.outline(), italicMatrix);
+            }
+
+            if (boldStrength > 0) {
+                FT_Outline_Embolden(slot.outline(), boldStrength * 64L);
+            }
+
+            if (FT_Render_Glyph(slot, FT_RENDER_MODE_NORMAL) != 0) throw new RenderException("Failed to render glyph!");
+            FT_Bitmap bitmap = slot.bitmap();
+            int bitmapLeft = slot.bitmap_left();
+            int bitmapTop = slot.bitmap_top();
+            FT_Vector advance = slot.advance();
+            float advanceX = advance.x() / 64.0f;
+
+            if (atlasCursorX + bitmap.width() > atlasWidth) {
+                atlasCursorX = 0;
+                atlasCursorY += atlasRowHeight;
+                atlasRowHeight = 0;
+            }
+            if (atlasCursorY + bitmap.rows() > atlasHeight) {
+                expandAtlas();
+            }
+
+            glBindTexture(GL_TEXTURE_2D, fontAtlasTextureId);
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            glPixelStorei(GL_UNPACK_ROW_LENGTH, bitmap.pitch());
+            glTexSubImage2D(GL_TEXTURE_2D, 0, atlasCursorX, atlasCursorY, bitmap.width(), bitmap.rows(), GL_RED, GL_UNSIGNED_BYTE, Objects.requireNonNull(bitmap.buffer(bitmap.pitch() * bitmap.rows())));
+            glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+
+            float u0 = (float) atlasCursorX / atlasWidth;
+            float u1 = (float) (atlasCursorX + bitmap.width()) / atlasWidth;
+            float v0 = (float) atlasCursorY / atlasHeight;
+            float v1 = (float) (atlasCursorY + bitmap.rows()) / atlasHeight;
+
+            atlasCursorX += bitmap.width();
+            if (bitmap.rows() > atlasRowHeight) atlasRowHeight = bitmap.rows();
+
+            info = new GlyphInfo(u0, v0, u1, v1, bitmapLeft, bitmapTop, bitmap.width(), bitmap.rows(), advanceX);
+            map.put(italicDegrees, info);
+        }
+
+        int glyphX = MathTool.round(x + info.bitmapLeft);
+        int glyphY = MathTool.round(y - info.bitmapTop);
+        int x1 = glyphX + info.bitmapWidth;
+        int y1 = glyphY + info.bitmapHeight;
+
+        float u0 = info.u0;
+        float v0 = info.v0;
+        float u1 = info.u1;
+        float v1 = info.v1;
+
+        boolean shouldPush = true;
+        StringBatch batch;
+        if (commands.peek() instanceof StringBatch currentBatch) {
+            shouldPush = false;
+            batch = currentBatch;
+        } else {
+            batch = allocStringBatch();
+        }
+
+        DirectByteBuffer buffer = batch.buffer;
+
+        buffer.writeInt(glyphX, glyphY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
+        buffer.writeFloat(u0, v0);
+        buffer.writeBytesFromIntsWithForcedConversion(aRed, aGreen, aBlue, aAlpha);
+
+        buffer.writeInt(x1, glyphY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
+        buffer.writeFloat(u1, v0);
+        buffer.writeBytesFromIntsWithForcedConversion(bRed, bGreen, bBlue, bAlpha);
+
+        buffer.writeInt(glyphX, y1);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
+        buffer.writeFloat(u0, v1);
+        buffer.writeBytesFromIntsWithForcedConversion(cRed, cGreen, cBlue, cAlpha);
+
+        buffer.writeInt(x1, glyphY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
+        buffer.writeFloat(u1, v0);
+        buffer.writeBytesFromIntsWithForcedConversion(bRed, bGreen, bBlue, bAlpha);
+
+        buffer.writeInt(glyphX, y1);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
+        buffer.writeFloat(u0, v1);
+        buffer.writeBytesFromIntsWithForcedConversion(cRed, cGreen, cBlue, cAlpha);
+
+        buffer.writeInt(x1, y1);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
+        buffer.writeFloat(u1, v1);
+        buffer.writeBytesFromIntsWithForcedConversion(dRed, dGreen, dBlue, dAlpha);
+
+        if (shouldPush) {
+            commands.push(batch);
+        }
+
+        return x + info.advanceX;
+    }
+
+    private void expandAtlas() {
+        int oldWidth = atlasWidth;
+        int oldHeight = atlasHeight;
+
+        int size = oldWidth * oldHeight;
+
+        ByteBuffer oldData = MemoryUtil.memAlloc(size);
+
+        try {
+            glBindTexture(GL_TEXTURE_2D, fontAtlasTextureId);
+            glGetTexImage(GL_TEXTURE_2D, 0, GL_RED, GL_UNSIGNED_BYTE, oldData);
+
+            int newTexId = glGenTextures();
+            glBindTexture(GL_TEXTURE_2D, newTexId);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+            int newWidth = oldWidth * 2;
+            int newHeight = oldHeight * 2;
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, newWidth, newHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (ByteBuffer) null);
+
+            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, oldWidth, oldHeight, GL_RED, GL_UNSIGNED_BYTE, oldData);
+
+            glDeleteTextures(fontAtlasTextureId);
+            fontAtlasTextureId = newTexId;
+
+            atlasWidth = newWidth;
+            atlasHeight = newHeight;
+
+            atlasCursorX = 0;
+            atlasCursorY = oldHeight;
+            atlasRowHeight = 0;
+
+            for (Double2ObjectMap<GlyphInfo> map : glyphCache.values()) {
+                map.clear();
+            }
+        } finally {
+            MemoryUtil.memFree(oldData);
         }
     }
 
@@ -508,9 +787,15 @@ public class OpenGLGuiRender extends GuiRender {
         addStateCommand(() -> glDisable(GL_SCISSOR_TEST));
     }
 
+    @Override
+    public RenderProviderType getProviderType() {
+        return RenderProviderType.OPENGL;
+    }
+
     private final Deque<TriangleBatch> triangleBatchPool = new ArrayDeque<>();
     private final Deque<ShapeBatch> shapeBatchPool = new ArrayDeque<>();
     private final Deque<TextureBatch> textureBatchPool = new ArrayDeque<>();
+    private final Deque<StringBatch> stringBatchPool = new ArrayDeque<>();
     private final Deque<StateCommand> stateCommandPool = new ArrayDeque<>();
 
     private <T extends RenderBatch> T allocBatch(Deque<T> pool, Supplier<T> supplier) {
@@ -530,6 +815,10 @@ public class OpenGLGuiRender extends GuiRender {
         batch.textureId = textureId;
         return batch;
     }
+    private StringBatch allocStringBatch() {
+        return allocBatch(stringBatchPool, () -> new StringBatch(new DirectByteBuffer(stringStride * 4)));
+    }
+
     private void addStateCommand(Runnable command) {
         if (stateCommandPool.isEmpty()) {
             commands.push(new StateCommand(command));
@@ -626,6 +915,25 @@ public class OpenGLGuiRender extends GuiRender {
         }
     }
 
+    private class StringBatch extends RenderBatch {
+        @Override
+        public void execute() {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, fontAtlasTextureId);
+            glUniform1i(stringSamplerLocation, 0);
+            stringVboCapacity = executeBatch(stringShaderProgram, stringVao, stringVbo, GL_TRIANGLES, stringStride, stringVboCapacity);
+        }
+
+        @Override
+        public void destroy() {
+            stringBatchPool.push(this);
+        }
+
+        StringBatch(DirectByteBuffer buffer) {
+            super(buffer);
+        }
+    }
+
     private class StateCommand implements RenderCommand {
         Runnable command;
 
@@ -674,5 +982,8 @@ public class OpenGLGuiRender extends GuiRender {
         int[] viewport = new int[4];
         int[] scissorTestBox = new int[4];
         public boolean[] colorWriteMask = new boolean[4];
+    }
+
+    private record GlyphInfo(float u0, float v0, float u1, float v1, int bitmapLeft, int bitmapTop, int bitmapWidth, int bitmapHeight, float advanceX) {
     }
 }

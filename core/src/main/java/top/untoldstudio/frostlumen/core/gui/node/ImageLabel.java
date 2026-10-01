@@ -1,6 +1,6 @@
 package top.untoldstudio.frostlumen.core.gui.node;
 
-import top.untoldstudio.frostlumen.core.MathTool;
+import top.untoldstudio.frostlumen.core.tool.MathTool;
 import top.untoldstudio.frostlumen.core.data.ImageAlignment;
 import top.untoldstudio.frostlumen.core.data.RGBA;
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
@@ -22,7 +22,7 @@ public class ImageLabel extends GuiNode<ImageLabel> {
     public void render(GuiRender render, long delta) {
         if (drawBackground) super.drawDefaultFrameBackground(render);
         render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY);
-        render.drawTexture(texture, imagePositionX, imagePositionY, imagePositionMaxX, imagePositionMaxY, 0, 0, 1, 1, textureColor.red(), textureColor.green(), textureColor.blue(), textureColor.alpha());
+        render.drawTexture(texture, imagePositionX, imagePositionY, imagePositionMaxX, imagePositionMaxY, angle, 0, 0, 1, 1, textureColor.red(), textureColor.green(), textureColor.blue(), textureColor.alpha());
         render.disableScissor();
     }
 

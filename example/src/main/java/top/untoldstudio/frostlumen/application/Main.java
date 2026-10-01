@@ -16,14 +16,10 @@
 package top.untoldstudio.frostlumen.application;
 
 import org.lwjgl.opengl.GL;
-import top.untoldstudio.frostlumen.core.data.ImageAlignment;
 import top.untoldstudio.frostlumen.core.data.RGBA;
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
-import top.untoldstudio.frostlumen.core.data.ThicknessPosition;
 import top.untoldstudio.frostlumen.core.gui.Window;
-import top.untoldstudio.frostlumen.core.gui.node.Frame;
-import top.untoldstudio.frostlumen.core.gui.node.ImageLabel;
-import top.untoldstudio.frostlumen.core.render.IResourceManager;
+import top.untoldstudio.frostlumen.core.gui.node.TextLabel;
 import top.untoldstudio.frostlumen.core.render.RenderProviderType;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -38,6 +34,15 @@ public class Main {
         GL.createCapabilities();
 
         Window window = Window.from(windowHandle, RenderProviderType.OPENGL);
+
+        TextLabel label = new TextLabel("114514", ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+                .setTextColor(RGBA.BLUE)
+                .setDrawBackground(true)
+                .setAnchor(0.5, 0.5)
+                .setBackgroundCornerRadius(10)
+                .setAngle(10f)
+                ;
+        window.getNodeRoot().addChild(label);
 
         while (!glfwWindowShouldClose(windowHandle)) {
             glfwPollEvents();
