@@ -85,6 +85,22 @@ public class OpenGLGuiRender extends GuiRender {
     private int atlasCursorY;
     private int atlasRowHeight;
 
+    private static final int BLUR_DOWNSCALE = 2;
+    private static final float BLUR_DOWNSCALE_INV = 1.0f / BLUR_DOWNSCALE;
+    private static final int BLUR_PASSES = 5;
+    private final DirectByteBuffer blurTempBuffer;
+    private final int[] blurFbo = new int[2];
+    private final int[] blurTexture = new int[2];
+    private final int blurShaderProgram;
+    private final int blurTexelSizeLocation;
+    private final int blurDirectionLocation;
+    private final int blurSamplerLocation;
+    private final int blurUVScaleLocation;
+    private final int blurRadiusLocation;
+    private final int blurVao;
+    private int blurTextureWidth;
+    private int blurTextureHeight;
+
     private final Deque<SavedGLState> savedGLStateState = new ArrayDeque<>();
     private final Deque<SavedGLState> savedGLStatePool = new ArrayDeque<>();
 
@@ -105,15 +121,19 @@ public class OpenGLGuiRender extends GuiRender {
         String textureFragSource;
         String stringVertSource;
         String stringFragSource;
+        String blurVertSource;
+        String blurFragSource;
         try {
-            triangleVertSource = ResourceReader.readString("/shader/triangle/vert.glsl");
-            triangleFragSource = ResourceReader.readString("/shader/triangle/frag.glsl");
-            shapeVertSource = ResourceReader.readString("/shader/shape/vert.glsl");
-            shapeFragSource = ResourceReader.readString("/shader/shape/frag.glsl");
-            textureVertSource = ResourceReader.readString("/shader/texture/vert.glsl");
-            textureFragSource = ResourceReader.readString("/shader/texture/frag.glsl");
-            stringVertSource = ResourceReader.readString("/shader/string/vert.glsl");
-            stringFragSource = ResourceReader.readString("/shader/string/frag.glsl");
+            triangleVertSource = ResourceReader.readString("/shader/opengl/triangle/vert.glsl");
+            triangleFragSource = ResourceReader.readString("/shader/opengl/triangle/frag.glsl");
+            shapeVertSource = ResourceReader.readString("/shader/opengl/shape/vert.glsl");
+            shapeFragSource = ResourceReader.readString("/shader/opengl/shape/frag.glsl");
+            textureVertSource = ResourceReader.readString("/shader/opengl/texture/vert.glsl");
+            textureFragSource = ResourceReader.readString("/shader/opengl/texture/frag.glsl");
+            stringVertSource = ResourceReader.readString("/shader/opengl/string/vert.glsl");
+            stringFragSource = ResourceReader.readString("/shader/opengl/string/frag.glsl");
+            blurVertSource = ResourceReader.readString("/shader/opengl/blur/vert.glsl");
+            blurFragSource = ResourceReader.readString("/shader/opengl/blur/frag.glsl");
         } catch (IOException e) {
             throw new ResourceException("Cannot read shader source!");
         }
@@ -149,6 +169,7 @@ public class OpenGLGuiRender extends GuiRender {
                 3, "aTexCoord",
                 4, "aColor"
         ));
+        blurShaderProgram = createProgram(blurVertSource, blurFragSource, Map.of());
 
         triangleVao = glGenVertexArrays();
         triangleVbo = glGenBuffers();
@@ -252,6 +273,15 @@ public class OpenGLGuiRender extends GuiRender {
         atlasHeight = 2048;
         glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, atlasWidth, atlasHeight, 0, GL_RED, GL_UNSIGNED_BYTE, (ByteBuffer) null);
 
+        blurVao = glGenVertexArrays();
+        blurTexelSizeLocation = glGetUniformLocation(blurShaderProgram, "uTexelSize");
+        blurDirectionLocation = glGetUniformLocation(blurShaderProgram, "uDirection");
+        blurSamplerLocation = glGetUniformLocation(blurShaderProgram, "uTexture");
+        blurUVScaleLocation = glGetUniformLocation(blurShaderProgram, "uUVScale");
+        blurRadiusLocation = glGetUniformLocation(blurShaderProgram, "uRadius");
+
+        blurTempBuffer = new DirectByteBuffer(textureStride * 4);
+
         restoreContext();
     }
 
@@ -263,6 +293,20 @@ public class OpenGLGuiRender extends GuiRender {
 
     @Override
     public void init() {
+        Window window = Window.get(windowHandle);
+        int w = Math.max(1, window.getFrameBufferWidth() / BLUR_DOWNSCALE);
+        int h = Math.max(1, window.getFrameBufferHeight() / BLUR_DOWNSCALE);
+        rebuildBlurTextures(w, h);
+    }
+
+    @Override
+    public void onFrameBufferSizeChange(int width, int height) {
+        glViewport(0, 0, width, height);
+        int halfW = Math.max(1, width / BLUR_DOWNSCALE);
+        int halfH = Math.max(1, height / BLUR_DOWNSCALE);
+        if (halfW > blurTextureWidth || halfH > blurTextureHeight) {
+            rebuildBlurTextures(Math.max(halfW, blurTextureWidth), Math.max(halfH, blurTextureHeight));
+        }
     }
 
     @Override
@@ -293,6 +337,8 @@ public class OpenGLGuiRender extends GuiRender {
         glDisable(GL_SCISSOR_TEST);
         glDisable(GL_STENCIL_TEST);
         glDisable(GL_COLOR_LOGIC_OP);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     @Override
@@ -639,6 +685,149 @@ public class OpenGLGuiRender extends GuiRender {
         return x + info.advanceX;
     }
 
+    @Override
+    protected void blurFramebufferRegion(int x, int y, int width, int height, float angle, int radius) {
+        submitBuffer();
+        saveContext();
+
+        Window window = Window.get(windowHandle);
+        int windowWidth = window.getFrameBufferWidth();
+        int windowHeight = window.getFrameBufferHeight();
+
+        int halfW = Math.max(1, width / BLUR_DOWNSCALE);
+        int halfH = Math.max(1, height / BLUR_DOWNSCALE);
+
+        if (halfW > blurTextureWidth || halfH > blurTextureHeight) {
+            rebuildBlurTextures(Math.max(halfW, blurTextureWidth), Math.max(halfH, blurTextureHeight));
+        }
+
+        int glY0 = windowHeight - (y + height);
+        int glY1 = windowHeight - y;
+
+        glDisable(GL_SCISSOR_TEST);
+
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, blurFbo[0]);
+        glBlitFramebuffer(x, glY0, x + width, glY1, 0, 0, halfW, halfH, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        glBindVertexArray(blurVao);
+        glUseProgram(blurShaderProgram);
+        glUniform2f(blurTexelSizeLocation, 1f / blurTextureWidth, 1f / blurTextureHeight);
+        glUniform2f(blurUVScaleLocation, (float) halfW / blurTextureWidth, (float) halfH / blurTextureHeight);
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(blurSamplerLocation, 0);
+
+        float perPassRadius = Math.max(1.0f, radius * BLUR_DOWNSCALE_INV / BLUR_PASSES);
+        glUniform1f(blurRadiusLocation, perPassRadius);
+
+        for (int i = 0; i < BLUR_PASSES; i++) {
+            glBindFramebuffer(GL_FRAMEBUFFER, blurFbo[1]);
+            glViewport(0, 0, halfW, halfH);
+            glUniform1i(blurDirectionLocation, 0);
+            glBindTexture(GL_TEXTURE_2D, blurTexture[0]);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+            glBindFramebuffer(GL_FRAMEBUFFER, blurFbo[0]);
+            glViewport(0, 0, halfW, halfH);
+            glUniform1i(blurDirectionLocation, 1);
+            glBindTexture(GL_TEXTURE_2D, blurTexture[1]);
+            glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glViewport(0, 0, windowWidth, windowHeight);
+        glUseProgram(textureShaderProgram);
+        glUniformMatrix4fv(textureProjectLocation, false, projectionMatrixArray);
+
+        glEnable(GL_SCISSOR_TEST);
+        glScissor(x, glY0, width, height);
+
+        glBindVertexArray(textureVao);
+        glBindBuffer(GL_ARRAY_BUFFER, textureVbo);
+
+        int centerX = x + width / 2;
+        int centerY = y + height / 2;
+        float uMax = (float) halfW / blurTextureWidth;
+        float vMax = (float) halfH / blurTextureHeight;
+
+        DirectByteBuffer temp = blurTempBuffer;
+        temp.clear();
+
+        temp.writeInt(x, y);
+        temp.writeInt(centerX, centerY);
+        temp.writeFloat(0f);
+        temp.writeFloat(0f, vMax);
+        temp.writeBytesFromIntsWithForcedConversion(255, 255, 255, 255);
+
+        temp.writeInt(x + width, y);
+        temp.writeInt(centerX, centerY);
+        temp.writeFloat(0f);
+        temp.writeFloat(uMax, vMax);
+        temp.writeBytesFromIntsWithForcedConversion(255, 255, 255, 255);
+
+        temp.writeInt(x + width, y + height);
+        temp.writeInt(centerX, centerY);
+        temp.writeFloat(0f);
+        temp.writeFloat(uMax, 0f);
+        temp.writeBytesFromIntsWithForcedConversion(255, 255, 255, 255);
+
+        temp.writeInt(x, y + height);
+        temp.writeInt(centerX, centerY);
+        temp.writeFloat(0f);
+        temp.writeFloat(0f, 0f);
+        temp.writeBytesFromIntsWithForcedConversion(255, 255, 255, 255);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, blurTexture[0]);
+        glUniform1i(textureSamplerLocation, 0);
+
+        glBufferSubData(GL_ARRAY_BUFFER, 0, temp.getNioDirectByteBuffer());
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+        glDisable(GL_SCISSOR_TEST);
+
+        restoreContext();
+    }
+
+    private void rebuildBlurTextures(int width, int height) {
+        saveContext();
+
+        for (int i = 0; i < 2; i++) {
+            if (blurTexture[i] != 0) {
+                glDeleteTextures(blurTexture[i]);
+            }
+            if (blurFbo[i] != 0) {
+                glDeleteFramebuffers(blurFbo[i]);
+            }
+        }
+
+        blurTextureWidth = width;
+        blurTextureHeight = height;
+
+        for (int i = 0; i < 2; i++) {
+            blurTexture[i] = glGenTextures();
+            glBindTexture(GL_TEXTURE_2D, blurTexture[i]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, blurTextureWidth, blurTextureHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, (ByteBuffer) null);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+            blurFbo[i] = glGenFramebuffers();
+            glBindFramebuffer(GL_FRAMEBUFFER, blurFbo[i]);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, blurTexture[i], 0);
+
+            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+                throw new ResourceException("Blur FBO " + i + " incomplete");
+            }
+        }
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        restoreContext();
+    }
+
     private void expandAtlas() {
         int oldWidth = atlasWidth;
         int oldHeight = atlasHeight;
@@ -694,6 +883,7 @@ public class OpenGLGuiRender extends GuiRender {
         savedGLState.colorLogicOp = glIsEnabled(GL_COLOR_LOGIC_OP);
 
         savedGLState.program = glGetInteger(GL_CURRENT_PROGRAM);
+        savedGLState.frameBufferBinding = glGetInteger(GL_FRAMEBUFFER_BINDING);
         savedGLState.vertexArrayBinding = glGetInteger(GL_VERTEX_ARRAY_BINDING);
         savedGLState.arrayBufferBinding = glGetInteger(GL_ARRAY_BUFFER_BINDING);
         savedGLState.blendSrcRgb = glGetInteger(GL_BLEND_SRC_RGB);
@@ -733,6 +923,7 @@ public class OpenGLGuiRender extends GuiRender {
         enableGLState(GL_COLOR_LOGIC_OP, savedGLState.colorLogicOp);
 
         glUseProgram(savedGLState.program);
+        glBindFramebuffer(GL_FRAMEBUFFER, savedGLState.frameBufferBinding);
         glBindVertexArray(savedGLState.vertexArrayBinding);
         glBindBuffer(GL_ARRAY_BUFFER, savedGLState.arrayBufferBinding);
         glColorMask(savedGLState.colorWriteMask[0], savedGLState.colorWriteMask[1], savedGLState.colorWriteMask[2], savedGLState.colorWriteMask[3]);
@@ -842,25 +1033,28 @@ public class OpenGLGuiRender extends GuiRender {
         @Override
         public abstract void destroy();
 
-        protected static int ensureCapacity(int limit, int capacity) {
-            if (limit > capacity) {
-                int target = Math.max(capacity * 2, capacity + limit);
-                glBufferData(GL_ARRAY_BUFFER, target, GL_STREAM_DRAW);
-                return target;
-            }
-            return capacity;
-        }
-
         protected int executeBatch(int program, int vao, int vbo, int mode, int stride, int capacity) {
-            glUseProgram(program);
-            glBindVertexArray(vao);
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            int writtenBytes = buffer.getWrittenBytes();
-            capacity = ensureCapacity(writtenBytes, capacity);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, buffer.getNioDirectByteBuffer());
-            glDrawArrays(mode, 0, writtenBytes / stride);
-            return capacity;
+            return OpenGLGuiRender.executeBatch(buffer, program, vao, vbo, mode, stride, capacity);
         }
+    }
+
+    private static int executeBatch(DirectByteBuffer buffer, int program, int vao, int vbo, int mode, int stride, int capacity) {
+        glUseProgram(program);
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        int writtenBytes = buffer.getWrittenBytes();
+        capacity = ensureCapacity(writtenBytes, capacity);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, buffer.getNioDirectByteBuffer());
+        glDrawArrays(mode, 0, writtenBytes / stride);
+        return capacity;
+    }
+    private static int ensureCapacity(int limit, int capacity) {
+        if (limit > capacity) {
+            int target = Math.max(capacity * 2, capacity + limit);
+            glBufferData(GL_ARRAY_BUFFER, target, GL_STREAM_DRAW);
+            return target;
+        }
+        return capacity;
     }
 
     private class TriangleBatch extends RenderBatch {
@@ -898,6 +1092,7 @@ public class OpenGLGuiRender extends GuiRender {
 
         @Override
         public void execute() {
+            glUseProgram(textureShaderProgram);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, textureId);
             glUniform1i(textureSamplerLocation, 0);
@@ -918,6 +1113,7 @@ public class OpenGLGuiRender extends GuiRender {
     private class StringBatch extends RenderBatch {
         @Override
         public void execute() {
+            glUseProgram(stringShaderProgram);
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, fontAtlasTextureId);
             glUniform1i(stringSamplerLocation, 0);
@@ -960,6 +1156,7 @@ public class OpenGLGuiRender extends GuiRender {
 
     private static class SavedGLState {
         int program;
+        int frameBufferBinding;
         int vertexArrayBinding;
         int arrayBufferBinding;
         int blendSrcRgb;

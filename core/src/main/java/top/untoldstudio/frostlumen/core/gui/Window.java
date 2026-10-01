@@ -89,6 +89,10 @@ public class Window {
         })));
     }
 
+    public void init() {
+        root.init();
+    }
+
     public NodeRoot getNodeRoot() {
         return root;
     }

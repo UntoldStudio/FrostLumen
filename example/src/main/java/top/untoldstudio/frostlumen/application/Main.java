@@ -16,8 +16,10 @@
 package top.untoldstudio.frostlumen.application;
 
 import org.lwjgl.opengl.GL;
+import top.untoldstudio.frostlumen.core.data.RGBA;
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.gui.Window;
+import top.untoldstudio.frostlumen.core.gui.node.Frame;
 import top.untoldstudio.frostlumen.core.gui.node.ImageButton;
 import top.untoldstudio.frostlumen.core.render.IResourceManager;
 import top.untoldstudio.frostlumen.core.render.RenderProviderType;
@@ -31,9 +33,11 @@ public class Main {
         long windowHandle = glfwCreateWindow(800, 600, "Test", 0, 0);
 
         glfwMakeContextCurrent(windowHandle);
+        glfwSwapInterval(1);
         GL.createCapabilities();
 
         Window window = Window.from(windowHandle, RenderProviderType.OPENGL);
+        window.init();
 
         IResourceManager resourceManager = IResourceManager.getIResourceManagerFromThreadLocal();
         ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-blue.jpg"), ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
@@ -41,9 +45,10 @@ public class Main {
                 .getOnClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
                 .setAnchor(0.5, 0.5)
                 .setDrawBackground(true)
-                .setAngle(90)
                 ;
-        window.getNodeRoot().addChild(button);
+        Frame frame = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+                .setRenderLevel(-1).setAnchor(0.5, 0.5).setBackgroundColor(new RGBA(210, 230, 255, 90)).setBackgroundBlurStrength(1f);
+        window.getNodeRoot().addChildren(button, frame);
 
         while (!glfwWindowShouldClose(windowHandle)) {
             glfwPollEvents();

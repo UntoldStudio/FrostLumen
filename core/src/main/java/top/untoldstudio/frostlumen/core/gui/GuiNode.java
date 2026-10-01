@@ -44,18 +44,22 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     protected float angle = 0;
     protected Set<MouseButton> currentMouseClickButtons = new HashSet<>();
     protected boolean mouseInNode;
+    protected float backgroundBlurStrength = 0;
 
     protected void drawDefaultFrameBackground(GuiRender render) {
+        if (backgroundBlurStrength != 0 && backgroundColor.alpha() != 255) {
+            render.blurRegion(realPositionX, realPositionY, realSizeX, realSizeY, angle, backgroundBlurStrength);
+        }
+
         if (backgroundLeftBorderThickness == 0 && backgroundRightBorderThickness == 0 && backgroundTopBorderThickness == 0 && backgroundBottomBorderThickness == 0 && backgroundLeftTopCornerRadius == 0 && backgroundRightTopCornerRadius == 0 && backgroundLeftBottomCornerRadius == 0 && backgroundRightBottomCornerRadius == 0) {
-            render.drawRectangle(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY, angle,
-                    backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha());
+            render.drawRectangle(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY, angle, backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha());
         } else {
             render.drawShape(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY, angle,
                     backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha(),
                     backgroundLeftTopCornerRadius, backgroundRightTopCornerRadius, backgroundLeftBottomCornerRadius, backgroundRightBottomCornerRadius,
                     backgroundLeftBorderThickness, backgroundRightBorderThickness, backgroundTopBorderThickness, backgroundBottomBorderThickness,
                     backgroundBorderColor.red(), backgroundBorderColor.green(), backgroundBorderColor.blue(), backgroundBorderColor.alpha(), backgroundBorderThicknessPosition
-                    );
+            );
         }
     }
 
@@ -243,14 +247,14 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         return parent;
     }
 
+    public T setBackgroundBlurStrength(float strength) {
+        this.backgroundBlurStrength = strength;
+        return self;
+    }
     public T setRenderLevel(int renderLevel) {
         this.renderLevel = renderLevel;
         return self;
     }
-    public int getRenderLevel() {
-        return renderLevel;
-    }
-
     public T setAngle(float angle) {
         this.angle = angle;
         return self;
@@ -343,6 +347,12 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
 
     public boolean isClipChildren() {
         return clipChildren;
+    }
+    public int getRenderLevel() {
+        return renderLevel;
+    }
+    public float getBackgroundBlurStrength() {
+        return backgroundBlurStrength;
     }
     public float getAngle() {
         return angle;

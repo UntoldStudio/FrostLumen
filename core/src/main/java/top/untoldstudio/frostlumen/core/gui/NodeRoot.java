@@ -28,6 +28,10 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
     private boolean isLastMouseMoveEventCanceled = false;
     private long lastRenderTime = 0;
 
+    public void init() {
+        render.initRender();
+    }
+
     @Override
     public void dispatchMouseMoveEvent(MouseMoveEvent event) {
         super.dispatchMouseMoveEvent(event);
@@ -40,6 +44,7 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
         realSizeY = event.newHeight();
         realPositionMaxX = event.newWidth();
         realPositionMaxY = event.newHeight();
+        render.onFrameBufferSizeChange(realPositionMaxX, realPositionMaxY);
         super.dispatchFrameBufferSizeChangeEvent(event);
     }
 
@@ -95,7 +100,5 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
         realSizeY = window.getFrameBufferHeight();
         realPositionMaxX = window.getFrameBufferWidth();
         realPositionMaxY = window.getFrameBufferHeight();
-
-        render.initRender();
     }
 }

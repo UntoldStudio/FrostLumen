@@ -613,7 +613,17 @@ public abstract class GuiRender implements IResourceManager {
 
     protected abstract int loadTexture(ByteBuffer data, int width, int height);
 
+    public abstract void onFrameBufferSizeChange(int width, int height);
+
     public abstract RenderProviderType getProviderType();
+
+    public void blurRegion(int x, int y, int width, int height, float angle, float strength) {
+        if (width == 0 || height == 0 || strength == 0) return;
+        strength = Math.clamp(strength, 0, 1);
+        int radius = MathTool.round(strength * 24);
+        blurFramebufferRegion(x, y, width, height, angle, radius);
+    }
+    protected abstract void blurFramebufferRegion(int x, int y, int width, int height, float angle, int radius);
 
     public GuiRender(long windowHandle) {
         this.windowHandle = windowHandle;
