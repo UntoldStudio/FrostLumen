@@ -7,11 +7,11 @@
     <list default="true" id="1bc31957-5fa6-4663-b247-f00787c6193c" name="更改" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/gui/GuiNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/gui/GuiNode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/gui/Window.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/gui/Window.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/gui/node/ImageNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/gui/node/ImageNode.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/render/GuiRender.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/render/GuiRender.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/render/provider/OpenGLGuiRender.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/render/provider/OpenGLGuiRender.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/resources/shader/opengl/blur/frag.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/resources/shader/opengl/blur/frag.glsl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/tool/DirectByteBuffer.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/tool/DirectByteBuffer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/tool/GCCleanable.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/tool/GCCleanable.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/src/main/resources/shader/opengl/shape/frag.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/resources/shader/opengl/shape/frag.glsl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/src/main/resources/shader/opengl/string/frag.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/resources/shader/opengl/string/frag.glsl" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/core/src/main/resources/shader/opengl/texture/frag.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/resources/shader/opengl/texture/frag.glsl" afterDir="false" />
@@ -116,12 +116,13 @@
       <recent name="D:\Develop\FrostLumen\core\src\main\resources\shader\" />
     </key>
   </component>
-  <component name="RunManager" selected="应用程序.Run">
+  <component name="RunManager" selected="Gradle.Release Version">
     <configuration name="Run" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="ms-21" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="MAIN_CLASS_NAME" value="top.untoldstudio.frostlumen.example.Main" />
       <module name="FrostLumen.example.main" />
+      <option name="VM_PARAMETERS" value="-XX:NativeMemoryTracking=summary" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
       <method v="2">
         <option name="Make" enabled="true" />

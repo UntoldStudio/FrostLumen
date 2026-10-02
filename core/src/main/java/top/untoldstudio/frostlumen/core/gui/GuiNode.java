@@ -46,6 +46,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     protected double xAnchor = 0;
     protected double yAnchor = 0;
     protected float angle = 0;
+    protected float realAngle = 0;
     protected Set<MouseButton> currentMouseClickButtons = new HashSet<>();
     protected boolean mouseInNode;
     protected float backgroundBlurStrength = 0;
@@ -69,18 +70,32 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
 
     protected void drawDefaultFrameBackground(GuiRender render) {
         if (backgroundBlurStrength != 0 && backgroundColor.alpha() != 255) {
-            render.blurRegion(realPositionX, realPositionY, realSizeX, realSizeY, angle, backgroundBlurStrength);
+            boolean hasRoundedCorner = backgroundLeftTopCornerRadius != 0 || backgroundRightTopCornerRadius != 0 || backgroundLeftBottomCornerRadius != 0 || backgroundRightBottomCornerRadius != 0;
+            if (hasRoundedCorner) {
+                render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, backgroundLeftTopCornerRadius, backgroundRightTopCornerRadius, backgroundLeftBottomCornerRadius, backgroundRightBottomCornerRadius);
+                render.blurRegion(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, backgroundBlurStrength);
+                render.disableScissor();
+            } else {
+                render.blurRegion(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, backgroundBlurStrength);
+            }
         }
 
-        if (backgroundLeftBorderThickness == 0 && backgroundRightBorderThickness == 0 && backgroundTopBorderThickness == 0 && backgroundBottomBorderThickness == 0 && backgroundLeftTopCornerRadius == 0 && backgroundRightTopCornerRadius == 0 && backgroundLeftBottomCornerRadius == 0 && backgroundRightBottomCornerRadius == 0) {
-            render.drawRectangle(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY, angle, backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha());
+        if (backgroundLeftBorderThickness == 0 && backgroundRightBorderThickness == 0 &&
+                backgroundTopBorderThickness == 0 && backgroundBottomBorderThickness == 0 &&
+                backgroundLeftTopCornerRadius == 0 && backgroundRightTopCornerRadius == 0 &&
+                backgroundLeftBottomCornerRadius == 0 && backgroundRightBottomCornerRadius == 0
+        ) {
+            render.drawRectangle(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY, realAngle, backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha());
         } else {
-            render.drawShape(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY, angle,
+            render.drawShape(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY, realAngle,
                     backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha(),
-                    backgroundLeftTopCornerRadius, backgroundRightTopCornerRadius, backgroundLeftBottomCornerRadius, backgroundRightBottomCornerRadius,
-                    backgroundLeftBorderThickness, backgroundRightBorderThickness, backgroundTopBorderThickness, backgroundBottomBorderThickness,
-                    backgroundBorderColor.red(), backgroundBorderColor.green(), backgroundBorderColor.blue(), backgroundBorderColor.alpha(), backgroundBorderThicknessPosition
-            );
+                    backgroundLeftTopCornerRadius, backgroundRightTopCornerRadius,
+                    backgroundLeftBottomCornerRadius, backgroundRightBottomCornerRadius,
+                    backgroundLeftBorderThickness, backgroundRightBorderThickness,
+                    backgroundTopBorderThickness, backgroundBottomBorderThickness,
+                    backgroundBorderColor.red(), backgroundBorderColor.green(),
+                    backgroundBorderColor.blue(), backgroundBorderColor.alpha(),
+                    backgroundBorderThicknessPosition);
         }
     }
 
@@ -126,6 +141,9 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
 
         realPositionMaxX = realPositionX + realSizeX;
         realPositionMaxY = realPositionY + realSizeY;
+
+        realAngle = (parentFrame == null ? 0 : parentFrame.realAngle) + angle;
+
         letChildrenOperationPosition();
     }
     protected void letChildrenOperationPosition(){
@@ -137,7 +155,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     @Override
     public void dispatchRender(GuiRender render, long delta) {
         if (clipChildren) {
-            render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY, angle);
+            render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, backgroundLeftTopCornerRadius, backgroundRightTopCornerRadius, backgroundLeftBottomCornerRadius, backgroundRightBottomCornerRadius);
             render(render, delta);
             super.dispatchRender(render, delta);
             render.disableScissor();
@@ -297,6 +315,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     }
     public T setAngle(float angle) {
         this.angle = angle;
+        operationPosition();
         return self;
     }
     public T setPosition(ScaleOffset position) {
@@ -468,7 +487,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
 
         double dx = mouseX - centerX;
         double dy = mouseY - centerY;
-        double radians = Math.toRadians(-node.angle);
+        double radians = Math.toRadians(-node.realAngle);
         double cosine = Math.cos(radians);
         double sine = Math.sin(radians);
         double localX = centerX + dx * cosine - dy * sine;

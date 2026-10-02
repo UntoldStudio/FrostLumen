@@ -90,9 +90,9 @@ public class OpenGLGuiRender extends GuiRender {
     private int atlasCursorY;
     private int atlasRowHeight;
 
-    private static final int BLUR_DOWNSCALE = 2;
+    private static final int BLUR_DOWNSCALE = 3;
     private static final float BLUR_DOWNSCALE_INV = 1.0f / BLUR_DOWNSCALE;
-    private static final int BLUR_PASSES = 5;
+    private static final int BLUR_PASSES = 3;
     private final DirectByteBuffer blurTempBuffer;
     private final int[] blurFbo = new int[2];
     private final int[] blurTexture = new int[2];
@@ -106,7 +106,7 @@ public class OpenGLGuiRender extends GuiRender {
     private int blurTextureWidth;
     private int blurTextureHeight;
 
-    private static final int MAX_SCISSOR_PLANES = 32;
+    private static final int MAX_SCISSOR_STATES = 16;
 
     private final Deque<SavedGLState> savedGLStateState = new ArrayDeque<>();
     private final Deque<SavedGLState> savedGLStatePool = new ArrayDeque<>();
@@ -294,10 +294,10 @@ public class OpenGLGuiRender extends GuiRender {
     }
 
     private static int[] bindScissorStateLocations(int program) {
-        int countLocation = glGetUniformLocation(program, "uScissorPlaneCount");
-        int planesLocation = glGetUniformLocation(program, "uScissorPlanes[0]");
+        int rectangleCountLocation = glGetUniformLocation(program, "uScissorRectCount");
+        int rectangleDataLocation = glGetUniformLocation(program, "uScissorRects[0]");
         int viewportHeightLocation = glGetUniformLocation(program, "uViewportHeight");
-        return new int[]{countLocation, planesLocation, viewportHeightLocation};
+        return new int[]{rectangleCountLocation, rectangleDataLocation, viewportHeightLocation};
     }
 
     private void enableVertexAttributes(int target) {
@@ -728,42 +728,59 @@ public class OpenGLGuiRender extends GuiRender {
         int windowWidth = window.getFrameBufferWidth();
         int windowHeight = window.getFrameBufferHeight();
 
-        int halfWidth = Math.max(1, width / BLUR_DOWNSCALE);
-        int halfHeight = Math.max(1, height / BLUR_DOWNSCALE);
+        float angleInRadians = (float) Math.toRadians(angle);
+        float cosineOfAngle = (float) Math.cos(angleInRadians);
+        float sineOfAngle = (float) Math.sin(angleInRadians);
 
-        if (halfWidth > blurTextureWidth || halfHeight > blurTextureHeight) {
-            rebuildBlurTextures(Math.max(halfWidth, blurTextureWidth), Math.max(halfHeight, blurTextureHeight));
+        float rawSourceWidth = Math.abs(width * cosineOfAngle) + Math.abs(height * sineOfAngle);
+        float rawSourceHeight = Math.abs(width * sineOfAngle) + Math.abs(height * cosineOfAngle);
+
+        int sourceWidth = (int) Math.ceil(rawSourceWidth);
+        int sourceHeight = (int) Math.ceil(rawSourceHeight);
+
+        int centerScreenX = x + width / 2;
+        int centerScreenY = y + height / 2;
+
+        int sourceLeft = centerScreenX - sourceWidth / 2;
+        int sourceTop = centerScreenY - sourceHeight / 2;
+
+        int sourceHalfWidth = Math.max(1, sourceWidth / BLUR_DOWNSCALE);
+        int sourceHalfHeight = Math.max(1, sourceHeight / BLUR_DOWNSCALE);
+
+        if (sourceHalfWidth > blurTextureWidth || sourceHalfHeight > blurTextureHeight) {
+            rebuildBlurTextures(Math.max(sourceHalfWidth, blurTextureWidth), Math.max(sourceHalfHeight, blurTextureHeight));
         }
 
-        int glY0 = windowHeight - (y + height);
-        int glY1 = windowHeight - y;
+        int glSourceBottom = windowHeight - (sourceTop + sourceHeight);
+        int glSourceTop = windowHeight - sourceTop;
 
         glDisable(GL_SCISSOR_TEST);
 
         glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, blurFbo[0]);
-        glBlitFramebuffer(x, glY0, x + width, glY1, 0, 0, halfWidth, halfHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
+        glBlitFramebuffer(sourceLeft, glSourceBottom, sourceLeft + sourceWidth, glSourceTop,
+                0, 0, sourceHalfWidth, sourceHalfHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         glBindVertexArray(blurVao);
         glUseProgram(blurShaderProgram);
-        glUniform2f(blurTexelSizeLocation, 1f / blurTextureWidth, 1f / blurTextureHeight);
-        glUniform2f(blurUVScaleLocation, (float) halfWidth / blurTextureWidth, (float) halfHeight / blurTextureHeight);
+        glUniform2f(blurTexelSizeLocation, 1.0f / blurTextureWidth, 1.0f / blurTextureHeight);
+        glUniform2f(blurUVScaleLocation, (float) sourceHalfWidth / blurTextureWidth, (float) sourceHalfHeight / blurTextureHeight);
         glActiveTexture(GL_TEXTURE0);
         glUniform1i(blurSamplerLocation, 0);
 
         float perPassRadius = Math.max(1.0f, radius * BLUR_DOWNSCALE_INV / BLUR_PASSES);
         glUniform1f(blurRadiusLocation, perPassRadius);
 
-        for (int i = 0; i < BLUR_PASSES; i++) {
+        for (int blurPass = 0; blurPass < BLUR_PASSES; blurPass++) {
             glBindFramebuffer(GL_FRAMEBUFFER, blurFbo[1]);
-            glViewport(0, 0, halfWidth, halfHeight);
+            glViewport(0, 0, sourceHalfWidth, sourceHalfHeight);
             glUniform1i(blurDirectionLocation, 0);
             glBindTexture(GL_TEXTURE_2D, blurTexture[0]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
             glBindFramebuffer(GL_FRAMEBUFFER, blurFbo[0]);
-            glViewport(0, 0, halfWidth, halfHeight);
+            glViewport(0, 0, sourceHalfWidth, sourceHalfHeight);
             glUniform1i(blurDirectionLocation, 1);
             glBindTexture(GL_TEXTURE_2D, blurTexture[1]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -777,43 +794,49 @@ public class OpenGLGuiRender extends GuiRender {
         glBindVertexArray(textureVao);
         glBindBuffer(GL_ARRAY_BUFFER, textureVbo);
 
-        int centerX = x + width / 2;
-        int centerY = y + height / 2;
-        float uMax = (float) halfWidth / blurTextureWidth;
-        float vMax = (float) halfHeight / blurTextureHeight;
+        DirectByteBuffer vertexData = blurTempBuffer;
+        vertexData.clear();
 
-        DirectByteBuffer temp = blurTempBuffer;
-        temp.clear();
+        int[][] unrotatedCornerPositions = {
+                {x, y},
+                {x + width, y},
+                {x + width, y + height},
+                {x, y + height}
+        };
 
-        temp.writeInt(x, y);
-        temp.writeInt(centerX, centerY);
-        temp.writeFloat(0f);
-        temp.writeFloat(0f, vMax);
-        temp.writeBytesFromIntsWithForcedConversion(255, 255, 255, 255);
+        float sourceBottomEdge = sourceTop + sourceHeight;
 
-        temp.writeInt(x + width, y);
-        temp.writeInt(centerX, centerY);
-        temp.writeFloat(0f);
-        temp.writeFloat(uMax, vMax);
-        temp.writeBytesFromIntsWithForcedConversion(255, 255, 255, 255);
+        for (int[] unrotatedCornerPosition : unrotatedCornerPositions) {
+            int unrotatedCornerX = unrotatedCornerPosition[0];
+            int unrotatedCornerY = unrotatedCornerPosition[1];
 
-        temp.writeInt(x + width, y + height);
-        temp.writeInt(centerX, centerY);
-        temp.writeFloat(0f);
-        temp.writeFloat(uMax, 0f);
-        temp.writeBytesFromIntsWithForcedConversion(255, 255, 255, 255);
+            float localOffsetX = unrotatedCornerX - centerScreenX;
+            float localOffsetY = unrotatedCornerY - centerScreenY;
 
-        temp.writeInt(x, y + height);
-        temp.writeInt(centerX, centerY);
-        temp.writeFloat(0f);
-        temp.writeFloat(0f, 0f);
-        temp.writeBytesFromIntsWithForcedConversion(255, 255, 255, 255);
+            float rotatedOffsetX = localOffsetX * cosineOfAngle - localOffsetY * sineOfAngle;
+            float rotatedOffsetY = localOffsetX * sineOfAngle + localOffsetY * cosineOfAngle;
+
+            float rotatedScreenX = centerScreenX + rotatedOffsetX;
+            float rotatedScreenY = centerScreenY + rotatedOffsetY;
+
+            float texelX = (rotatedScreenX - sourceLeft) / (float) BLUR_DOWNSCALE;
+            float texelY = (sourceBottomEdge - rotatedScreenY) / (float) BLUR_DOWNSCALE;
+
+            float textureCoordinateU = texelX / blurTextureWidth;
+            float textureCoordinateV = texelY / blurTextureHeight;
+
+            vertexData.writeInt(Math.round(rotatedScreenX), Math.round(rotatedScreenY));
+            vertexData.writeInt(centerScreenX, centerScreenY);
+            vertexData.writeFloat(0.0f);
+            vertexData.writeFloat(textureCoordinateU, textureCoordinateV);
+            vertexData.writeBytesFromIntsWithForcedConversion(255, 255, 255, 255);
+        }
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, blurTexture[0]);
         glUniform1i(textureSamplerLocation, 0);
 
-        glBufferSubData(GL_ARRAY_BUFFER, 0, temp.getNioDirectByteBuffer());
+        glBufferSubData(GL_ARRAY_BUFFER, 0, vertexData.getNioDirectByteBuffer());
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         restoreContext();
@@ -853,7 +876,6 @@ public class OpenGLGuiRender extends GuiRender {
         }
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
         restoreContext();
     }
 
@@ -994,7 +1016,10 @@ public class OpenGLGuiRender extends GuiRender {
         Iterator<RenderCommand> iterator = commands.descendingIterator();
         while (iterator.hasNext()) {
             RenderCommand command = iterator.next();
-            if (command instanceof RenderBatch batch && batch.buffer.getWrittenBytes() == 0) continue;
+            if (command instanceof RenderBatch batch && batch.buffer.getWrittenBytes() == 0) {
+                command.destroy();
+                continue;
+            }
             command.execute();
             command.destroy();
         }
@@ -1002,30 +1027,39 @@ public class OpenGLGuiRender extends GuiRender {
     }
 
     @Override
-    protected void enableScissorTest(HalfPlane[] planes) {
+    protected void enableScissorTest(ScissorState[] scissorStates) {
         addStateCommand(() -> {
-            uploadScissorPlanes(triangleShaderProgram, triangleScissorStateLocations, planes);
-            uploadScissorPlanes(shapeShaderProgram, shapeScissorStateLocations, planes);
-            uploadScissorPlanes(textureShaderProgram, textureScissorStateLocations, planes);
-            uploadScissorPlanes(stringShaderProgram, stringScissorStateLocations, planes);
+            uploadScissorStates(triangleShaderProgram, triangleScissorStateLocations, scissorStates);
+            uploadScissorStates(shapeShaderProgram, shapeScissorStateLocations, scissorStates);
+            uploadScissorStates(textureShaderProgram, textureScissorStateLocations, scissorStates);
+            uploadScissorStates(stringShaderProgram, stringScissorStateLocations, scissorStates);
         });
     }
 
-    private void uploadScissorPlanes(int shaderProgram, int[] uniformLocations, HalfPlane[] planes) {
+    private void uploadScissorStates(int shaderProgram, int[] uniformLocations, ScissorState[] scissorStates) {
         glUseProgram(shaderProgram);
-        int planeCount = Math.min(planes.length, MAX_SCISSOR_PLANES);
-        glUniform1i(uniformLocations[0], planeCount);
-        if (planeCount > 0) {
+        int stateCount = Math.min(scissorStates.length, MAX_SCISSOR_STATES);
+        glUniform1i(uniformLocations[0], stateCount);
+        if (stateCount > 0) {
             try (MemoryStack stack = MemoryStack.stackPush()) {
-                FloatBuffer buffer = stack.mallocFloat(planeCount * 3);
-                for (int planeIndex = 0; planeIndex < planeCount; planeIndex++) {
-                    HalfPlane plane = planes[planeIndex];
-                    buffer.put(plane.normalX());
-                    buffer.put(plane.normalY());
-                    buffer.put(plane.distance());
+                FloatBuffer buffer = stack.mallocFloat(stateCount * 12);
+                for (int stateIndex = 0; stateIndex < stateCount; stateIndex++) {
+                    ScissorState scissorState = scissorStates[stateIndex];
+                    buffer.put(scissorState.centerX());
+                    buffer.put(scissorState.centerY());
+                    buffer.put(scissorState.halfWidth());
+                    buffer.put(scissorState.halfHeight());
+                    buffer.put(scissorState.cosineOfAngle());
+                    buffer.put(scissorState.sineOfAngle());
+                    buffer.put(scissorState.cornerTopLeft());
+                    buffer.put(scissorState.cornerTopRight());
+                    buffer.put(scissorState.cornerBottomLeft());
+                    buffer.put(scissorState.cornerBottomRight());
+                    buffer.put(0.0f);
+                    buffer.put(0.0f);
                 }
                 buffer.flip();
-                glUniform3fv(uniformLocations[1], buffer);
+                glUniform4fv(uniformLocations[1], buffer);
             }
         }
     }

@@ -15,10 +15,12 @@
  */
 package top.untoldstudio.frostlumen.core.tool;
 
+import org.lwjgl.system.MemoryUtil;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-public class DirectByteBuffer {
+public class DirectByteBuffer extends GCCleanable {
     private ByteBuffer buffer;
 
     public void writeFloat(float value) {
@@ -72,18 +74,14 @@ public class DirectByteBuffer {
         buffer.clear();
     }
 
-    public void fresh(int capacity) {
-        buffer = ByteBuffer.allocateDirect(capacity);
-        buffer.order(ByteOrder.nativeOrder());
-    }
-
     private void tryExpansion(int needByteLength) {
         int target = buffer.position() + needByteLength;
         if (buffer.capacity() < target) {
-            ByteBuffer newBuffer = ByteBuffer.allocateDirect(target * 2);
+            ByteBuffer newBuffer = MemoryUtil.memAlloc(target * 2);
             newBuffer.order(ByteOrder.nativeOrder());
             buffer.flip();
             newBuffer.put(buffer);
+            MemoryUtil.memFree(buffer);
             buffer = newBuffer;
         }
     }
@@ -93,7 +91,9 @@ public class DirectByteBuffer {
     }
 
     public DirectByteBuffer(int capacity) {
-        buffer = ByteBuffer.allocateDirect(capacity);
+        buffer = MemoryUtil.memAlloc(capacity);
         buffer.order(ByteOrder.nativeOrder());
+
+        super.registerOnGCRecycle(() -> MemoryUtil.memFree(buffer));
     }
 }

@@ -65,8 +65,13 @@ public abstract class GuiRender implements IResourceManager {
     protected int cursorModeInThisFrame;
     protected final Int2LongMap cursorShapeMap = new Int2LongOpenHashMap();
     protected final Deque<ScissorState> scissorStateDeque = new ArrayDeque<>();
-    protected record HalfPlane(float normalX, float normalY, float distance) {}
-    protected record ScissorState(HalfPlane[] planes) {}
+    protected record ScissorState(
+            float centerX, float centerY,
+            float halfWidth, float halfHeight,
+            float cosineOfAngle, float sineOfAngle,
+            float cornerTopLeft, float cornerTopRight,
+            float cornerBottomLeft, float cornerBottomRight
+    ) {}
 
     public void drawRectangle(int minX, int minY, int maxX, int maxY, float angle, int red, int green, int blue, int alpha) {
         drawRectangle(minX, minY, maxX, maxY, angle, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha);
@@ -557,31 +562,25 @@ public abstract class GuiRender implements IResourceManager {
         }
     }
 
-    public void enableScissor(int x, int y, int width, int height, float angle) {
+    public void enableScissor(int x, int y, int width, int height, float angle, int aCornerRadii, int bCornerRadii, int cCornerRadii, int dCornerRadii) {
         float centerX = x + width * 0.5f;
         float centerY = y + height * 0.5f;
         float halfWidth = width * 0.5f;
         float halfHeight = height * 0.5f;
+
         float radians = (float) Math.toRadians(angle);
-        float cosine = (float) Math.cos(radians);
-        float sine = (float) Math.sin(radians);
+        float cosineOfAngle = (float) Math.cos(radians);
+        float sineOfAngle = (float) Math.sin(radians);
 
-        float localXAxisX = cosine;
-        float localXAxisY = sine;
-        float localYAxisX = -sine;
-        float localYAxisY = cosine;
+        float maxCornerRadius = Math.min(halfWidth, halfHeight);
+        float cornerTopLeft = Math.clamp(aCornerRadii, 0, maxCornerRadius);
+        float cornerTopRight = Math.clamp(bCornerRadii, 0, maxCornerRadius);
+        float cornerBottomLeft = Math.clamp(cCornerRadii, 0, maxCornerRadius);
+        float cornerBottomRight = Math.clamp(dCornerRadii, 0, maxCornerRadius);
 
-        float centerProjectionOnXAxis = localXAxisX * centerX + localXAxisY * centerY;
-        float centerProjectionOnYAxis = localYAxisX * centerX + localYAxisY * centerY;
-
-        HalfPlane[] planes = new HalfPlane[]{
-                new HalfPlane(-localXAxisX, -localXAxisY, centerProjectionOnXAxis + halfWidth),
-                new HalfPlane(localXAxisX, localXAxisY, -centerProjectionOnXAxis + halfWidth),
-                new HalfPlane(-localYAxisX, -localYAxisY, centerProjectionOnYAxis + halfHeight),
-                new HalfPlane(localYAxisX, localYAxisY, -centerProjectionOnYAxis + halfHeight),
-        };
-
-        scissorStateDeque.push(new ScissorState(planes));
+        scissorStateDeque.push(new ScissorState(centerX, centerY, halfWidth, halfHeight,
+                cosineOfAngle, sineOfAngle,
+                cornerTopLeft, cornerTopRight, cornerBottomLeft, cornerBottomRight));
         pushScissorToRender();
     }
 
@@ -593,18 +592,14 @@ public abstract class GuiRender implements IResourceManager {
     }
 
     private void pushScissorToRender() {
-        List<HalfPlane> allPlanes = new ArrayList<>();
-        for (ScissorState state : scissorStateDeque) {
-            Collections.addAll(allPlanes, state.planes());
-        }
-        if (allPlanes.isEmpty()) {
+        if (scissorStateDeque.isEmpty()) {
             disableScissorTest();
         } else {
-            enableScissorTest(allPlanes.toArray(new HalfPlane[0]));
+            enableScissorTest(scissorStateDeque.toArray(new ScissorState[0]));
         }
     }
 
-    protected abstract void enableScissorTest(HalfPlane[] planes);
+    protected abstract void enableScissorTest(ScissorState[] scissorStates);
 
     protected abstract void disableScissorTest();
 
@@ -807,8 +802,11 @@ public abstract class GuiRender implements IResourceManager {
                 pixels = stbi_load_from_memory(buffer, widthBuffer, heightBuffer, channelBuffer, 4);
 
                 if (pixels == null) {
+                    MemoryUtil.memFree(buffer);
                     throw new ResourceException("Load texture failed:" + stbi_failure_reason());
                 }
+
+                MemoryUtil.memFree(buffer);
             }
 
             int width = widthBuffer.get();
@@ -834,11 +832,14 @@ public abstract class GuiRender implements IResourceManager {
             buffer.flip();
             ByteBuffer pixels = stbi_load_from_memory(buffer, widthBuffer, heightBuffer, channelBuffer, 4);
             if (pixels == null) {
+                MemoryUtil.memFree(buffer);
                 throw new ResourceException("Load texture failed:" + stbi_failure_reason());
             }
             int width = widthBuffer.get();
             int height = heightBuffer.get();
             int id = loadTexture(pixels, width, height, isLinear);
+            MemoryUtil.memFree(buffer);
+            stbi_image_free(pixels);
             return new Texture(isNiceGrid, type, stretchInner, id, width, height, channelBuffer.get(), null, left, right, top, bottom);
         }
     }

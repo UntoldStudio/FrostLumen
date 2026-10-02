@@ -34,7 +34,6 @@ public class Main {
         long windowHandle = glfwCreateWindow(800, 600, "Test", 0, 0);
 
         glfwMakeContextCurrent(windowHandle);
-        glfwSwapInterval(1);
         GL.createCapabilities();
 
         Window window = Window.from(windowHandle, RenderProviderType.OPENGL);
@@ -46,22 +45,52 @@ public class Main {
                 .onClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
                 .setAnchor(0.5, 0.5)
                 .setDrawBackground(true)
+                .setBackgroundCornerRadius(10)
                 ;
-        Frame frame = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+        Frame frame1 = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
                 .setAnchor(0.5, 0.5).setBackgroundColor(new RGBA(210, 230, 255, 90))
+                .setClipChildren(true)
+                .setAngle(20f)
+                .setBackgroundCornerRadius(10)
+                ;
+        Frame frame2 = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+                .setAnchor(0.5, 0.5)
+                .setBackgroundColor(new RGBA(210, 230, 255, 90))
                 .setBackgroundBlurStrength(1f)
-                .setClipChildren(true);
-        frame.addChild(button);
-        window.getNodeRoot().addChild(frame);
+                .setBackgroundCornerRadius(10)
+                ;
+        Frame frame3 = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.3, 0.3))
+                .setAnchor(0.5, 0.5)
+                .setBackgroundColor(new RGBA(210, 230, 255, 90))
+                .setBackgroundBlurStrength(1f)
+                .setBackgroundCornerRadius(10)
+                .setAngle(100)
+                ;
+        frame1.addChild(button);
+        window.getNodeRoot().addChildren(frame1, frame2, frame3);
+
+        long previousTime = System.nanoTime();
+        int frameCount = 0;
+
+        glfwSwapInterval(1);
 
         while (!glfwWindowShouldClose(windowHandle)) {
             glfwPollEvents();
-
             glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
             glClear(GL_COLOR_BUFFER_BIT);
-
             window.getNodeRoot().render();
+
             glfwSwapBuffers(windowHandle);
+
+            frameCount++;
+            long currentTime = System.nanoTime();
+            long elapsed = currentTime - previousTime;
+            if (elapsed >= 1_000_000_000L) {
+                double seconds = elapsed / 1_000_000_000.0;
+                System.out.printf("FPS: %.2f%n", frameCount / seconds);
+                frameCount = 0;
+                previousTime = currentTime;
+            }
         }
 
         window.close();
