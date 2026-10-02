@@ -65,7 +65,8 @@ public abstract class GuiRender implements IResourceManager {
     protected int cursorModeInThisFrame;
     protected final Int2LongMap cursorShapeMap = new Int2LongOpenHashMap();
     protected final Deque<ScissorState> scissorStateDeque = new ArrayDeque<>();
-    protected record ScissorState(int x, int y, int width, int height) {}
+    protected record HalfPlane(float normalX, float normalY, float distance) {}
+    protected record ScissorState(HalfPlane[] planes) {}
 
     public void drawRectangle(int minX, int minY, int maxX, int maxY, float angle, int red, int green, int blue, int alpha) {
         drawRectangle(minX, minY, maxX, maxY, angle, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha);
@@ -158,7 +159,7 @@ public abstract class GuiRender implements IResourceManager {
                     dRed, dGreen, dBlue, dAlpha, texture.stretchInner()
             );
         } else {
-            drawTexture(texture.textureId(), minX, minY, maxX, maxY, (minX + maxX) / 2, (minY  + maxX) / 2, angle, u0, v0, u1, v1,
+            drawTexture(texture.textureId(), minX, minY, maxX, maxY, (minX + maxX) / 2, (minY + maxY) / 2, angle, u0, v0, u1, v1,
                     aRed, aGreen, aBlue, aAlpha,
                     bRed, bGreen, bBlue, bAlpha,
                     cRed, cGreen, cBlue, cAlpha,
@@ -556,26 +557,54 @@ public abstract class GuiRender implements IResourceManager {
         }
     }
 
-    public void enableScissor(int x, int y, int width, int height) {
-        scissorStateDeque.push(new ScissorState(x, y, width, height));
-        enableScissorTest(x, y, width, height);
-    }
+    public void enableScissor(int x, int y, int width, int height, float angle) {
+        float centerX = x + width * 0.5f;
+        float centerY = y + height * 0.5f;
+        float halfWidth = width * 0.5f;
+        float halfHeight = height * 0.5f;
+        float radians = (float) Math.toRadians(angle);
+        float cosine = (float) Math.cos(radians);
+        float sine = (float) Math.sin(radians);
 
-    protected abstract void enableScissorTest(int x, int y, int width, int height);
+        float localXAxisX = cosine;
+        float localXAxisY = sine;
+        float localYAxisX = -sine;
+        float localYAxisY = cosine;
+
+        float centerProjectionOnXAxis = localXAxisX * centerX + localXAxisY * centerY;
+        float centerProjectionOnYAxis = localYAxisX * centerX + localYAxisY * centerY;
+
+        HalfPlane[] planes = new HalfPlane[]{
+                new HalfPlane(-localXAxisX, -localXAxisY, centerProjectionOnXAxis + halfWidth),
+                new HalfPlane(localXAxisX, localXAxisY, -centerProjectionOnXAxis + halfWidth),
+                new HalfPlane(-localYAxisX, -localYAxisY, centerProjectionOnYAxis + halfHeight),
+                new HalfPlane(localYAxisX, localYAxisY, -centerProjectionOnYAxis + halfHeight),
+        };
+
+        scissorStateDeque.push(new ScissorState(planes));
+        pushScissorToRender();
+    }
 
     public void disableScissor() {
         if (!scissorStateDeque.isEmpty()) {
             scissorStateDeque.pop();
-            if (!scissorStateDeque.isEmpty()) {
-                ScissorState next = scissorStateDeque.peek();
-                enableScissorTest(next.x, next.y, next.width, next.height);
-            } else {
-                disableScissorTest();
-            }
-        } else {
+        }
+        pushScissorToRender();
+    }
+
+    private void pushScissorToRender() {
+        List<HalfPlane> allPlanes = new ArrayList<>();
+        for (ScissorState state : scissorStateDeque) {
+            Collections.addAll(allPlanes, state.planes());
+        }
+        if (allPlanes.isEmpty()) {
             disableScissorTest();
+        } else {
+            enableScissorTest(allPlanes.toArray(new HalfPlane[0]));
         }
     }
+
+    protected abstract void enableScissorTest(HalfPlane[] planes);
 
     protected abstract void disableScissorTest();
 

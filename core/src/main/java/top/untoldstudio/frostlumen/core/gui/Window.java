@@ -97,6 +97,7 @@ public class Window {
 
     private void init() {
         root.init();
+        root.dispatchFrameBufferSizeChangeEvent(new FrameBufferSizeChangeEvent(frameBufferWidth, frameBufferHeight, frameBufferWidth, frameBufferHeight));
     }
 
     public NodeRoot getNodeRoot() {
@@ -105,11 +106,16 @@ public class Window {
 
     public void close() {
         glfwDestroyWindow(windowHandle);
-        clear();
+        clear(true);
     }
     public void clear() {
-        WindowCloseEvent closeEvent = new WindowCloseEvent();
-        root.dispatchWindowCloseEvent(closeEvent);
+        clear(false);
+    }
+    private void clear(boolean needCloseEvent) {
+        if (needCloseEvent) {
+            WindowCloseEvent closeEvent = new WindowCloseEvent();
+            root.dispatchWindowCloseEvent(closeEvent);
+        }
 
         glfwSetKeyCallback(windowHandle, oldKeyCallback);
         glfwSetMouseButtonCallback(windowHandle, oldMouseButtonCallback);

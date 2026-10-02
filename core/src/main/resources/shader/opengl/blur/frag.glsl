@@ -7,22 +7,28 @@ uniform vec2 uTexelSize;
 uniform int uDirection;
 uniform vec2 uUVScale;
 uniform float uRadius;
-
 out vec4 FragColor;
 
 void main() {
-    vec2 offset = (uDirection == 0 ? vec2(uTexelSize.x, 0.0) : vec2(0.0, uTexelSize.y)) * uRadius;
+    vec2 texelDir = (uDirection == 0 ? vec2(uTexelSize.x, 0.0) : vec2(0.0, uTexelSize.y));
+
+    float sigma = max(uRadius * 0.5, 0.1);
+    float twoSigma2 = 2.0 * sigma * sigma;
 
     vec2 uv = vTexCoord * uUVScale;
-    vec4 result = texture(uTexture, uv) * 0.2270270270;
-    result += texture(uTexture, uv + offset * 1.0) * 0.1945945946;
-    result += texture(uTexture, uv - offset * 1.0) * 0.1945945946;
-    result += texture(uTexture, uv + offset * 2.0) * 0.1216216216;
-    result += texture(uTexture, uv - offset * 2.0) * 0.1216216216;
-    result += texture(uTexture, uv + offset * 3.0) * 0.0540540541;
-    result += texture(uTexture, uv - offset * 3.0) * 0.0540540541;
-    result += texture(uTexture, uv + offset * 4.0) * 0.0162162162;
-    result += texture(uTexture, uv - offset * 4.0) * 0.0162162162;
+    vec2 minUV = vec2(0.0);
+    vec2 maxUV = uUVScale;
 
-    FragColor = result;
+    vec4 result = texture(uTexture, uv);
+    float weightSum = 1.0;
+
+    for (int i = 1; i <= int(uRadius); i++) {
+        float w = exp(-float(i * i) / twoSigma2);
+        vec2 offset = texelDir * float(i);
+        result += texture(uTexture, clamp(uv + offset, minUV, maxUV)) * w;
+        result += texture(uTexture, clamp(uv - offset, minUV, maxUV)) * w;
+        weightSum += 2.0 * w;
+    }
+
+    FragColor = result / weightSum;
 }

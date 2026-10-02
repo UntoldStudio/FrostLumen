@@ -20,6 +20,7 @@ import it.unimi.dsi.fastutil.doubles.Double2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.joml.Matrix4f;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.util.freetype.*;
 import top.untoldstudio.frostlumen.core.data.ThicknessPosition;
@@ -35,6 +36,7 @@ import top.untoldstudio.frostlumen.core.tool.ResourceReader;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.*;
 import java.util.function.Supplier;
 
@@ -53,6 +55,7 @@ public class OpenGLGuiRender extends GuiRender {
     private final int triangleShaderProgram;
     private final int triangleVao;
     private final int triangleVbo;
+    private final int[] triangleScissorStateLocations;
     private int triangleVboCapacity;
 
     private final int shapeStride;
@@ -60,6 +63,7 @@ public class OpenGLGuiRender extends GuiRender {
     private final int shapeShaderProgram;
     private final int shapeVao;
     private final int shapeVbo;
+    private final int[] shapeScissorStateLocations;
     private int shapeVboCapacity;
 
     private final int textureStride;
@@ -68,6 +72,7 @@ public class OpenGLGuiRender extends GuiRender {
     private final int textureShaderProgram;
     private final int textureVao;
     private final int textureVbo;
+    private final int[] textureScissorStateLocations;
     private int textureVboCapacity;
 
     private final int stringStride;
@@ -76,6 +81,7 @@ public class OpenGLGuiRender extends GuiRender {
     private final int stringShaderProgram;
     private final int stringVao;
     private final int stringVbo;
+    private final int[] stringScissorStateLocations;
     private int stringVboCapacity;
     private int fontAtlasTextureId;
     private int atlasWidth;
@@ -99,6 +105,8 @@ public class OpenGLGuiRender extends GuiRender {
     private final int blurVao;
     private int blurTextureWidth;
     private int blurTextureHeight;
+
+    private static final int MAX_SCISSOR_PLANES = 32;
 
     private final Deque<SavedGLState> savedGLStateState = new ArrayDeque<>();
     private final Deque<SavedGLState> savedGLStatePool = new ArrayDeque<>();
@@ -277,7 +285,19 @@ public class OpenGLGuiRender extends GuiRender {
 
         blurTempBuffer = new DirectByteBuffer(textureStride * 4);
 
+        triangleScissorStateLocations = bindScissorStateLocations(triangleShaderProgram);
+        shapeScissorStateLocations = bindScissorStateLocations(shapeShaderProgram);
+        textureScissorStateLocations = bindScissorStateLocations(textureShaderProgram);
+        stringScissorStateLocations = bindScissorStateLocations(stringShaderProgram);
+
         restoreContext();
+    }
+
+    private static int[] bindScissorStateLocations(int program) {
+        int countLocation = glGetUniformLocation(program, "uScissorPlaneCount");
+        int planesLocation = glGetUniformLocation(program, "uScissorPlanes[0]");
+        int viewportHeightLocation = glGetUniformLocation(program, "uViewportHeight");
+        return new int[]{countLocation, planesLocation, viewportHeightLocation};
     }
 
     private void enableVertexAttributes(int target) {
@@ -302,6 +322,15 @@ public class OpenGLGuiRender extends GuiRender {
         if (halfWidth > blurTextureWidth || halfHeight > blurTextureHeight) {
             rebuildBlurTextures(Math.max(halfWidth, blurTextureWidth), Math.max(halfHeight, blurTextureHeight));
         }
+
+        glUseProgram(triangleShaderProgram);
+        glUniform1f(triangleScissorStateLocations[2], height);
+        glUseProgram(shapeShaderProgram);
+        glUniform1f(shapeScissorStateLocations[2], height);
+        glUseProgram(stringShaderProgram);
+        glUniform1f(stringScissorStateLocations[2], height);
+        glUseProgram(textureShaderProgram);
+        glUniform1f(textureScissorStateLocations[2], height);
     }
 
     @Override
@@ -745,9 +774,6 @@ public class OpenGLGuiRender extends GuiRender {
         glUseProgram(textureShaderProgram);
         glUniformMatrix4fv(textureProjectLocation, false, projectionMatrixArray);
 
-        glEnable(GL_SCISSOR_TEST);
-        glScissor(x, glY0, width, height);
-
         glBindVertexArray(textureVao);
         glBindBuffer(GL_ARRAY_BUFFER, textureVbo);
 
@@ -789,8 +815,6 @@ public class OpenGLGuiRender extends GuiRender {
 
         glBufferSubData(GL_ARRAY_BUFFER, 0, temp.getNioDirectByteBuffer());
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-        glDisable(GL_SCISSOR_TEST);
 
         restoreContext();
     }
@@ -978,17 +1002,46 @@ public class OpenGLGuiRender extends GuiRender {
     }
 
     @Override
-    public void enableScissorTest(int x, int y, int width, int height) {
-        int glY = Window.get(windowHandle).getFrameBufferHeight() - y - height;
-
+    protected void enableScissorTest(HalfPlane[] planes) {
         addStateCommand(() -> {
-            glScissor(x, glY, width, height);
-            glEnable(GL_SCISSOR_TEST);
+            uploadScissorPlanes(triangleShaderProgram, triangleScissorStateLocations, planes);
+            uploadScissorPlanes(shapeShaderProgram, shapeScissorStateLocations, planes);
+            uploadScissorPlanes(textureShaderProgram, textureScissorStateLocations, planes);
+            uploadScissorPlanes(stringShaderProgram, stringScissorStateLocations, planes);
         });
     }
+
+    private void uploadScissorPlanes(int shaderProgram, int[] uniformLocations, HalfPlane[] planes) {
+        glUseProgram(shaderProgram);
+        int planeCount = Math.min(planes.length, MAX_SCISSOR_PLANES);
+        glUniform1i(uniformLocations[0], planeCount);
+        if (planeCount > 0) {
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                FloatBuffer buffer = stack.mallocFloat(planeCount * 3);
+                for (int planeIndex = 0; planeIndex < planeCount; planeIndex++) {
+                    HalfPlane plane = planes[planeIndex];
+                    buffer.put(plane.normalX());
+                    buffer.put(plane.normalY());
+                    buffer.put(plane.distance());
+                }
+                buffer.flip();
+                glUniform3fv(uniformLocations[1], buffer);
+            }
+        }
+    }
+
     @Override
-    public void disableScissorTest() {
-        addStateCommand(() -> glDisable(GL_SCISSOR_TEST));
+    protected void disableScissorTest() {
+        addStateCommand(() -> {
+            glUseProgram(triangleShaderProgram);
+            glUniform1i(triangleScissorStateLocations[0], 0);
+            glUseProgram(shapeShaderProgram);
+            glUniform1i(shapeScissorStateLocations[0], 0);
+            glUseProgram(textureShaderProgram);
+            glUniform1i(textureScissorStateLocations[0], 0);
+            glUseProgram(stringShaderProgram);
+            glUniform1i(stringScissorStateLocations[0], 0);
+        });
     }
 
     @Override

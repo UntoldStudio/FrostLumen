@@ -8,6 +8,10 @@ flat in ivec4 vCornerRadii;
 flat in ivec4 vEdgeThickness;
 flat in int vBorderPosition;
 
+uniform float uViewportHeight;
+uniform int uScissorPlaneCount;
+uniform vec3 uScissorPlanes[32];
+
 out vec4 FragColor;
 
 float sdRoundRect(vec2 p, vec2 halfSize, vec4 radii) {
@@ -32,6 +36,16 @@ float selectThickness(vec2 p, vec2 halfSize, ivec4 t) {
 }
 
 void main() {
+    if (uScissorPlaneCount > 0) {
+        vec2 p = vec2(gl_FragCoord.x, uViewportHeight - gl_FragCoord.y);
+        for (int i = 0; i < uScissorPlaneCount; i++) {
+            vec3 pl = uScissorPlanes[i];
+            if (pl.x * p.x + pl.y * p.y + pl.z < 0.0) {
+                discard;
+            }
+        }
+    }
+
     float thickness = selectThickness(vLocalPos, vHalfSize, vEdgeThickness);
 
     float innerOffset;

@@ -137,7 +137,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     @Override
     public void dispatchRender(GuiRender render, long delta) {
         if (clipChildren) {
-            render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY);
+            render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY, angle);
             render(render, delta);
             super.dispatchRender(render, delta);
             render.disableScissor();
@@ -445,17 +445,35 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     }
 
     private boolean isMouseInNode(NodeRoot root) {
-        int centerX = (realPositionX + realPositionMaxX) / 2;
-        int centerY = (realPositionY + realPositionMaxY) / 2;
+        double mouseX = root.getWindow().getMouseX();
+        double mouseY = root.getWindow().getMouseY();
 
-        double dx = root.getWindow().getMouseX() - centerX;
-        double dy = root.getWindow().getMouseY() - centerY;
-        double rad = Math.toRadians(-angle);
-        double cos = Math.cos(rad);
-        double sin = Math.sin(rad);
-        double localX = centerX + dx * cos - dy * sin;
-        double localY = centerY + dx * sin + dy * cos;
-        return localX >= realPositionX && localX <= realPositionMaxX && localY >= realPositionY && localY <= realPositionMaxY;
+        if (isPointNotInNodeRect(this, mouseX, mouseY)) {
+            return false;
+        }
+
+        GuiNode<?> ancestor = parent instanceof GuiNode<?> parentGuiNode ? parentGuiNode : null;
+        while (ancestor != null) {
+            if (ancestor.clipChildren && isPointNotInNodeRect(ancestor, mouseX, mouseY)) {
+                return false;
+            }
+            ancestor = ancestor.parent instanceof GuiNode<?> nextAncestor ? nextAncestor : null;
+        }
+        return true;
+    }
+
+    private static boolean isPointNotInNodeRect(GuiNode<?> node, double mouseX, double mouseY) {
+        int centerX = (node.realPositionX + node.realPositionMaxX) / 2;
+        int centerY = (node.realPositionY + node.realPositionMaxY) / 2;
+
+        double dx = mouseX - centerX;
+        double dy = mouseY - centerY;
+        double radians = Math.toRadians(-node.angle);
+        double cosine = Math.cos(radians);
+        double sine = Math.sin(radians);
+        double localX = centerX + dx * cosine - dy * sine;
+        double localY = centerY + dx * sine + dy * cosine;
+        return !(localX >= node.realPositionX) || !(localX <= node.realPositionMaxX) || !(localY >= node.realPositionY) || !(localY <= node.realPositionMaxY);
     }
 
     public GuiNode(ScaleOffset position, ScaleOffset size) {

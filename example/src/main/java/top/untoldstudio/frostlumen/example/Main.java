@@ -40,7 +40,7 @@ public class Main {
         Window window = Window.from(windowHandle, RenderProviderType.OPENGL);
 
         IResourceManager resourceManager = IResourceManager.getIResourceManagerFromThreadLocal();
-        ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-blue.jpg"), ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+        ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-blue.jpg"), ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(1.5, 1.5))
                 .normal().setImageAlignment(ImageAlignment.FILL).getNode()
                 .onHover().setTexture(resourceManager.loadTexture("/oiiaioiiai-red.jpg")).getNode()
                 .onClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
@@ -48,7 +48,9 @@ public class Main {
                 .setDrawBackground(true)
                 ;
         Frame frame = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
-                .setAnchor(0.5, 0.5).setBackgroundColor(new RGBA(210, 230, 255, 90)).setBackgroundBlurStrength(1f);
+                .setAnchor(0.5, 0.5).setBackgroundColor(new RGBA(210, 230, 255, 90))
+                .setBackgroundBlurStrength(1f)
+                .setClipChildren(true);
         frame.addChild(button);
         window.getNodeRoot().addChild(frame);
 
@@ -61,5 +63,7 @@ public class Main {
             window.getNodeRoot().render();
             glfwSwapBuffers(windowHandle);
         }
+
+        window.close();
     }
 }
