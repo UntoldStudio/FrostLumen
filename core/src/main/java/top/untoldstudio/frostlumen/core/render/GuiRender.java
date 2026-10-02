@@ -28,7 +28,9 @@ import org.lwjgl.util.freetype.FT_Matrix;
 import org.lwjgl.util.freetype.FT_Vector;
 import top.untoldstudio.frostlumen.core.data.CursorMode;
 import top.untoldstudio.frostlumen.core.data.CursorShape;
+import top.untoldstudio.frostlumen.core.data.NiceSliceType;
 import top.untoldstudio.frostlumen.core.data.ThicknessPosition;
+import top.untoldstudio.frostlumen.core.exception.RenderException;
 import top.untoldstudio.frostlumen.core.exception.ResourceException;
 import top.untoldstudio.frostlumen.core.font.Font;
 import top.untoldstudio.frostlumen.core.texture.Texture;
@@ -41,9 +43,7 @@ import java.lang.ref.Cleaner;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.util.freetype.FreeType.*;
@@ -64,6 +64,8 @@ public abstract class GuiRender implements IResourceManager {
     protected long cursorShapeInThisFrame;
     protected int cursorModeInThisFrame;
     protected final Int2LongMap cursorShapeMap = new Int2LongOpenHashMap();
+    protected final Deque<ScissorState> scissorStateDeque = new ArrayDeque<>();
+    protected record ScissorState(int x, int y, int width, int height) {}
 
     public void drawRectangle(int minX, int minY, int maxX, int maxY, float angle, int red, int green, int blue, int alpha) {
         drawRectangle(minX, minY, maxX, maxY, angle, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha);
@@ -123,15 +125,60 @@ public abstract class GuiRender implements IResourceManager {
                                      int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha
     );
 
-    public void drawNiceSliceTexture(int textureId, int textureWidth, int textureHeight, int borderLeft, int borderRight, int borderTop, int borderBottom, int targetMinX, int targetMinY, int targetMaxX, int targetMaxY, float angle, float textureU0, float textureV0, float textureU3, float textureV3,
+    public void drawNiceSliceTexture(NiceSliceType type, int textureId, int textureWidth, int textureHeight, int borderLeft, int borderRight, int borderTop, int borderBottom, int targetMinX, int targetMinY, int targetMaxX, int targetMaxY, float angle, float textureU0, float textureV0, float textureU3, float textureV3,
                                      int aRed, int aGreen, int aBlue, int aAlpha,
                                      int bRed, int bGreen, int bBlue, int bAlpha,
                                      int cRed, int cGreen, int cBlue, int cAlpha,
-                                     int dRed, int dGreen, int dBlue, int dAlpha
-    ) {
-        int centerX = (targetMinX + targetMaxX) / 2;
-        int centerY = (targetMinY + targetMaxY) / 2;
+                                     int dRed, int dGreen, int dBlue, int dAlpha,
+                                     boolean stretchInner) {
+        switch (type) {
+            case PROPORTIONAL -> drawNiceSliceTextureProportional(textureId, textureWidth, textureHeight, borderLeft, borderRight, borderTop, borderBottom, targetMinX, targetMinY, targetMaxX, targetMaxY, angle, textureU0, textureV0, textureU3, textureV3, aRed, aGreen, aBlue, aAlpha, bRed, bGreen, bBlue, bAlpha, cRed, cGreen, cBlue, cAlpha, dRed, dGreen, dBlue, dAlpha, stretchInner);
+            case FIXED_BORDER -> drawNiceSliceTextureFixed(textureId, textureWidth, textureHeight, borderLeft, borderRight, borderTop, borderBottom, targetMinX, targetMinY, targetMaxX, targetMaxY, angle, textureU0, textureV0, textureU3, textureV3, aRed, aGreen, aBlue, aAlpha, bRed, bGreen, bBlue, bAlpha, cRed, cGreen, cBlue, cAlpha, dRed, dGreen, dBlue, dAlpha, stretchInner);
+        }
+    }
 
+    public void drawTexture(Texture texture, int minX, int minY, int maxX, int maxY, float angle, int red, int green, int blue, int alpha) {
+        drawTexture(texture, minX, minY, maxX, maxY, angle, 0, 0, 1, 1,
+                red, green, blue, alpha, red, green, blue, alpha,
+                red, green, blue, alpha, red, green, blue, alpha
+        );
+    }
+    public void drawTexture(Texture texture, int minX, int minY, int maxX, int maxY, float angle, float u0, float v0, float u1, float v1,
+                            int aRed, int aGreen, int aBlue, int aAlpha,
+                            int bRed, int bGreen, int bBlue, int bAlpha,
+                            int cRed, int cGreen, int cBlue, int cAlpha,
+                            int dRed, int dGreen, int dBlue, int dAlpha
+    ) {
+        if (texture.isNiceSlice()) {
+            drawNiceSliceTexture(
+                    texture.sliceType(), texture.textureId(), texture.width(), texture.height(), texture.left(), texture.right(), texture.top(), texture.bottom(), minX, minY, maxX, maxY, angle, u0, v0, u1, v1,
+                    aRed, aGreen, aBlue, aAlpha,
+                    bRed, bGreen, bBlue, bAlpha,
+                    cRed, cGreen, cBlue, cAlpha,
+                    dRed, dGreen, dBlue, dAlpha, texture.stretchInner()
+            );
+        } else {
+            drawTexture(texture.textureId(), minX, minY, maxX, maxY, (minX + maxX) / 2, (minY  + maxX) / 2, angle, u0, v0, u1, v1,
+                    aRed, aGreen, aBlue, aAlpha,
+                    bRed, bGreen, bBlue, bAlpha,
+                    cRed, cGreen, cBlue, cAlpha,
+                    dRed, dGreen, dBlue, dAlpha
+            );
+        }
+    }
+
+    private void drawNiceSliceTextureProportional(int textureId, int textureWidth, int textureHeight, int borderLeft, int borderRight, int borderTop, int borderBottom, int targetMinX, int targetMinY, int targetMaxX, int targetMaxY, float angle, float textureU0, float textureV0, float textureU3, float textureV3,
+                                                  int aRed, int aGreen, int aBlue, int aAlpha,
+                                                  int bRed, int bGreen, int bBlue, int bAlpha,
+                                                  int cRed, int cGreen, int cBlue, int cAlpha,
+                                                  int dRed, int dGreen, int dBlue, int dAlpha,
+                                                  boolean stretchInner) {
+        if (borderLeft + borderRight > textureWidth) {
+            throw new RenderException("borderLeft + borderRight > textureWidth");
+        }
+        if (borderTop + borderBottom > textureHeight) {
+            throw new RenderException("borderTop + borderBottom > textureHeight");
+        }
         int targetRectWidth = targetMaxX - targetMinX;
         int targetRectHeight = targetMaxY - targetMinY;
         float subTexturePixelWidth = (textureU3 - textureU0) * textureWidth;
@@ -163,189 +210,331 @@ public abstract class GuiRender implements IResourceManager {
         for (int columnRegionIndex = 0; columnRegionIndex < 3; columnRegionIndex++) {
             int regionMinX;
             int regionMaxX;
-            float regionTextureLeftU;
+            float uStart;
             float regionTextureRightU;
             if (columnRegionIndex == 0) {
                 regionMinX = targetMinX;
                 regionMaxX = leftSliceEndX;
-                regionTextureLeftU = textureU0;
+                uStart = textureU0;
                 regionTextureRightU = textureU1;
             } else if (columnRegionIndex == 1) {
                 regionMinX = leftSliceEndX;
                 regionMaxX = rightSliceStartX;
-                regionTextureLeftU = textureU1;
+                uStart = textureU1;
                 regionTextureRightU = textureU2;
             } else {
                 regionMinX = rightSliceStartX;
                 regionMaxX = targetMaxX;
-                regionTextureLeftU = textureU2;
+                uStart = textureU2;
                 regionTextureRightU = textureU3;
             }
 
             for (int rowRegionIndex = 0; rowRegionIndex < 3; rowRegionIndex++) {
                 int regionMinY;
                 int regionMaxY;
-                float regionTextureTopV;
+                float vStart;
                 float regionTextureBottomV;
                 if (rowRegionIndex == 0) {
                     regionMinY = targetMinY;
                     regionMaxY = topSliceEndY;
-                    regionTextureTopV = textureV0;
+                    vStart = textureV0;
                     regionTextureBottomV = textureV1;
                 } else if (rowRegionIndex == 1) {
                     regionMinY = topSliceEndY;
                     regionMaxY = bottomSliceStartY;
-                    regionTextureTopV = textureV1;
+                    vStart = textureV1;
                     regionTextureBottomV = textureV2;
                 } else {
                     regionMinY = bottomSliceStartY;
                     regionMaxY = targetMaxY;
-                    regionTextureTopV = textureV2;
+                    vStart = textureV2;
                     regionTextureBottomV = textureV3;
                 }
 
-                float normalizedX0 = (regionMinX - targetMinX) / (float) targetRectWidth;
-                float normalizedX1 = (regionMaxX - targetMinX) / (float) targetRectWidth;
-                float normalizedY0 = (regionMinY - targetMinY) / (float) targetRectHeight;
-                float normalizedY1 = (regionMaxY - targetMinY) / (float) targetRectHeight;
+                if (regionMinX >= regionMaxX || regionMinY >= regionMaxY) {
+                    continue;
+                }
 
-                float inverseNormalizedX0 = 1f - normalizedX0;
-                float inverseNormalizedX1 = 1f - normalizedX1;
-                float inverseNormalizedY0 = 1f - normalizedY0;
-                float inverseNormalizedY1 = 1f - normalizedY1;
-
-                int topLeftRed = Math.round(
-                        inverseNormalizedX0 * inverseNormalizedY0 * aRed +
-                                normalizedX0 * inverseNormalizedY0 * bRed +
-                                inverseNormalizedX0 * normalizedY0 * cRed +
-                                normalizedX0 * normalizedY0 * dRed
-                );
-                int topLeftGreen = Math.round(
-                        inverseNormalizedX0 * inverseNormalizedY0 * aGreen +
-                                normalizedX0 * inverseNormalizedY0 * bGreen +
-                                inverseNormalizedX0 * normalizedY0 * cGreen +
-                                normalizedX0 * normalizedY0 * dGreen
-                );
-                int topLeftBlue = Math.round(
-                        inverseNormalizedX0 * inverseNormalizedY0 * aBlue +
-                                normalizedX0 * inverseNormalizedY0 * bBlue +
-                                inverseNormalizedX0 * normalizedY0 * cBlue +
-                                normalizedX0 * normalizedY0 * dBlue
-                );
-                int topLeftAlpha = Math.round(
-                        inverseNormalizedX0 * inverseNormalizedY0 * aAlpha +
-                                normalizedX0 * inverseNormalizedY0 * bAlpha +
-                                inverseNormalizedX0 * normalizedY0 * cAlpha +
-                                normalizedX0 * normalizedY0 * dAlpha
-                );
-
-                int topRightRed = Math.round(
-                        inverseNormalizedX1 * inverseNormalizedY0 * aRed +
-                                normalizedX1 * inverseNormalizedY0 * bRed +
-                                inverseNormalizedX1 * normalizedY0 * cRed +
-                                normalizedX1 * normalizedY0 * dRed
-                );
-                int topRightGreen = Math.round(
-                        inverseNormalizedX1 * inverseNormalizedY0 * aGreen +
-                                normalizedX1 * inverseNormalizedY0 * bGreen +
-                                inverseNormalizedX1 * normalizedY0 * cGreen +
-                                normalizedX1 * normalizedY0 * dGreen
-                );
-                int topRightBlue = Math.round(
-                        inverseNormalizedX1 * inverseNormalizedY0 * aBlue +
-                                normalizedX1 * inverseNormalizedY0 * bBlue +
-                                inverseNormalizedX1 * normalizedY0 * cBlue +
-                                normalizedX1 * normalizedY0 * dBlue
-                );
-                int topRightAlpha = Math.round(
-                        inverseNormalizedX1 * inverseNormalizedY0 * aAlpha +
-                                normalizedX1 * inverseNormalizedY0 * bAlpha +
-                                inverseNormalizedX1 * normalizedY0 * cAlpha +
-                                normalizedX1 * normalizedY0 * dAlpha
-                );
-
-                int bottomLeftRed = Math.round(
-                        inverseNormalizedX0 * inverseNormalizedY1 * aRed +
-                                normalizedX0 * inverseNormalizedY1 * bRed +
-                                inverseNormalizedX0 * normalizedY1 * cRed +
-                                normalizedX0 * normalizedY1 * dRed
-                );
-                int bottomLeftGreen = Math.round(
-                        inverseNormalizedX0 * inverseNormalizedY1 * aGreen +
-                                normalizedX0 * inverseNormalizedY1 * bGreen +
-                                inverseNormalizedX0 * normalizedY1 * cGreen +
-                                normalizedX0 * normalizedY1 * dGreen
-                );
-                int bottomLeftBlue = Math.round(
-                        inverseNormalizedX0 * inverseNormalizedY1 * aBlue +
-                                normalizedX0 * inverseNormalizedY1 * bBlue +
-                                inverseNormalizedX0 * normalizedY1 * cBlue +
-                                normalizedX0 * normalizedY1 * dBlue
-                );
-                int bottomLeftAlpha = Math.round(
-                        inverseNormalizedX0 * inverseNormalizedY1 * aAlpha +
-                                normalizedX0 * inverseNormalizedY1 * bAlpha +
-                                inverseNormalizedX0 * normalizedY1 * cAlpha +
-                                normalizedX0 * normalizedY1 * dAlpha
-                );
-
-                int bottomRightRed = Math.round(
-                        inverseNormalizedX1 * inverseNormalizedY1 * aRed +
-                                normalizedX1 * inverseNormalizedY1 * bRed +
-                                inverseNormalizedX1 * normalizedY1 * cRed +
-                                normalizedX1 * normalizedY1 * dRed
-                );
-                int bottomRightGreen = Math.round(
-                        inverseNormalizedX1 * inverseNormalizedY1 * aGreen +
-                                normalizedX1 * inverseNormalizedY1 * bGreen +
-                                inverseNormalizedX1 * normalizedY1 * cGreen +
-                                normalizedX1 * normalizedY1 * dGreen
-                );
-                int bottomRightBlue = Math.round(
-                        inverseNormalizedX1 * inverseNormalizedY1 * aBlue +
-                                normalizedX1 * inverseNormalizedY1 * bBlue +
-                                inverseNormalizedX1 * normalizedY1 * cBlue +
-                                normalizedX1 * normalizedY1 * dBlue
-                );
-                int bottomRightAlpha = Math.round(
-                        inverseNormalizedX1 * inverseNormalizedY1 * aAlpha +
-                                normalizedX1 * inverseNormalizedY1 * bAlpha +
-                                inverseNormalizedX1 * normalizedY1 * cAlpha +
-                                normalizedX1 * normalizedY1 * dAlpha
-                );
-
-                drawTexture(textureId, regionMinX, regionMinY, regionMaxX, regionMaxY, centerX, centerY, angle,
-                        regionTextureLeftU, regionTextureTopV, regionTextureRightU, regionTextureBottomV,
-                        topLeftRed, topLeftGreen, topLeftBlue, topLeftAlpha,
-                        topRightRed, topRightGreen, topRightBlue, topRightAlpha,
-                        bottomLeftRed, bottomLeftGreen, bottomLeftBlue, bottomLeftAlpha,
-                        bottomRightRed, bottomRightGreen, bottomRightBlue, bottomRightAlpha);
+                boolean isInner = (columnRegionIndex == 1 || rowRegionIndex == 1);
+                if (isInner && !stretchInner) {
+                    float tileWidthPx = (regionTextureRightU - uStart) * textureWidth;
+                    float tileHeightPx = (regionTextureBottomV - vStart) * textureHeight;
+                    if (tileWidthPx > 0 && tileHeightPx > 0) {
+                        int regionWidth = regionMaxX - regionMinX;
+                        int regionHeight = regionMaxY - regionMinY;
+                        for (float offsetX = 0; offsetX < regionWidth; offsetX += tileWidthPx) {
+                            float drawWidth = Math.min(tileWidthPx, regionWidth - offsetX);
+                            float uEnd = uStart + (drawWidth / tileWidthPx) * (regionTextureRightU - uStart);
+                            int drawX = regionMinX + Math.round(offsetX);
+                            int drawMaxX = drawX + Math.round(drawWidth);
+                            for (float offsetY = 0; offsetY < regionHeight; offsetY += tileHeightPx) {
+                                float drawHeight = Math.min(tileHeightPx, regionHeight - offsetY);
+                                float vEnd = vStart + (drawHeight / tileHeightPx) * (regionTextureBottomV - vStart);
+                                int drawY = regionMinY + Math.round(offsetY);
+                                int drawMaxY = drawY + Math.round(drawHeight);
+                                drawTexturedRegion(textureId, drawX, drawY, drawMaxX, drawMaxY,
+                                        targetMinX, targetMinY, targetMaxX, targetMaxY, angle,
+                                        uStart, vStart, uEnd, vEnd,
+                                        aRed, aGreen, aBlue, aAlpha,
+                                        bRed, bGreen, bBlue, bAlpha,
+                                        cRed, cGreen, cBlue, cAlpha,
+                                        dRed, dGreen, dBlue, dAlpha);
+                            }
+                        }
+                    }
+                } else {
+                    drawTexturedRegion(textureId, regionMinX, regionMinY, regionMaxX, regionMaxY,
+                            targetMinX, targetMinY, targetMaxX, targetMaxY, angle,
+                            uStart, vStart, regionTextureRightU, regionTextureBottomV,
+                            aRed, aGreen, aBlue, aAlpha,
+                            bRed, bGreen, bBlue, bAlpha,
+                            cRed, cGreen, cBlue, cAlpha,
+                            dRed, dGreen, dBlue, dAlpha);
+                }
             }
         }
     }
 
-    public void drawTexture(Texture texture, int minX, int minY, int maxX, int maxY, float angle, float u0, float v0, float u1, float v1,
-                            int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
-                            int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha
-    ) {
-        if (texture.isNiceSlice()) {
-            drawNiceSliceTexture(texture.textureId(), texture.width(), texture.height(), texture.left(), texture.right(), texture.top(), texture.bottom(),
-                    minX, minY, maxX, maxY, angle, u0, v0, u1, v1,
-                    aRed, aGreen, aBlue, aAlpha, bRed, bGreen, bBlue, bAlpha,
-                    cRed, cGreen, cBlue, cAlpha, dRed, dGreen, dBlue, dAlpha
-            );
-        } else {
-            int centerX = (minX + maxX) / 2;
-            int centerY = (minY + maxY) / 2;
+    private void drawNiceSliceTextureFixed(int textureId, int textureWidth, int textureHeight, int borderLeft, int borderRight, int borderTop, int borderBottom, int targetMinX, int targetMinY, int targetMaxX, int targetMaxY, float angle, float textureU0, float textureV0, float textureU3, float textureV3,
+                                           int aRed, int aGreen, int aBlue, int aAlpha,
+                                           int bRed, int bGreen, int bBlue, int bAlpha,
+                                           int cRed, int cGreen, int cBlue, int cAlpha,
+                                           int dRed, int dGreen, int dBlue, int dAlpha,
+                                           boolean stretchInner) {
+        if (borderLeft + borderRight > textureWidth) {
+            throw new RenderException("borderLeft + borderRight > textureWidth");
+        }
+        if (borderTop + borderBottom > textureHeight) {
+            throw new RenderException("borderTop + borderBottom > textureHeight");
+        }
+        int targetRectWidth = targetMaxX - targetMinX;
+        int targetRectHeight = targetMaxY - targetMinY;
+        if (targetRectWidth <= 0 || targetRectHeight <= 0) {
+            return;
+        }
 
-            drawTexture(texture.textureId(), minX, minY, maxX, maxY, centerX, centerY, angle, u0, v0, u1, v1,
-                    aRed, aGreen, aBlue, aAlpha, bRed, bGreen, bBlue, bAlpha,
-                    cRed, cGreen, cBlue, cAlpha, dRed, dGreen, dBlue, dAlpha
-            );
+        int i = Math.min(borderLeft, targetRectWidth / 2);
+        int j = Math.min(borderRight, targetRectWidth / 2);
+        int k = Math.min(borderTop, targetRectHeight / 2);
+        int l = Math.min(borderBottom, targetRectHeight / 2);
+
+        int midX = targetMinX + i;
+        int midMaxX = targetMaxX - j;
+        int midY = targetMinY + k;
+        int midMaxY = targetMaxY - l;
+
+        for (int col = 0; col < 3; col++) {
+            int regionMinX;
+            int regionMaxX;
+            int sourceX;
+            int sourceW;
+            if (col == 0) {
+                regionMinX = targetMinX;
+                regionMaxX = midX;
+                sourceX = 0;
+                sourceW = i;
+            } else if (col == 1) {
+                regionMinX = midX;
+                regionMaxX = midMaxX;
+                sourceX = i;
+                sourceW = textureWidth - j - i;
+            } else {
+                regionMinX = midMaxX;
+                regionMaxX = targetMaxX;
+                sourceX = textureWidth - j;
+                sourceW = j;
+            }
+            if (regionMinX >= regionMaxX || sourceW <= 0) {
+                continue;
+            }
+
+            for (int row = 0; row < 3; row++) {
+                int regionMinY;
+                int regionMaxY;
+                int sourceY;
+                int sourceH;
+                if (row == 0) {
+                    regionMinY = targetMinY;
+                    regionMaxY = midY;
+                    sourceY = 0;
+                    sourceH = k;
+                } else if (row == 1) {
+                    regionMinY = midY;
+                    regionMaxY = midMaxY;
+                    sourceY = k;
+                    sourceH = textureHeight - l - k;
+                } else {
+                    regionMinY = midMaxY;
+                    regionMaxY = targetMaxY;
+                    sourceY = textureHeight - l;
+                    sourceH = l;
+                }
+                if (regionMinY >= regionMaxY || sourceH <= 0) {
+                    continue;
+                }
+
+                float uStart = textureU0 + (sourceX / (float) textureWidth) * (textureU3 - textureU0);
+                float uEnd = textureU0 + ((sourceX + sourceW) / (float) textureWidth) * (textureU3 - textureU0);
+                float vStart = textureV0 + (sourceY / (float) textureHeight) * (textureV3 - textureV0);
+                float vEnd = textureV0 + ((sourceY + sourceH) / (float) textureHeight) * (textureV3 - textureV0);
+
+                boolean isInner = (col == 1 || row == 1);
+                if (isInner && !stretchInner) {
+                    for (int tileX = regionMinX; tileX < regionMaxX; tileX += sourceW) {
+                        int tileMaxX = Math.min(tileX + sourceW, regionMaxX);
+                        float tileUEnd = uStart + (tileMaxX - tileX) / (float) sourceW * (uEnd - uStart);
+                        for (int tileY = regionMinY; tileY < regionMaxY; tileY += sourceH) {
+                            int tileMaxY = Math.min(tileY + sourceH, regionMaxY);
+                            float tileVEnd = vStart + (tileMaxY - tileY) / (float) sourceH * (vEnd - vStart);
+                            drawTexturedRegion(textureId, tileX, tileY, tileMaxX, tileMaxY,
+                                    targetMinX, targetMinY, targetMaxX, targetMaxY, angle,
+                                    uStart, vStart, tileUEnd, tileVEnd,
+                                    aRed, aGreen, aBlue, aAlpha,
+                                    bRed, bGreen, bBlue, bAlpha,
+                                    cRed, cGreen, cBlue, cAlpha,
+                                    dRed, dGreen, dBlue, dAlpha);
+                        }
+                    }
+                } else {
+                    drawTexturedRegion(textureId, regionMinX, regionMinY, regionMaxX, regionMaxY,
+                            targetMinX, targetMinY, targetMaxX, targetMaxY, angle,
+                            uStart, vStart, uEnd, vEnd,
+                            aRed, aGreen, aBlue, aAlpha,
+                            bRed, bGreen, bBlue, bAlpha,
+                            cRed, cGreen, cBlue, cAlpha,
+                            dRed, dGreen, dBlue, dAlpha);
+                }
+            }
         }
     }
-    public void drawTexture(Texture data, int minX, int minY, int maxX, int maxY, float angle, float u0, float v0, float u1, float v1, int red, int green, int blue, int alpha) {
-        drawTexture(data, minX, minY, maxX, maxY, angle, u0, v0, u1, v1, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha);
+
+    private void drawTexturedRegion(int textureId, int targetMinX, int targetMinY, int targetMaxX, int targetMaxY,
+                                    int globalTargetMinX, int globalTargetMinY, int globalTargetMaxX, int globalTargetMaxY,
+                                    float angle, float u0, float v0, float u1, float v1,
+                                    int aRed, int aGreen, int aBlue, int aAlpha,
+                                    int bRed, int bGreen, int bBlue, int bAlpha,
+                                    int cRed, int cGreen, int cBlue, int cAlpha,
+                                    int dRed, int dGreen, int dBlue, int dAlpha) {
+        int targetRectWidth = globalTargetMaxX - globalTargetMinX;
+        int targetRectHeight = globalTargetMaxY - globalTargetMinY;
+        int centerX = (globalTargetMinX + globalTargetMaxX) / 2;
+        int centerY = (globalTargetMinY + globalTargetMaxY) / 2;
+
+        float normalizedX0 = (targetMinX - globalTargetMinX) / (float) targetRectWidth;
+        float normalizedX1 = (targetMaxX - globalTargetMinX) / (float) targetRectWidth;
+        float normalizedY0 = (targetMinY - globalTargetMinY) / (float) targetRectHeight;
+        float normalizedY1 = (targetMaxY - globalTargetMinY) / (float) targetRectHeight;
+
+        float inverseNormalizedX0 = 1f - normalizedX0;
+        float inverseNormalizedX1 = 1f - normalizedX1;
+        float inverseNormalizedY0 = 1f - normalizedY0;
+        float inverseNormalizedY1 = 1f - normalizedY1;
+
+        int topLeftRed = MathTool.round(
+                inverseNormalizedX0 * inverseNormalizedY0 * aRed +
+                        normalizedX0 * inverseNormalizedY0 * bRed +
+                        inverseNormalizedX0 * normalizedY0 * cRed +
+                        normalizedX0 * normalizedY0 * dRed
+        );
+        int topLeftGreen = MathTool.round(
+                inverseNormalizedX0 * inverseNormalizedY0 * aGreen +
+                        normalizedX0 * inverseNormalizedY0 * bGreen +
+                        inverseNormalizedX0 * normalizedY0 * cGreen +
+                        normalizedX0 * normalizedY0 * dGreen
+        );
+        int topLeftBlue = MathTool.round(
+                inverseNormalizedX0 * inverseNormalizedY0 * aBlue +
+                        normalizedX0 * inverseNormalizedY0 * bBlue +
+                        inverseNormalizedX0 * normalizedY0 * cBlue +
+                        normalizedX0 * normalizedY0 * dBlue
+        );
+        int topLeftAlpha = MathTool.round(
+                inverseNormalizedX0 * inverseNormalizedY0 * aAlpha +
+                        normalizedX0 * inverseNormalizedY0 * bAlpha +
+                        inverseNormalizedX0 * normalizedY0 * cAlpha +
+                        normalizedX0 * normalizedY0 * dAlpha
+        );
+
+        int topRightRed = MathTool.round(
+                inverseNormalizedX1 * inverseNormalizedY0 * aRed +
+                        normalizedX1 * inverseNormalizedY0 * bRed +
+                        inverseNormalizedX1 * normalizedY0 * cRed +
+                        normalizedX1 * normalizedY0 * dRed
+        );
+        int topRightGreen = MathTool.round(
+                inverseNormalizedX1 * inverseNormalizedY0 * aGreen +
+                        normalizedX1 * inverseNormalizedY0 * bGreen +
+                        inverseNormalizedX1 * normalizedY0 * cGreen +
+                        normalizedX1 * normalizedY0 * dGreen
+        );
+        int topRightBlue = MathTool.round(
+                inverseNormalizedX1 * inverseNormalizedY0 * aBlue +
+                        normalizedX1 * inverseNormalizedY0 * bBlue +
+                        inverseNormalizedX1 * normalizedY0 * cBlue +
+                        normalizedX1 * normalizedY0 * dBlue
+        );
+        int topRightAlpha = MathTool.round(
+                inverseNormalizedX1 * inverseNormalizedY0 * aAlpha +
+                        normalizedX1 * inverseNormalizedY0 * bAlpha +
+                        inverseNormalizedX1 * normalizedY0 * cAlpha +
+                        normalizedX1 * normalizedY0 * dAlpha
+        );
+
+        int bottomLeftRed = MathTool.round(
+                inverseNormalizedX0 * inverseNormalizedY1 * aRed +
+                        normalizedX0 * inverseNormalizedY1 * bRed +
+                        inverseNormalizedX0 * normalizedY1 * cRed +
+                        normalizedX0 * normalizedY1 * dRed
+        );
+        int bottomLeftGreen = MathTool.round(
+                inverseNormalizedX0 * inverseNormalizedY1 * aGreen +
+                        normalizedX0 * inverseNormalizedY1 * bGreen +
+                        inverseNormalizedX0 * normalizedY1 * cGreen +
+                        normalizedX0 * normalizedY1 * dGreen
+        );
+        int bottomLeftBlue = MathTool.round(
+                inverseNormalizedX0 * inverseNormalizedY1 * aBlue +
+                        normalizedX0 * inverseNormalizedY1 * bBlue +
+                        inverseNormalizedX0 * normalizedY1 * cBlue +
+                        normalizedX0 * normalizedY1 * dBlue
+        );
+        int bottomLeftAlpha = MathTool.round(
+                inverseNormalizedX0 * inverseNormalizedY1 * aAlpha +
+                        normalizedX0 * inverseNormalizedY1 * bAlpha +
+                        inverseNormalizedX0 * normalizedY1 * cAlpha +
+                        normalizedX0 * normalizedY1 * dAlpha
+        );
+
+        int bottomRightRed = MathTool.round(
+                inverseNormalizedX1 * inverseNormalizedY1 * aRed +
+                        normalizedX1 * inverseNormalizedY1 * bRed +
+                        inverseNormalizedX1 * normalizedY1 * cRed +
+                        normalizedX1 * normalizedY1 * dRed
+        );
+        int bottomRightGreen = MathTool.round(
+                inverseNormalizedX1 * inverseNormalizedY1 * aGreen +
+                        normalizedX1 * inverseNormalizedY1 * bGreen +
+                        inverseNormalizedX1 * normalizedY1 * cGreen +
+                        normalizedX1 * normalizedY1 * dGreen
+        );
+        int bottomRightBlue = MathTool.round(
+                inverseNormalizedX1 * inverseNormalizedY1 * aBlue +
+                        normalizedX1 * inverseNormalizedY1 * bBlue +
+                        inverseNormalizedX1 * normalizedY1 * cBlue +
+                        normalizedX1 * normalizedY1 * dBlue
+        );
+        int bottomRightAlpha = MathTool.round(
+                inverseNormalizedX1 * inverseNormalizedY1 * aAlpha +
+                        normalizedX1 * inverseNormalizedY1 * bAlpha +
+                        inverseNormalizedX1 * normalizedY1 * cAlpha +
+                        normalizedX1 * normalizedY1 * dAlpha
+        );
+
+        drawTexture(textureId, targetMinX, targetMinY, targetMaxX, targetMaxY, centerX, centerY, angle, u0, v0, u1, v1,
+                topLeftRed, topLeftGreen, topLeftBlue, topLeftAlpha,
+                topRightRed, topRightGreen, topRightBlue, topRightAlpha,
+                bottomLeftRed, bottomLeftGreen, bottomLeftBlue, bottomLeftAlpha,
+                bottomRightRed, bottomRightGreen, bottomRightBlue, bottomRightAlpha);
     }
 
     public abstract void submitBuffer();
@@ -367,9 +556,28 @@ public abstract class GuiRender implements IResourceManager {
         }
     }
 
-    public abstract void enableScissor(int x, int y, int width, int height);
+    public void enableScissor(int x, int y, int width, int height) {
+        scissorStateDeque.push(new ScissorState(x, y, width, height));
+        enableScissorTest(x, y, width, height);
+    }
 
-    public abstract void disableScissor();
+    protected abstract void enableScissorTest(int x, int y, int width, int height);
+
+    public void disableScissor() {
+        if (!scissorStateDeque.isEmpty()) {
+            scissorStateDeque.pop();
+            if (!scissorStateDeque.isEmpty()) {
+                ScissorState next = scissorStateDeque.peek();
+                enableScissorTest(next.x, next.y, next.width, next.height);
+            } else {
+                disableScissorTest();
+            }
+        } else {
+            disableScissorTest();
+        }
+    }
+
+    protected abstract void disableScissorTest();
 
     public void initRender() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -555,7 +763,7 @@ public abstract class GuiRender implements IResourceManager {
                                     int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha
     );
 
-    private Texture loadTexture(String path, boolean isNiceSlice, int left, int right, int top, int bottom) {
+    private Texture loadTexture(String path, boolean isNiceSlice, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer widthBuffer = stack.mallocInt(1);
             IntBuffer heightBuffer = stack.mallocInt(1);
@@ -578,24 +786,66 @@ public abstract class GuiRender implements IResourceManager {
             int height = heightBuffer.get();
             int channel = channelBuffer.get();
 
-            int id = loadTexture(pixels, width, height);
+            int id = loadTexture(pixels, width, height, isLinear);
 
             stbi_image_free(pixels);
 
-            return new Texture(isNiceSlice, id, width, height, channel, path, left, right, top, bottom);
+            return new Texture(isNiceSlice, type, stretchInner, id, width, height, channel, path, left, right, top, bottom);
         } catch (IOException e) {
             throw new ResourceException("Load texture failed: " + e.getMessage());
         }
     }
-
-    @Override
-    public Texture loadTexture(String path) {
-        return loadTexture(path, false, -1, -1, -1, -1);
+    private Texture loadTexture(byte[] bytes, boolean isNiceGrid, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            IntBuffer widthBuffer = stack.mallocInt(1);
+            IntBuffer heightBuffer = stack.mallocInt(1);
+            IntBuffer channelBuffer = stack.mallocInt(1);
+            ByteBuffer buffer = MemoryUtil.memAlloc(bytes.length);
+            buffer.put(bytes);
+            buffer.flip();
+            ByteBuffer pixels = stbi_load_from_memory(buffer, widthBuffer, heightBuffer, channelBuffer, 4);
+            if (pixels == null) {
+                throw new ResourceException("Load texture failed:" + stbi_failure_reason());
+            }
+            int width = widthBuffer.get();
+            int height = heightBuffer.get();
+            int id = loadTexture(pixels, width, height, isLinear);
+            return new Texture(isNiceGrid, type, stretchInner, id, width, height, channelBuffer.get(), null, left, right, top, bottom);
+        }
     }
 
     @Override
-    public Texture loadNiceSliceTexture(String path, int left, int right, int top, int bottom) {
-        return loadTexture(path, true, left, right, top, bottom);
+    public Texture loadTexture(byte[] data) {
+        return loadTexture(data, true);
+    }
+    @Override
+    public Texture loadTexture(byte[] data, boolean isLinear) {
+        return loadTexture(data, false, null, true, isLinear, -1, -1, -1, -1);
+    }
+    @Override
+    public Texture loadTexture(String path) {
+        return loadTexture(path, true);
+    }
+    @Override
+    public Texture loadTexture(String path, boolean isLinear) {
+        return loadTexture(path, false, null, true, isLinear, -1, -1, -1, -1);
+    }
+
+    @Override
+    public Texture loadNiceSliceTexture(byte[] data, NiceSliceType type, boolean stretchInner, int left, int right, int top, int bottom) {
+        return loadNiceSliceTexture(data, type, stretchInner, true, left, right, top, bottom);
+    }
+    @Override
+    public Texture loadNiceSliceTexture(byte[] data, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom) {
+        return loadTexture(data, true, type, stretchInner, isLinear, left, right, top, bottom);
+    }
+    @Override
+    public Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, int left, int right, int top, int bottom) {
+        return loadNiceSliceTexture(path, type, stretchInner, true, left, right, top, bottom);
+    }
+    @Override
+    public Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom) {
+        return loadTexture(path, true, type, stretchInner, isLinear, left, right, top, bottom);
     }
 
     public void setCursorShape(CursorShape cursorShapeInThisFrame) {
@@ -611,7 +861,7 @@ public abstract class GuiRender implements IResourceManager {
         this.cursorShapeInThisFrame = cursorShapeInThisFrame;
     }
 
-    protected abstract int loadTexture(ByteBuffer data, int width, int height);
+    protected abstract int loadTexture(ByteBuffer data, int width, int height, boolean isLinear);
 
     public abstract void onFrameBufferSizeChange(int width, int height);
 
@@ -626,10 +876,16 @@ public abstract class GuiRender implements IResourceManager {
     protected abstract void blurFramebufferRegion(int x, int y, int width, int height, float angle, int radius);
 
     public GuiRender(long windowHandle) {
+        if (IResourceManager.getIResourceManagerFromThreadLocal() == null) {
+            IResourceManager.THREAD_LOCAL.set(this);
+        }
+
         this.windowHandle = windowHandle;
 
         for (CursorShape shape : CursorShape.values()) {
-            cursorShapeMap.put(shape.getGLFWValue(), glfwCreateStandardCursor(shape.getGLFWValue()));
+            int glfwValue = shape.getGLFWValue();
+            if (glfwValue < 0) continue;
+            cursorShapeMap.put(glfwValue, glfwCreateStandardCursor(shape.getGLFWValue()));
         }
     }
 }

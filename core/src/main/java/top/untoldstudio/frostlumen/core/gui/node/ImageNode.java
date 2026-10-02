@@ -23,11 +23,11 @@ import top.untoldstudio.frostlumen.core.render.GuiRender;
 import top.untoldstudio.frostlumen.core.texture.Texture;
 import top.untoldstudio.frostlumen.core.tool.MathTool;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
-    private final List<ImageRenderDescription> selfRenderDescriptions = new ArrayList<>();
+    private final Set<ImageRenderDescription> selfRenderDescriptions = new HashSet<>();
 
     @Override
     protected void operationPosition(GuiNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
@@ -52,7 +52,7 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
 
         public void render(GuiRender render) {
             render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY);
-            render.drawTexture(texture, imagePositionX, imagePositionY, imagePositionMaxX, imagePositionMaxY, angle, 0, 0, 1, 1, color.red(), color.green(), color.blue(), color.alpha());
+            render.drawTexture(texture, imagePositionX, imagePositionY, imagePositionMaxX, imagePositionMaxY, angle, color.red(), color.green(), color.blue(), color.alpha());
             render.disableScissor();
         }
 
@@ -88,6 +88,7 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
         }
 
         public void operationImageAlignment() {
+            if (texture == null) return;
             switch (imageAlignment) {
                 case STRETCH -> {
                     imagePositionX = realPositionX;

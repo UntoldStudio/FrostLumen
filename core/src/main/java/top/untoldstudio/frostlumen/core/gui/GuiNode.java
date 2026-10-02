@@ -30,7 +30,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     private final OneArgListenerRegistry<MouseMoveEvent> mouseLeaveListenerRegistry = new OneArgListenerRegistry<>();
     protected NodeRoot root;
     protected ParentNode<?> parent;
-    protected int renderLevel = 0;
+    protected int zIndex = 0;
     protected RGBA backgroundColor = RGBA.WHITE;
     protected RGBA backgroundBorderColor = RGBA.BLACK;
     protected int backgroundLeftBorderThickness = 0;
@@ -138,17 +138,18 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     public void dispatchRender(GuiRender render, long delta) {
         if (clipChildren) {
             render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY);
-            super.dispatchRender(render, delta);
             render(render, delta);
+            super.dispatchRender(render, delta);
             render.disableScissor();
         } else {
-            super.dispatchRender(render, delta);
             render(render, delta);
+            super.dispatchRender(render, delta);
         }
     }
     @Override
     public void dispatchKeyEvent(KeyEvent event) {
         super.dispatchKeyEvent(event);
+        if (event.isCancel()) return;
         onKeyEvent(event);
     }
     public void dispatchMouseButtonEvent(MouseButtonEvent event) {
@@ -158,6 +159,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
             currentMouseClickButtons.remove(event.getButton());
         }
         super.dispatchMouseButtonEvent(event);
+        if (event.isCancel()) return;
         onMouseButtonEvent(event);
     }
     @Override
@@ -173,21 +175,25 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
             mouseInNode = current;
         }
         super.dispatchMouseMoveEvent(event);
+        if (event.isCancel()) return;
         onMouseMoveEvent(event);
     }
     @Override
     public void dispatchMouseScrollEvent(MouseScrollEvent event) {
         super.dispatchMouseScrollEvent(event);
+        if (event.isCancel()) return;
         onMouseScrollEvent(event);
     }
     @Override
     public void dispatchUserInputTextEvent(UserInputTextEvent event) {
         super.dispatchUserInputTextEvent(event);
+        if (event.isCancel()) return;
         onUserInputTextEvent(event);
     }
     @Override
     public void dispatchUserDropFilesEvent(UserDropFilesEvent event) {
         super.dispatchUserDropFilesEvent(event);
+        if (event.isCancel()) return;
         onUserDropFilesEvent(event);
     }
 
@@ -210,6 +216,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     @Override
     public void dispatchUserRequestWindowCloseEvent(UserRequestWindowCloseEvent event) {
         onUserRequestWindowCloseEvent(event);
+        if (event.isCancel()) return;
         super.dispatchUserRequestWindowCloseEvent(event);
     }
     @Override
@@ -257,8 +264,8 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
 
     @Override
     public T addChild(GuiNode<?> child) {
-        super.addChild(child);
         setChildRootToThisRoot(child);
+        super.addChild(child);
         return self;
     }
 
@@ -281,8 +288,11 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         this.backgroundBlurStrength = strength;
         return self;
     }
-    public T setRenderLevel(int renderLevel) {
-        this.renderLevel = renderLevel;
+    public T setZIndex(int zIndex) {
+        this.zIndex = zIndex;
+        if (parent != null) {
+            parent.sortChildren();
+        }
         return self;
     }
     public T setAngle(float angle) {
@@ -309,15 +319,18 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     }
     public T setXAnchor(double xAnchor) {
         this.xAnchor = xAnchor;
+        operationPosition();
         return self;
     }
     public T setYAnchor(double yAnchor) {
         this.yAnchor = yAnchor;
+        operationPosition();
         return self;
     }
     public T setAnchor(double xAnchor, double yAnchor) {
         this.xAnchor = xAnchor;
         this.yAnchor = yAnchor;
+        operationPosition();
         return self;
     }
     public T setBackgroundCornerRadius(int radius) {
@@ -378,8 +391,8 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     public boolean isClipChildren() {
         return clipChildren;
     }
-    public int getRenderLevel() {
-        return renderLevel;
+    public int getZIndex() {
+        return zIndex;
     }
     public float getBackgroundBlurStrength() {
         return backgroundBlurStrength;

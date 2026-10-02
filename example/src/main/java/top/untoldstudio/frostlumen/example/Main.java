@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package top.untoldstudio.frostlumen.application;
+package top.untoldstudio.frostlumen.example;
 
 import org.lwjgl.opengl.GL;
+import top.untoldstudio.frostlumen.core.data.ImageAlignment;
 import top.untoldstudio.frostlumen.core.data.RGBA;
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.gui.Window;
@@ -37,18 +38,19 @@ public class Main {
         GL.createCapabilities();
 
         Window window = Window.from(windowHandle, RenderProviderType.OPENGL);
-        window.init();
 
         IResourceManager resourceManager = IResourceManager.getIResourceManagerFromThreadLocal();
         ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-blue.jpg"), ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
-                .getOnHover().setTexture(resourceManager.loadTexture("/oiiaioiiai-red.jpg")).getNode()
-                .getOnClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
+                .normal().setImageAlignment(ImageAlignment.FILL).getNode()
+                .onHover().setTexture(resourceManager.loadTexture("/oiiaioiiai-red.jpg")).getNode()
+                .onClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
                 .setAnchor(0.5, 0.5)
                 .setDrawBackground(true)
                 ;
         Frame frame = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
-                .setRenderLevel(-1).setAnchor(0.5, 0.5).setBackgroundColor(new RGBA(210, 230, 255, 90)).setBackgroundBlurStrength(1f);
-        window.getNodeRoot().addChildren(button, frame);
+                .setAnchor(0.5, 0.5).setBackgroundColor(new RGBA(210, 230, 255, 90)).setBackgroundBlurStrength(1f);
+        frame.addChild(button);
+        window.getNodeRoot().addChild(frame);
 
         while (!glfwWindowShouldClose(windowHandle)) {
             glfwPollEvents();

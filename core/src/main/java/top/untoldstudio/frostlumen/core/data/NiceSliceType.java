@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package top.untoldstudio.frostlumen.core.texture;
+package top.untoldstudio.frostlumen.core.data;
 
-import top.untoldstudio.frostlumen.core.data.NiceSliceType;
-
-public record Texture(boolean isNiceSlice, NiceSliceType sliceType, boolean stretchInner, int textureId, int width, int height, int channel, String filePath, int left, int right, int top, int bottom) {
+public enum NiceSliceType {
+    PROPORTIONAL,
+    FIXED_BORDER
 }

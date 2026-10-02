@@ -36,7 +36,8 @@ public class FrostLumenModBootstrap {
         minecraft.execute(() -> {
             Window window = Window.from(minecraft.getWindow().handle(), RenderProviderType.OPENGL);
             NodeRoot root = window.getNodeRoot();
-            bootstrapRegistry.trigger(root);
+
+            root.runTask(() -> bootstrapRegistry.trigger(root));
         });
     }
 

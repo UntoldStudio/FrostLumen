@@ -13,9 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package top.untoldstudio.frostlumen.core.texture;
+package top.untoldstudio.rimeui.neoforge.tool;
 
-import top.untoldstudio.frostlumen.core.data.NiceSliceType;
+import net.minecraft.resources.ResourceLocation;
 
-public record Texture(boolean isNiceSlice, NiceSliceType sliceType, boolean stretchInner, int textureId, int width, int height, int channel, String filePath, int left, int right, int top, int bottom) {
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class SpriteRawCache {
+    private static final Map<ResourceLocation, byte[]> CACHE = new ConcurrentHashMap<>();
+
+    public static void put(ResourceLocation id, byte[] data) {
+        CACHE.put(id, data);
+    }
+    public static byte[] get(ResourceLocation id) {
+        return CACHE.get(id);
+    }
+    public static void clear() {
+        CACHE.clear();
+    }
 }

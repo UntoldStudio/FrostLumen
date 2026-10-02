@@ -28,7 +28,6 @@ import top.untoldstudio.frostlumen.core.exception.ResourceException;
 import top.untoldstudio.frostlumen.core.font.Font;
 import top.untoldstudio.frostlumen.core.gui.Window;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
-import top.untoldstudio.frostlumen.core.render.IResourceManager;
 import top.untoldstudio.frostlumen.core.render.RenderProviderType;
 import top.untoldstudio.frostlumen.core.tool.DirectByteBuffer;
 import top.untoldstudio.frostlumen.core.tool.MathTool;
@@ -106,10 +105,6 @@ public class OpenGLGuiRender extends GuiRender {
 
     public OpenGLGuiRender(long windowHandle) {
         super(windowHandle);
-
-        if (IResourceManager.getIResourceManagerFromThreadLocal() == null) {
-            IResourceManager.THREAD_LOCAL.set(this);
-        }
 
         saveContext();
 
@@ -294,9 +289,9 @@ public class OpenGLGuiRender extends GuiRender {
     @Override
     public void init() {
         Window window = Window.get(windowHandle);
-        int w = Math.max(1, window.getFrameBufferWidth() / BLUR_DOWNSCALE);
-        int h = Math.max(1, window.getFrameBufferHeight() / BLUR_DOWNSCALE);
-        rebuildBlurTextures(w, h);
+        int width = Math.max(1, window.getFrameBufferWidth() / BLUR_DOWNSCALE);
+        int height = Math.max(1, window.getFrameBufferHeight() / BLUR_DOWNSCALE);
+        rebuildBlurTextures(width, height);
     }
 
     @Override
@@ -329,6 +324,11 @@ public class OpenGLGuiRender extends GuiRender {
         glUseProgram(stringShaderProgram);
         glUniformMatrix4fv(stringProjectLocation, false, projectionMatrixArray);
 
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+        glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+        glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
         glColorMask(true, true, true, true);
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -337,8 +337,6 @@ public class OpenGLGuiRender extends GuiRender {
         glDisable(GL_SCISSOR_TEST);
         glDisable(GL_STENCIL_TEST);
         glDisable(GL_COLOR_LOGIC_OP);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     @Override
@@ -379,7 +377,7 @@ public class OpenGLGuiRender extends GuiRender {
     }
 
     @Override
-    public int loadTexture(ByteBuffer pixels, int width, int height) {
+    public int loadTexture(ByteBuffer pixels, int width, int height, boolean isLinear) {
         int textureId = glGenTextures();
 
         glActiveTexture(GL_TEXTURE0);
@@ -387,8 +385,13 @@ public class OpenGLGuiRender extends GuiRender {
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        if (isLinear) {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        } else {
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        }
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
@@ -682,6 +685,8 @@ public class OpenGLGuiRender extends GuiRender {
             commands.push(batch);
         }
 
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
         return x + info.advanceX;
     }
 
@@ -895,6 +900,10 @@ public class OpenGLGuiRender extends GuiRender {
         savedGLState.blendEquationAlpha = glGetInteger(GL_BLEND_EQUATION_ALPHA);
         savedGLState.activeTexture = glGetInteger(GL_ACTIVE_TEXTURE);
         savedGLState.bindTexture = glGetInteger(GL_TEXTURE_BINDING_2D);
+        savedGLState.unpackAlignment = glGetInteger(GL_UNPACK_ALIGNMENT);
+        savedGLState.unpackRowLength = glGetInteger(GL_UNPACK_ROW_LENGTH);
+        savedGLState.unpackSkipRows = glGetInteger(GL_UNPACK_SKIP_ROWS);
+        savedGLState.unpackSkipPixels = glGetInteger(GL_UNPACK_SKIP_PIXELS);
 
         int[] int4Array = new int[4];
 
@@ -932,6 +941,10 @@ public class OpenGLGuiRender extends GuiRender {
         glBlendEquationSeparate(savedGLState.blendEquationRgb, savedGLState.blendEquationAlpha);
         glActiveTexture(savedGLState.activeTexture);
         glBindTexture(GL_TEXTURE_2D, savedGLState.bindTexture);
+        glPixelStorei(GL_UNPACK_ALIGNMENT, savedGLState.unpackAlignment);
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, savedGLState.unpackRowLength);
+        glPixelStorei(GL_UNPACK_SKIP_ROWS, savedGLState.unpackSkipRows);
+        glPixelStorei(GL_UNPACK_SKIP_PIXELS, savedGLState.unpackSkipPixels);
 
         glViewport(savedGLState.viewport[0], savedGLState.viewport[1], savedGLState.viewport[2], savedGLState.viewport[3]);
         glScissor(savedGLState.scissorTestBox[0], savedGLState.scissorTestBox[1], savedGLState.scissorTestBox[2], savedGLState.scissorTestBox[3]);
@@ -965,7 +978,7 @@ public class OpenGLGuiRender extends GuiRender {
     }
 
     @Override
-    public void enableScissor(int x, int y, int width, int height) {
+    public void enableScissorTest(int x, int y, int width, int height) {
         int glY = Window.get(windowHandle).getFrameBufferHeight() - y - height;
 
         addStateCommand(() -> {
@@ -974,7 +987,7 @@ public class OpenGLGuiRender extends GuiRender {
         });
     }
     @Override
-    public void disableScissor() {
+    public void disableScissorTest() {
         addStateCommand(() -> glDisable(GL_SCISSOR_TEST));
     }
 
@@ -1168,6 +1181,10 @@ public class OpenGLGuiRender extends GuiRender {
         int blendEquationAlpha;
         int activeTexture;
         int bindTexture;
+        int unpackAlignment;
+        int unpackRowLength;
+        int unpackSkipRows;
+        int unpackSkipPixels;
 
         boolean blend;
         boolean depthTest;

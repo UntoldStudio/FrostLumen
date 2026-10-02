@@ -31,6 +31,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static org.lwjgl.glfw.GLFW.*;
 
+/**
+ * WARN:本库暂时不支持多窗口
+ */
 public class Window {
     private static final Map<Long, Window> WINDOW_MAP = new ConcurrentHashMap<>();
     private final GLFWKeyCallback keyCallback;
@@ -84,12 +87,15 @@ public class Window {
         return WINDOW_MAP.get(windowHandle);
     }
     public static Window from(long windowHandle, RenderProviderType type) {
-        return WINDOW_MAP.computeIfAbsent(windowHandle, (key -> new Window(windowHandle, switch (type) {
+        Window window = WINDOW_MAP.get(windowHandle);
+        if (window != null) return window;
+        return new Window(windowHandle, switch (type) {
             case OPENGL -> new OpenGLGuiRender(windowHandle);
-        })));
+            //TODO:Vulkan
+        });
     }
 
-    public void init() {
+    private void init() {
         root.init();
     }
 
@@ -134,6 +140,8 @@ public class Window {
         minimizeCallback.free();
         maximizeCallback.free();
         windowMoveCallback.free();
+
+        WINDOW_MAP.remove(windowHandle);
     }
 
     private Window(long windowHandle, GuiRender render) {
@@ -170,14 +178,14 @@ public class Window {
             }
         }));
         mouseMoveCallback = GLFWCursorPosCallback.create((currentWindow, x, y) -> {
-            x = x * (double)frameBufferWidth / windowWidth;
-            y = y * (double)frameBufferHeight / windowHeight;
+            double eventX = x * (double)frameBufferWidth / windowWidth;
+            double eventY = y * (double)frameBufferHeight / windowHeight;
 
-            double xDelta = mouseX == -1 ? 0 : x - mouseX;
-            double yDelta = mouseY == -1 ? 0 : y - mouseY;
-            mouseX = x;
-            mouseY = y;
-            MouseMoveEvent event = new MouseMoveEvent(x, y, xDelta, yDelta);
+            double xDelta = mouseX == -1 ? 0 : eventX - mouseX;
+            double yDelta = mouseY == -1 ? 0 : eventY - mouseY;
+            mouseX = eventX;
+            mouseY = eventY;
+            MouseMoveEvent event = new MouseMoveEvent(eventX, eventY, xDelta, yDelta);
             root.dispatchMouseMoveEvent(event);
             if (oldMouseMoveCallback != null && !event.isCancel()) {
                 oldMouseMoveCallback.invoke(currentWindow, x, y);
@@ -299,6 +307,9 @@ public class Window {
         oldMinimizeCallback = glfwSetWindowIconifyCallback(windowHandle, minimizeCallback);
         oldMaximizeCallback = glfwSetWindowMaximizeCallback(windowHandle, maximizeCallback);
         oldWindowMoveCallback = glfwSetWindowPosCallback(windowHandle, windowMoveCallback);
+
+        WINDOW_MAP.put(windowHandle, this);
+        init();
     }
 
     public boolean isMouseInRange(int minX, int minY, int maxX, int maxY) {

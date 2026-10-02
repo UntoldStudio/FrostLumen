@@ -21,10 +21,7 @@ import top.untoldstudio.frostlumen.core.listener.GuiRenderAndLongListenerRegistr
 import top.untoldstudio.frostlumen.core.listener.consumer.GuiRenderAndLongConsumer;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoot, GuiNode {
@@ -77,76 +74,60 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
     public void registerAfterRenderListener(GuiRenderAndLongConsumer consumer) {
         afterRenderListenerRegistry.register(consumer);
     }
-    public void unregisterAfterRenderListener(GuiRenderAndLongConsumer consumer) {}
+    public void unregisterAfterRenderListener(GuiRenderAndLongConsumer consumer) {
+        afterRenderListenerRegistry.unregister(consumer);
+    }
 
     public void dispatchRender(GuiRender render, long delta) {
         beforeRenderListenerRegistry.trigger(render, delta);
-        reverseFor(node -> node.dispatchRender(render, delta));
+        forwardFor(node -> node.dispatchRender(render, delta), null);
         afterRenderListenerRegistry.trigger(render, delta);
     }
     public void dispatchKeyEvent(KeyEvent event) {
-        reverseFor(node -> node.dispatchKeyEvent(event));
+        reverseFor(node -> node.dispatchKeyEvent(event), event);
     }
     public void dispatchMouseButtonEvent(MouseButtonEvent event) {
-        reverseFor(node -> node.dispatchMouseButtonEvent(event));
+        reverseFor(node -> node.dispatchMouseButtonEvent(event), event);
     }
     public void dispatchMouseMoveEvent(MouseMoveEvent event) {
-        reverseFor(node -> node.dispatchMouseMoveEvent(event));
+        reverseFor(node -> node.dispatchMouseMoveEvent(event), event);
     }
     public void dispatchMouseScrollEvent(MouseScrollEvent event) {
-        reverseFor(node -> node.dispatchMouseScrollEvent(event));
+        reverseFor(node -> node.dispatchMouseScrollEvent(event), event);
     }
     public void dispatchUserInputTextEvent(UserInputTextEvent event) {
-        reverseFor(node -> node.dispatchUserInputTextEvent(event));
+        reverseFor(node -> node.dispatchUserInputTextEvent(event), event);
     }
     public void dispatchUserDropFilesEvent(UserDropFilesEvent event) {
-        reverseFor(node -> node.dispatchUserDropFilesEvent(event));
+        reverseFor(node -> node.dispatchUserDropFilesEvent(event), event);
     }
 
     public void dispatchMouseEnterWindowEvent(MouseEnterWindowEvent event) {
-        for (GuiNode<?> node : children) {
-            node.dispatchMouseEnterWindowEvent(event);
-        }
+        forwardFor(node -> node.dispatchMouseEnterWindowEvent(event), null);
     }
     public void dispatchMouseLeaveWindowEvent(MouseLeaveWindowEvent event) {
-        for (GuiNode<?> node : children) {
-            node.dispatchMouseLeaveWindowEvent(event);
-        }
+        forwardFor(node -> node.dispatchMouseLeaveWindowEvent(event), null);
     }
     public void dispatchFrameBufferSizeChangeEvent(FrameBufferSizeChangeEvent event) {
-        for (GuiNode<?> node : children) {
-            node.dispatchFrameBufferSizeChangeEvent(event);
-        }
+        forwardFor(node -> node.dispatchFrameBufferSizeChangeEvent(event), null);
     }
     public void dispatchUserRequestWindowCloseEvent(UserRequestWindowCloseEvent event) {
-        for (GuiNode<?> node : children) {
-            node.dispatchUserRequestWindowCloseEvent(event);
-        }
+        forwardFor(node -> node.dispatchUserRequestWindowCloseEvent(event), event);
     }
     public void dispatchWindowCloseEvent(WindowCloseEvent event) {
-        for (GuiNode<?> node : children) {
-            node.dispatchWindowCloseEvent(event);
-        }
+        forwardFor(node -> node.dispatchWindowCloseEvent(event), null);
     }
     public void dispatchWindowFocusChangeEvent(WindowFocusChangeEvent event) {
-        for (GuiNode<?> node : children) {
-            node.dispatchWindowFocusChangeEvent(event);
-        }
+        forwardFor(node -> node.dispatchWindowFocusChangeEvent(event), null);
     }
     public void dispatchWindowMinimizeEvent(WindowMinimizeEvent event) {
-        for (GuiNode<?> node : children) {
-            node.dispatchWindowMinimizeEvent(event);
-        }
+        forwardFor(node -> node.dispatchWindowMinimizeEvent(event), null);
     }
     public void dispatchWindowMaximizeEvent(WindowMaximizeEvent event) {
-        for (GuiNode<?> node : children) {
-            node.dispatchWindowMaximizeEvent(event);
-        }
+        forwardFor(node -> node.dispatchWindowMaximizeEvent(event), null);
     }
     public void dispatchWindowMoveEvent(WindowMoveEvent event) {
-        for (GuiNode<?> node : children) {
-            node.dispatchWindowMoveEvent(event);
-        }
+        forwardFor(node -> node.dispatchWindowMoveEvent(event), null);
     }
 
     public T addChild(GuiNode<?> child) {
@@ -164,6 +145,7 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
     }
     public T removeChild(GuiNode<?> child) {
         children.remove(child);
+        child.parent = null;
         return self;
     }
     public T removeChildren(GuiNode<?>... children) {
@@ -176,12 +158,19 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
         return Collections.unmodifiableList(children);
     }
 
-    protected void reverseFor(Consumer<GuiNode<?>> consumer) {
+    protected void forwardFor(Consumer<GuiNode<?>> consumer, CancelableEvent event) {
+        for (int i = 0; i < children.size(); i++) {
+            consumer.accept(children.get(i));
+            if (event != null && event.isCancel()) break;
+        }
+    }
+    protected void reverseFor(Consumer<GuiNode<?>> consumer, CancelableEvent event) {
         for (int i = children.size() - 1; i >= 0; i--) {
             consumer.accept(children.get(i));
+            if (event != null && event.isCancel()) break;
         }
     }
     protected void sortChildren() {
-        children.sort(Comparator.comparingInt(GuiNode::getRenderLevel));
+        children.sort(Comparator.comparingInt(GuiNode::getZIndex));
     }
 }

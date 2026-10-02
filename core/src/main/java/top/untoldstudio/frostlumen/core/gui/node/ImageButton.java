@@ -86,13 +86,13 @@ public class ImageButton extends ImageNode<ImageButton> {
     public boolean isDrawBackground() {
         return drawBackground;
     }
-    public ImageNode<ImageButton>.ImageRenderDescription getNormal() {
+    public ImageNode<ImageButton>.ImageRenderDescription normal() {
         return normal;
     }
-    public ImageNode<ImageButton>.ImageRenderDescription getOnHover() {
+    public ImageNode<ImageButton>.ImageRenderDescription onHover() {
         return onHover;
     }
-    public ImageNode<ImageButton>.ImageRenderDescription getOnClick() {
+    public ImageNode<ImageButton>.ImageRenderDescription onClick() {
         return onClick;
     }
 

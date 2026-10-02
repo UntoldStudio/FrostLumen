@@ -15,6 +15,7 @@
  */
 package top.untoldstudio.frostlumen.core.render;
 
+import top.untoldstudio.frostlumen.core.data.NiceSliceType;
 import top.untoldstudio.frostlumen.core.font.Font;
 import top.untoldstudio.frostlumen.core.texture.Texture;
 
@@ -22,7 +23,13 @@ public interface IResourceManager {
     ThreadLocal<IResourceManager> THREAD_LOCAL = new ThreadLocal<>();
 
     Texture loadTexture(String path);
-    Texture loadNiceSliceTexture(String path, int left, int right, int top, int bottom);
+    Texture loadTexture(String path, boolean isLinear);
+    Texture loadTexture(byte[] data);
+    Texture loadTexture(byte[] data, boolean isLinear);
+    Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, int left, int right, int top, int bottom);
+    Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom);
+    Texture loadNiceSliceTexture(byte[] data, NiceSliceType type, boolean stretchInner, int left, int right, int top, int bottom);
+    Texture loadNiceSliceTexture(byte[] data, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom);
     Font loadFont(String path);
 
     static IResourceManager getIResourceManagerFromThreadLocal() {

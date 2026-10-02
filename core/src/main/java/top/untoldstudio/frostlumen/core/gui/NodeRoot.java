@@ -21,9 +21,13 @@ import top.untoldstudio.frostlumen.core.event.FrameBufferSizeChangeEvent;
 import top.untoldstudio.frostlumen.core.event.MouseMoveEvent;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
 
+import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
+
 public final class NodeRoot extends ParentNode<NodeRoot> {
     private final Window window;
     private final GuiRender render;
+    private final Deque<Runnable> tasks = new ConcurrentLinkedDeque<>();
     private long externalSettingCursor = -1;
     private boolean isLastMouseMoveEventCanceled = false;
     private long lastRenderTime = 0;
@@ -50,6 +54,10 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
 
     public void render() {
         render.beginFrame();
+        while (!tasks.isEmpty()) {
+            tasks.poll().run();
+        }
+
         if (externalSettingCursor != -1 && !isLastMouseMoveEventCanceled) {
             render.setCursorShape(externalSettingCursor);
         } else {
@@ -57,9 +65,15 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
         }
         long now = System.currentTimeMillis();
         dispatchRender(render, now - lastRenderTime);
+
         render.submitBuffer();
+
         render.endFrame();
         lastRenderTime = now;
+    }
+
+    public void runTask(Runnable task) {
+        tasks.offer(task);
     }
 
     @Override
