@@ -32,9 +32,6 @@ public abstract class ParentTween extends Tween {
             addChild(tween);
         }
     }
-    protected void removeChild(Tween tween) {
-        children.remove(tween);
-    }
 
     private void tryTriggerOnCompleteCallback() {
         boolean isAllFinished = true;
@@ -71,9 +68,9 @@ public abstract class ParentTween extends Tween {
     }
 
     @Override
-    protected void playTween() {
+    protected void resumeTween() {
         for (Tween tween : children) {
-            tween.play();
+            tween.resume();
         }
     }
 
@@ -86,9 +83,9 @@ public abstract class ParentTween extends Tween {
     }
 
     @Override
-    protected void stopTween() {
+    protected void pauseTween() {
         for (Tween tween : children) {
-            tween.stop();
+            tween.pause();
         }
     }
 

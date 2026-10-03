@@ -31,6 +31,7 @@ public class TweenScheduler {
     public void registerTween(Tween tween) {
         tweenList.add(tween);
     }
+
     public void unregisterTween(Tween tween) {
         tweenList.remove(tween);
     }

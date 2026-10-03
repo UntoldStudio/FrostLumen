@@ -19,7 +19,7 @@ import java.lang.ref.Cleaner;
 
 public abstract class GCCleanable {
     protected static final Cleaner CLEANER = Cleaner.create();
-    protected static Cleaner.Cleanable cleanable;
+    protected Cleaner.Cleanable cleanable;
 
     public static Cleaner getGlobalCleaner() {
         return CLEANER;

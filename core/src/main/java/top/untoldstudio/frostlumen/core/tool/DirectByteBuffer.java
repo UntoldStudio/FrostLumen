@@ -21,6 +21,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public class DirectByteBuffer extends GCCleanable {
+    private final Cleaner cleaner;
     private ByteBuffer buffer;
 
     public void writeFloat(float value) {
@@ -83,6 +84,7 @@ public class DirectByteBuffer extends GCCleanable {
             newBuffer.put(buffer);
             MemoryUtil.memFree(buffer);
             buffer = newBuffer;
+            cleaner.buffer = newBuffer;
         }
     }
 
@@ -90,10 +92,25 @@ public class DirectByteBuffer extends GCCleanable {
         return buffer.position();
     }
 
+    private static class Cleaner implements Runnable {
+        ByteBuffer buffer;
+
+        @Override
+        public void run() {
+            MemoryUtil.memFree(buffer);
+        }
+
+        Cleaner(ByteBuffer buffer) {
+            this.buffer = buffer;
+        }
+    }
+
     public DirectByteBuffer(int capacity) {
         buffer = MemoryUtil.memAlloc(capacity);
         buffer.order(ByteOrder.nativeOrder());
 
-        super.setOnGCRecycle(() -> MemoryUtil.memFree(buffer));
+        Cleaner cleaner = new Cleaner(buffer);
+        super.setOnGCRecycle(cleaner);
+        this.cleaner = cleaner;
     }
 }

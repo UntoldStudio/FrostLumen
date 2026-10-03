@@ -15,12 +15,12 @@
  */
 package top.untoldstudio.frostlumen.core.tween;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class Tween {
-    protected final List<Runnable> onCompleteCallbackList = new ArrayList<>();
-    protected final List<Runnable> onUpdateCallbackList = new ArrayList<>();
+    protected final List<Runnable> onCompleteCallbackList = new CopyOnWriteArrayList<>();
+    protected final List<Runnable> onUpdateCallbackList = new CopyOnWriteArrayList<>();
     protected final boolean removeOnComplete;
     protected boolean playing;
 
@@ -50,12 +50,9 @@ public abstract class Tween {
     }
 
     public final void play() {
-        playing = true;
         reset();
-        playTween();
+        resume();
     }
-
-    protected void playTween() {}
 
     public final void step(long delta) {
         if (!playing) return;
@@ -64,12 +61,17 @@ public abstract class Tween {
 
     protected abstract void stepTween(long delta);
 
-    public final void stop() {
+    public final void resume() {
+        playing = true;
+        resumeTween();
+    }
+    public final void pause() {
         playing = false;
-        stopTween();
+        pauseTween();
     }
 
-    protected void stopTween() {}
+    protected void pauseTween() {}
+    protected void resumeTween() {}
 
     public void reset() {
         resetTween();
