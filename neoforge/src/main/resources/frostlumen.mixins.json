@@ -1,7 +1,7 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "top.untoldstudio.rimeui.neoforge.mixin",
+  "package": "top.untoldstudio.frostlumen.neoforge.mixin",
   "priority": 100,
   "compatibilityLevel": "JAVA_21",
   "client": [

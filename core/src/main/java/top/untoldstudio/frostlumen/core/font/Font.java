@@ -24,13 +24,14 @@ import top.untoldstudio.frostlumen.core.render.IResourceManager;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.lwjgl.util.freetype.FreeType.*;
 
 public record Font(FT_Face face, String path, ByteBuffer data, int id) {
     public static final String DEFAULT_FONT_PATH = "/inter.ttf";
 
-    private static int fontSeq = 0;
+    private final static AtomicInteger fontSeq = new AtomicInteger(0);
 
     public int getStringWidth(String text, int fontSize) {
         FT_Face face = face();
@@ -82,6 +83,6 @@ public record Font(FT_Face face, String path, ByteBuffer data, int id) {
     }
 
     public Font(FT_Face face, String path, ByteBuffer data) {
-        this(face, path, data, fontSeq++);
+        this(face, path, data, fontSeq.getAndIncrement());
     }
 }

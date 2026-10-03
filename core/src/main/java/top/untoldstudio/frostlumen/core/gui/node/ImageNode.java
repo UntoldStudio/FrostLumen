@@ -58,6 +58,7 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
 
         /**
          * {@link top.untoldstudio.frostlumen.core.render.IResourceManager:getIResourceManagerFromThreadLocal()}
+         * 如果你正在使用MC绑定你可以看看top.untoldstudio.frostlumen.neoforge.tool.MinecraftResourceAdapter
          */
         public ImageRenderDescription setTexture(Texture texture) {
             this.texture = texture;

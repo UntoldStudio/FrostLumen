@@ -116,7 +116,10 @@ void main() {
     float fillMask = 1.0 - smoothstep(-aa, aa, dInner);
     float outerMask = 1.0 - smoothstep(-aa, aa, dOuter);
 
-    vec4 color = mix(vBorderColor, vFillColor, fillMask);
+    vec4 color = vFillColor;
+    if (thickness > 0.0) {
+        color = mix(vBorderColor, vFillColor, fillMask);
+    }
 
     color.a *= outerMask;
     color.a *= accumulatedScissorCoverage;

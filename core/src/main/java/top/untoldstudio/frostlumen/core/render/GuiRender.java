@@ -34,12 +34,12 @@ import top.untoldstudio.frostlumen.core.exception.RenderException;
 import top.untoldstudio.frostlumen.core.exception.ResourceException;
 import top.untoldstudio.frostlumen.core.font.Font;
 import top.untoldstudio.frostlumen.core.texture.Texture;
+import top.untoldstudio.frostlumen.core.tool.GCCleanable;
 import top.untoldstudio.frostlumen.core.tool.LruCacheMap;
 import top.untoldstudio.frostlumen.core.tool.MathTool;
 import top.untoldstudio.frostlumen.core.tool.ResourceReader;
 
 import java.io.IOException;
-import java.lang.ref.Cleaner;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -50,10 +50,9 @@ import static org.lwjgl.util.freetype.FreeType.*;
 import static org.lwjgl.stb.STBImage.*;
 
 public abstract class GuiRender implements IResourceManager {
-    protected static final Cleaner CLEANER = Cleaner.create();
     protected static final ThreadLocal<FT_Vector> vector = ThreadLocal.withInitial(() -> {
         FT_Vector ftVector = FT_Vector.malloc();
-        CLEANER.register(Thread.currentThread(), ftVector::free);
+        GCCleanable.getGlobalCleaner().register(Thread.currentThread(), ftVector::free);
         return ftVector;
     });
     protected final Map<Font, Int2FloatMap> ascenderCache = new HashMap<>();
@@ -900,7 +899,7 @@ public abstract class GuiRender implements IResourceManager {
     public void blurRegion(int x, int y, int width, int height, float angle, float strength) {
         if (width == 0 || height == 0 || strength == 0) return;
         strength = Math.clamp(strength, 0, 1);
-        int radius = MathTool.round(strength * 24);
+        int radius = MathTool.round(strength * 100);
         blurFramebufferRegion(x, y, width, height, angle, radius);
     }
     protected abstract void blurFramebufferRegion(int x, int y, int width, int height, float angle, int radius);

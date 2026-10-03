@@ -18,12 +18,7 @@ package top.untoldstudio.frostlumen.core.data;
 import top.untoldstudio.frostlumen.core.tool.MathTool;
 import top.untoldstudio.frostlumen.core.gui.ParentNode;
 
-public record ScaleOffset(
-        double xScale,
-        int xOffset,
-        double yScale,
-        int yOffset
-) {
+public record ScaleOffset(double xScale, int xOffset, double yScale, int yOffset) {
     public static final ScaleOffset ZERO = new ScaleOffset(0, 0, 0, 0);
 
     public ScaleOffset withScale(double xScale, double yScale){
@@ -33,16 +28,22 @@ public record ScaleOffset(
         return new ScaleOffset(xScale, xOffset, yScale, yOffset);
     }
     public ScaleOffset withXScale(double xScale){
-        return withScale(xScale, yScale);
+        return new ScaleOffset(xScale, xOffset, yScale, yOffset);
+    }
+    public ScaleOffset withX(double xScale, int xOffset) {
+        return new ScaleOffset(xScale, xOffset, yScale, yOffset);
+    }
+    public ScaleOffset withY(double yScale, int yOffset) {
+        return new ScaleOffset(xScale, xOffset, yScale, yOffset);
     }
     public ScaleOffset withYScale(double yScale){
-        return withScale(xScale, yScale);
+        return new ScaleOffset(xScale, xOffset, yScale, yOffset);
     }
     public ScaleOffset withXOffset(int xOffset){
-        return withOffset(xOffset, yOffset);
+        return new ScaleOffset(xScale, xOffset, yScale, yOffset);
     }
     public ScaleOffset withYOffset(int yOffset){
-        return withOffset(xOffset, yOffset);
+        return new ScaleOffset(xScale, xOffset, yScale, yOffset);
     }
 
     public static ScaleOffset fromScale(double xScale, double yScale) {

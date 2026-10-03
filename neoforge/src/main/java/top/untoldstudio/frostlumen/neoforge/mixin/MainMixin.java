@@ -13,14 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package top.untoldstudio.rimeui.neoforge.mixin;
+package top.untoldstudio.frostlumen.neoforge.mixin;
 
-import com.mojang.blaze3d.platform.cursor.CursorType;
+import net.minecraft.client.main.Main;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(CursorType.class)
-public interface CursorTypeAccessor {
-    @Accessor("handle")
-    long getHandle();
+@Mixin(Main.class)
+public class MainMixin {
+    @Inject(method = "<clinit>", at = @At(value = "HEAD"))
+    private static void init(CallbackInfo callbackInfo) {
+        System.setProperty("org.lwjgl.system.stackSize", "1024");
+    }
 }

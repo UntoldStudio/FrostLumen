@@ -56,13 +56,13 @@ public class Main {
         Frame frame2 = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
                 .setAnchor(0.5, 0.5)
                 .setBackgroundColor(new RGBA(210, 230, 255, 90))
-                .setBackgroundBlurStrength(1f)
+                .setBackgroundBlurStrength(0.7f)
                 .setBackgroundCornerRadius(10)
                 ;
         Frame frame3 = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.3, 0.3))
                 .setAnchor(0.5, 0.5)
                 .setBackgroundColor(new RGBA(210, 230, 255, 90))
-                .setBackgroundBlurStrength(1f)
+                .setBackgroundBlurStrength(0.7f)
                 .setBackgroundCornerRadius(10)
                 .setAngle(100)
                 ;
@@ -72,7 +72,7 @@ public class Main {
         long previousTime = System.nanoTime();
         int frameCount = 0;
 
-        glfwSwapInterval(1);
+        glfwSwapInterval(0);
 
         while (!glfwWindowShouldClose(windowHandle)) {
             glfwPollEvents();

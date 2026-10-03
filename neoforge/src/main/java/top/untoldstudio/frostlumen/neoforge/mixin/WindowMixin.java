@@ -13,18 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package top.untoldstudio.rimeui.neoforge.mixin;
+package top.untoldstudio.frostlumen.neoforge.mixin;
 
-import net.minecraft.client.main.Main;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.platform.cursor.CursorType;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Main.class)
-public class MainMixin {
-    @Inject(method = "<init>", at = @At(value = "HEAD"))
-    private static void init(CallbackInfo callbackInfo) {
-        System.setProperty("org.lwjgl.system.stackSize", "1024");
+@Mixin(Window.class)
+public abstract class WindowMixin {
+    @Final
+    @Shadow
+    private long handle;
+
+    @Inject(method = "selectCursor", at = @At("HEAD"))
+    private void beforeSelectCursor(CursorType type, CallbackInfo callbackInfo) {
+        long handle = ((CursorTypeAccessor) type).getHandle();
+        if (top.untoldstudio.frostlumen.core.gui.Window.get(this.handle) != null) {
+            top.untoldstudio.frostlumen.core.gui.Window.get(this.handle).getNodeRoot().setExternalSettingCursor(handle);
+        }
     }
 }

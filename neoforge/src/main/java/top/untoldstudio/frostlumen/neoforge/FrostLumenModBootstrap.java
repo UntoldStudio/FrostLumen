@@ -13,14 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package top.untoldstudio.rimeui.neoforge;
+package top.untoldstudio.frostlumen.neoforge;
 
 import net.minecraft.client.Minecraft;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import top.untoldstudio.frostlumen.core.data.RGBA;
+import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.gui.NodeRoot;
 import top.untoldstudio.frostlumen.core.gui.Window;
+import top.untoldstudio.frostlumen.core.gui.node.Frame;
 import top.untoldstudio.frostlumen.core.listener.OneArgListenerRegistry;
 import top.untoldstudio.frostlumen.core.render.RenderProviderType;
 
@@ -37,7 +40,9 @@ public class FrostLumenModBootstrap {
             Window window = Window.from(minecraft.getWindow().handle(), RenderProviderType.OPENGL);
             NodeRoot root = window.getNodeRoot();
 
-            root.runTask(() -> bootstrapRegistry.trigger(root));
+            root.runTask(() -> {
+                bootstrapRegistry.trigger(root);
+            });
         });
     }
 

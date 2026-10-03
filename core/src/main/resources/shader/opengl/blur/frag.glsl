@@ -16,10 +16,11 @@ void main() {
     float twoSigma2 = 2.0 * sigma * sigma;
 
     vec2 uv = vTexCoord * uUVScale;
-    vec2 minUV = vec2(0.0);
-    vec2 maxUV = uUVScale;
+    vec2 halfTexel = uTexelSize * 0.5;
+    vec2 minUV = halfTexel;
+    vec2 maxUV = uUVScale - halfTexel;
 
-    vec4 result = texture(uTexture, uv);
+    vec4 result = texture(uTexture, clamp(uv, minUV, maxUV));
     float weightSum = 1.0;
 
     for (int i = 1; i <= int(uRadius); i++) {
@@ -30,5 +31,5 @@ void main() {
         weightSum += 2.0 * w;
     }
 
-    FragColor = result / weightSum;
+    FragColor = vec4(result.rgb / weightSum, 1.0);
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package top.untoldstudio.rimeui.neoforge.mixin;
+package top.untoldstudio.frostlumen.neoforge.mixin;
 
 import net.minecraft.client.renderer.texture.atlas.SpriteResourceLoader;
 import net.minecraft.server.packs.metadata.MetadataSectionType;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import top.untoldstudio.rimeui.neoforge.tool.SpriteRawCache;
+import top.untoldstudio.frostlumen.neoforge.tool.SpriteRawCache;
 
 import java.io.IOException;
 import java.io.InputStream;

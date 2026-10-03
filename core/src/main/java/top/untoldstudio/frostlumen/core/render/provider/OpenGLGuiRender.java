@@ -108,11 +108,13 @@ public class OpenGLGuiRender extends GuiRender {
 
     private static final int MAX_SCISSOR_STATES = 16;
 
-    private final Deque<SavedGLState> savedGLStateState = new ArrayDeque<>();
+    private final Deque<SavedGLState> savedGLStateStack = new ArrayDeque<>();
     private final Deque<SavedGLState> savedGLStatePool = new ArrayDeque<>();
 
     public OpenGLGuiRender(long windowHandle) {
         super(windowHandle);
+
+        checkGLState("before construction");
 
         saveContext();
 
@@ -291,6 +293,8 @@ public class OpenGLGuiRender extends GuiRender {
         stringScissorStateLocations = bindScissorStateLocations(stringShaderProgram);
 
         restoreContext();
+
+        checkGLState("after construction");
     }
 
     private static int[] bindScissorStateLocations(int program) {
@@ -308,14 +312,18 @@ public class OpenGLGuiRender extends GuiRender {
 
     @Override
     public void init() {
+        checkGLState("before init");
         Window window = Window.get(windowHandle);
         int width = Math.max(1, window.getFrameBufferWidth() / BLUR_DOWNSCALE);
         int height = Math.max(1, window.getFrameBufferHeight() / BLUR_DOWNSCALE);
         rebuildBlurTextures(width, height);
+        checkGLState("after init");
     }
 
     @Override
     public void onFrameBufferSizeChange(int width, int height) {
+        int savedProgram = glGetInteger(GL_CURRENT_PROGRAM);
+
         glViewport(0, 0, width, height);
         int halfWidth = Math.max(1, width / BLUR_DOWNSCALE);
         int halfHeight = Math.max(1, height / BLUR_DOWNSCALE);
@@ -331,10 +339,14 @@ public class OpenGLGuiRender extends GuiRender {
         glUniform1f(stringScissorStateLocations[2], height);
         glUseProgram(textureShaderProgram);
         glUniform1f(textureScissorStateLocations[2], height);
+
+        glUseProgram(savedProgram);
     }
 
     @Override
     public void begin() {
+        checkGLState("before begin");
+
         Window window = Window.get(windowHandle);
         int windowWidth = window.getFrameBufferWidth();
         int windowHeight = window.getFrameBufferHeight();
@@ -366,6 +378,8 @@ public class OpenGLGuiRender extends GuiRender {
         glDisable(GL_SCISSOR_TEST);
         glDisable(GL_STENCIL_TEST);
         glDisable(GL_COLOR_LOGIC_OP);
+
+        checkGLState("after begin");
     }
 
     @Override
@@ -423,6 +437,8 @@ public class OpenGLGuiRender extends GuiRender {
         }
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+        checkGLState("load texture");
 
         return textureId;
     }
@@ -724,6 +740,10 @@ public class OpenGLGuiRender extends GuiRender {
         submitBuffer();
         saveContext();
 
+        checkGLState("before blur");
+
+        int drawFbo = Objects.requireNonNull(savedGLStateStack.peek()).drawFrameBufferBinding;
+
         Window window = Window.get(windowHandle);
         int windowWidth = window.getFrameBufferWidth();
         int windowHeight = window.getFrameBufferHeight();
@@ -756,11 +776,9 @@ public class OpenGLGuiRender extends GuiRender {
 
         glDisable(GL_SCISSOR_TEST);
 
-        glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, drawFbo);
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, blurFbo[0]);
-        glBlitFramebuffer(sourceLeft, glSourceBottom, sourceLeft + sourceWidth, glSourceTop,
-                0, 0, sourceHalfWidth, sourceHalfHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBlitFramebuffer(sourceLeft, glSourceBottom, sourceLeft + sourceWidth, glSourceTop, 0, 0, sourceHalfWidth, sourceHalfHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
         glBindVertexArray(blurVao);
         glUseProgram(blurShaderProgram);
@@ -773,20 +791,21 @@ public class OpenGLGuiRender extends GuiRender {
         glUniform1f(blurRadiusLocation, perPassRadius);
 
         for (int blurPass = 0; blurPass < BLUR_PASSES; blurPass++) {
-            glBindFramebuffer(GL_FRAMEBUFFER, blurFbo[1]);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, blurFbo[1]);
             glViewport(0, 0, sourceHalfWidth, sourceHalfHeight);
             glUniform1i(blurDirectionLocation, 0);
             glBindTexture(GL_TEXTURE_2D, blurTexture[0]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-            glBindFramebuffer(GL_FRAMEBUFFER, blurFbo[0]);
+            glBindFramebuffer(GL_DRAW_FRAMEBUFFER, blurFbo[0]);
             glViewport(0, 0, sourceHalfWidth, sourceHalfHeight);
             glUniform1i(blurDirectionLocation, 1);
             glBindTexture(GL_TEXTURE_2D, blurTexture[1]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
         }
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFbo);
+
         glViewport(0, 0, windowWidth, windowHeight);
         glUseProgram(textureShaderProgram);
         glUniformMatrix4fv(textureProjectLocation, false, projectionMatrixArray);
@@ -822,6 +841,9 @@ public class OpenGLGuiRender extends GuiRender {
             float texelX = (rotatedScreenX - sourceLeft) / (float) BLUR_DOWNSCALE;
             float texelY = (sourceBottomEdge - rotatedScreenY) / (float) BLUR_DOWNSCALE;
 
+            texelX = Math.clamp(texelX, 0.5f, sourceHalfWidth - 0.5f);
+            texelY = Math.clamp(texelY, 0.5f, sourceHalfHeight - 0.5f);
+
             float textureCoordinateU = texelX / blurTextureWidth;
             float textureCoordinateV = texelY / blurTextureHeight;
 
@@ -840,10 +862,14 @@ public class OpenGLGuiRender extends GuiRender {
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
         restoreContext();
+
+        checkGLState("after blur");
     }
 
     private void rebuildBlurTextures(int width, int height) {
         saveContext();
+
+        checkGLState("before rebuild blur textures");
 
         for (int i = 0; i < 2; i++) {
             if (blurTexture[i] != 0) {
@@ -875,7 +901,8 @@ public class OpenGLGuiRender extends GuiRender {
             }
         }
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        checkGLState("after rebuild blur textures");
+
         restoreContext();
     }
 
@@ -934,7 +961,6 @@ public class OpenGLGuiRender extends GuiRender {
         savedGLState.colorLogicOp = glIsEnabled(GL_COLOR_LOGIC_OP);
 
         savedGLState.program = glGetInteger(GL_CURRENT_PROGRAM);
-        savedGLState.frameBufferBinding = glGetInteger(GL_FRAMEBUFFER_BINDING);
         savedGLState.vertexArrayBinding = glGetInteger(GL_VERTEX_ARRAY_BINDING);
         savedGLState.arrayBufferBinding = glGetInteger(GL_ARRAY_BUFFER_BINDING);
         savedGLState.blendSrcRgb = glGetInteger(GL_BLEND_SRC_RGB);
@@ -946,10 +972,18 @@ public class OpenGLGuiRender extends GuiRender {
         savedGLState.blendEquationAlpha = glGetInteger(GL_BLEND_EQUATION_ALPHA);
         savedGLState.activeTexture = glGetInteger(GL_ACTIVE_TEXTURE);
         savedGLState.bindTexture = glGetInteger(GL_TEXTURE_BINDING_2D);
+        if (savedGLState.activeTexture == GL_TEXTURE0) {
+            savedGLState.texture0bind = -1;
+        } else {
+            glActiveTexture(GL_TEXTURE0);
+            savedGLState.texture0bind = glGetInteger(GL_TEXTURE_BINDING_2D);
+        }
         savedGLState.unpackAlignment = glGetInteger(GL_UNPACK_ALIGNMENT);
         savedGLState.unpackRowLength = glGetInteger(GL_UNPACK_ROW_LENGTH);
         savedGLState.unpackSkipRows = glGetInteger(GL_UNPACK_SKIP_ROWS);
         savedGLState.unpackSkipPixels = glGetInteger(GL_UNPACK_SKIP_PIXELS);
+        savedGLState.readFrameBufferBinding = glGetInteger(GL_READ_FRAMEBUFFER_BINDING);
+        savedGLState.drawFrameBufferBinding = glGetInteger(GL_DRAW_FRAMEBUFFER_BINDING);
 
         int[] int4Array = new int[4];
 
@@ -963,12 +997,12 @@ public class OpenGLGuiRender extends GuiRender {
         glGetIntegerv(GL_VIEWPORT, savedGLState.viewport);
         glGetIntegerv(GL_SCISSOR_BOX, savedGLState.scissorTestBox);
 
-        savedGLStateState.push(savedGLState);
+        savedGLStateStack.push(savedGLState);
     }
 
     @Override
     public void restoreContext() {
-        SavedGLState savedGLState = savedGLStateState.pop();
+        SavedGLState savedGLState = savedGLStateStack.pop();
 
         enableGLState(GL_BLEND, savedGLState.blend);
         enableGLState(GL_DEPTH_TEST, savedGLState.depthTest);
@@ -978,19 +1012,24 @@ public class OpenGLGuiRender extends GuiRender {
         enableGLState(GL_COLOR_LOGIC_OP, savedGLState.colorLogicOp);
 
         glUseProgram(savedGLState.program);
-        glBindFramebuffer(GL_FRAMEBUFFER, savedGLState.frameBufferBinding);
         glBindVertexArray(savedGLState.vertexArrayBinding);
         glBindBuffer(GL_ARRAY_BUFFER, savedGLState.arrayBufferBinding);
         glColorMask(savedGLState.colorWriteMask[0], savedGLState.colorWriteMask[1], savedGLState.colorWriteMask[2], savedGLState.colorWriteMask[3]);
         glBlendFuncSeparate(savedGLState.blendSrcRgb, savedGLState.blendDstRgb, savedGLState.blendSrcAlpha, savedGLState.blendDstAlpha);
         glLogicOp(savedGLState.logicOpMode);
         glBlendEquationSeparate(savedGLState.blendEquationRgb, savedGLState.blendEquationAlpha);
+        if (savedGLState.texture0bind != -1) {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, savedGLState.texture0bind);
+        }
         glActiveTexture(savedGLState.activeTexture);
         glBindTexture(GL_TEXTURE_2D, savedGLState.bindTexture);
         glPixelStorei(GL_UNPACK_ALIGNMENT, savedGLState.unpackAlignment);
         glPixelStorei(GL_UNPACK_ROW_LENGTH, savedGLState.unpackRowLength);
         glPixelStorei(GL_UNPACK_SKIP_ROWS, savedGLState.unpackSkipRows);
         glPixelStorei(GL_UNPACK_SKIP_PIXELS, savedGLState.unpackSkipPixels);
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, savedGLState.readFrameBufferBinding);
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, savedGLState.drawFrameBufferBinding);
 
         glViewport(savedGLState.viewport[0], savedGLState.viewport[1], savedGLState.viewport[2], savedGLState.viewport[3]);
         glScissor(savedGLState.scissorTestBox[0], savedGLState.scissorTestBox[1], savedGLState.scissorTestBox[2], savedGLState.scissorTestBox[3]);
@@ -1013,6 +1052,8 @@ public class OpenGLGuiRender extends GuiRender {
 
     @Override
     public void submitBuffer() {
+        checkGLState("before submit");
+
         Iterator<RenderCommand> iterator = commands.descendingIterator();
         while (iterator.hasNext()) {
             RenderCommand command = iterator.next();
@@ -1024,6 +1065,8 @@ public class OpenGLGuiRender extends GuiRender {
             command.destroy();
         }
         commands.clear();
+
+        checkGLState("after submit");
     }
 
     @Override
@@ -1081,6 +1124,13 @@ public class OpenGLGuiRender extends GuiRender {
     @Override
     public RenderProviderType getProviderType() {
         return RenderProviderType.OPENGL;
+    }
+
+    private static void checkGLState(String tag) {
+        int error;
+        while ((error = glGetError()) != GL_NO_ERROR) {
+            System.err.println("[FrostLumen] Find GL Error in " + tag + ":0x" + Integer.toHexString(error));
+        }
     }
 
     private final Deque<TriangleBatch> triangleBatchPool = new ArrayDeque<>();
@@ -1256,7 +1306,6 @@ public class OpenGLGuiRender extends GuiRender {
 
     private static class SavedGLState {
         int program;
-        int frameBufferBinding;
         int vertexArrayBinding;
         int arrayBufferBinding;
         int blendSrcRgb;
@@ -1268,10 +1317,13 @@ public class OpenGLGuiRender extends GuiRender {
         int blendEquationAlpha;
         int activeTexture;
         int bindTexture;
+        int texture0bind;
         int unpackAlignment;
         int unpackRowLength;
         int unpackSkipRows;
         int unpackSkipPixels;
+        int readFrameBufferBinding;
+        int drawFrameBufferBinding;
 
         boolean blend;
         boolean depthTest;

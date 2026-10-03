@@ -13,23 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package top.untoldstudio.rimeui.neoforge;
+package top.untoldstudio.frostlumen.neoforge.mixin;
 
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
+import com.mojang.blaze3d.platform.cursor.CursorType;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mod(Main.MOD_ID)
-public final class Main {
-    public static final String MOD_ID = "forstlumen";
-    private static Main instance;
-
-    public Main(IEventBus modEventBus, ModContainer modContainer) {
-        instance = this;
-        modEventBus.register(FrostLumenModBootstrap.INSTANCE);
-    }
-
-    public static Main getInstance() {
-        return instance;
-    }
+@Mixin(CursorType.class)
+public interface CursorTypeAccessor {
+    @Accessor("handle")
+    long getHandle();
 }

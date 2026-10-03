@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package top.untoldstudio.frostlumen.core.tool;
+package top.untoldstudio.frostlumen.neoforge;
 
-import java.lang.ref.Cleaner;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
 
-public abstract class GCCleanable {
-    private static final Cleaner CLEANER = Cleaner.create();
+@Mod(Main.MOD_ID)
+public final class Main {
+    public static final String MOD_ID = "frostlumen";
+    private static Main instance;
 
-    public static Cleaner getGlobalCleaner() {
-        return CLEANER;
+    public Main(IEventBus modEventBus, ModContainer modContainer) {
+        instance = this;
+        modEventBus.register(FrostLumenModBootstrap.INSTANCE);
     }
 
-    protected void registerOnGCRecycle(Runnable onGCRecycleCallback) {
-        CLEANER.register(this, onGCRecycleCallback);
-    }
-    protected GCCleanable() {
+    public static Main getInstance() {
+        return instance;
     }
 }

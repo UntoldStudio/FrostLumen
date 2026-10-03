@@ -5,7 +5,10 @@
       <w>IBEAM</w>
       <w>VRESIZE</w>
       <w>aTexCoord</w>
+      <w>clinit</w>
       <w>forstlumen</w>
+      <w>frostlumen</w>
+      <w>neoforge</w>
     </words>
   </dictionary>
 </component>
