@@ -49,7 +49,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.util.freetype.FreeType.*;
 import static org.lwjgl.stb.STBImage.*;
 
-public abstract class GuiRender implements IResourceManager {
+public abstract class GuiRender implements ResourceManager {
     protected static final ThreadLocal<FT_Vector> vector = ThreadLocal.withInitial(() -> {
         FT_Vector ftVector = FT_Vector.malloc();
         GCCleanable.getGlobalCleaner().register(Thread.currentThread(), ftVector::free);
@@ -545,7 +545,7 @@ public abstract class GuiRender implements IResourceManager {
     public abstract void submitBuffer();
 
     public void beginFrame() {
-        IResourceManager.THREAD_LOCAL.set(this);
+        ResourceManager.THREAD_LOCAL.set(this);
         cursorShapeInThisFrame = -1;
         cursorModeInThisFrame = -1;
         begin();
@@ -898,15 +898,14 @@ public abstract class GuiRender implements IResourceManager {
 
     public void blurRegion(int x, int y, int width, int height, float angle, double strength) {
         if (width == 0 || height == 0 || strength == 0) return;
-        strength = Math.clamp(strength, 0, 1);
         int radius = MathTool.round(strength * 100);
         blurFramebufferRegion(x, y, width, height, angle, radius);
     }
     protected abstract void blurFramebufferRegion(int x, int y, int width, int height, float angle, int radius);
 
     public GuiRender(long windowHandle) {
-        if (IResourceManager.getIResourceManagerFromThreadLocal() == null) {
-            IResourceManager.THREAD_LOCAL.set(this);
+        if (ResourceManager.getIResourceManagerFromThreadLocal() == null) {
+            ResourceManager.THREAD_LOCAL.set(this);
         }
 
         this.windowHandle = windowHandle;

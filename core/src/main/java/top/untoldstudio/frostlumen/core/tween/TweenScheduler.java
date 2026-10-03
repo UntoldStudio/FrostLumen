@@ -13,21 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package top.untoldstudio.frostlumen.core.tool;
+package top.untoldstudio.frostlumen.core.tween;
 
-import java.lang.ref.Cleaner;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public abstract class GCCleanable {
-    protected static final Cleaner CLEANER = Cleaner.create();
-    protected static Cleaner.Cleanable cleanable;
+public class TweenScheduler {
+    private final List<Tween> tweenList = new CopyOnWriteArrayList<>();
 
-    public static Cleaner getGlobalCleaner() {
-        return CLEANER;
+    public void step(long delta) {
+        for (Tween tween : tweenList) {
+            tween.step(delta);
+        }
+        tweenList.removeIf(tween -> tween.isCompleted() && tween.isRemoveOnComplete());
     }
 
-    protected void setOnGCRecycle(Runnable onGCRecycleCallback) {
-        cleanable = CLEANER.register(this, onGCRecycleCallback);
+    public void registerTween(Tween tween) {
+        tweenList.add(tween);
     }
-    protected GCCleanable() {
+    public void unregisterTween(Tween tween) {
+        tweenList.remove(tween);
     }
 }

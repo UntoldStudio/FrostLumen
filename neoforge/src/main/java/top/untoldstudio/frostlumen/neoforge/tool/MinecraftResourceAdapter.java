@@ -27,7 +27,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import top.untoldstudio.frostlumen.core.data.NiceSliceType;
 import top.untoldstudio.frostlumen.core.exception.ResourceException;
-import top.untoldstudio.frostlumen.core.render.IResourceManager;
+import top.untoldstudio.frostlumen.core.render.ResourceManager;
 import top.untoldstudio.frostlumen.core.texture.Texture;
 
 import java.util.Optional;
@@ -48,7 +48,7 @@ public class MinecraftResourceAdapter {
             throw new ResourceException("Cannot load texture from resource item:" + item);
         }
 
-        return IResourceManager.getIResourceManagerFromThreadLocal().loadTexture(data, false);
+        return ResourceManager.getIResourceManagerFromThreadLocal().loadTexture(data, false);
     }
     public static Texture loadTextureFromResourceLocation(ResourceLocation location) {
         boolean isNiceSlice = false;
@@ -85,9 +85,9 @@ public class MinecraftResourceAdapter {
         }
 
         if (isNiceSlice) {
-            return IResourceManager.getIResourceManagerFromThreadLocal().loadNiceSliceTexture(data, NiceSliceType.FIXED_BORDER, stretchInner, false, left, right, top, bottom);
+            return ResourceManager.getIResourceManagerFromThreadLocal().loadNiceSliceTexture(data, NiceSliceType.FIXED_BORDER, stretchInner, false, left, right, top, bottom);
         } else {
-            return IResourceManager.getIResourceManagerFromThreadLocal().loadTexture(data, false);
+            return ResourceManager.getIResourceManagerFromThreadLocal().loadTexture(data, false);
         }
     }
 }

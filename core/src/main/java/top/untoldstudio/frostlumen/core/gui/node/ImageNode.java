@@ -20,6 +20,7 @@ import top.untoldstudio.frostlumen.core.data.RGBA;
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.gui.GuiNode;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
+import top.untoldstudio.frostlumen.core.render.ResourceManager;
 import top.untoldstudio.frostlumen.core.texture.Texture;
 import top.untoldstudio.frostlumen.core.tool.MathTool;
 
@@ -57,7 +58,7 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
         }
 
         /**
-         * {@link top.untoldstudio.frostlumen.core.render.IResourceManager:getIResourceManagerFromThreadLocal()}
+         * {@link ResourceManager :getIResourceManagerFromThreadLocal()}
          * 如果你正在使用MC绑定你可以看看top.untoldstudio.frostlumen.neoforge.tool.MinecraftResourceAdapter
          */
         public ImageRenderDescription setTexture(Texture texture) {

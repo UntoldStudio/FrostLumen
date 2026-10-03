@@ -20,6 +20,7 @@ import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.event.FrameBufferSizeChangeEvent;
 import top.untoldstudio.frostlumen.core.event.MouseMoveEvent;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
+import top.untoldstudio.frostlumen.core.tween.TweenScheduler;
 
 import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -28,12 +29,14 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
     private final Window window;
     private final GuiRender render;
     private final Deque<Runnable> tasks = new ConcurrentLinkedDeque<>();
+    private final TweenScheduler tweenScheduler = new TweenScheduler();
     private long externalSettingCursor = -1;
     private boolean isLastMouseMoveEventCanceled = false;
-    private long lastRenderTime = 0;
+    private long lastRenderTime;
 
     public void init() {
         render.initRender();
+        lastRenderTime = System.currentTimeMillis();
     }
 
     @Override
@@ -64,7 +67,11 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
             render.setCursorShape(CursorShape.ARROW);
         }
         long now = System.currentTimeMillis();
-        dispatchRender(render, now - lastRenderTime);
+        long delta = now - lastRenderTime;
+
+        tweenScheduler.step(delta);
+
+        dispatchRender(render, delta);
 
         render.submitBuffer();
 
@@ -96,6 +103,10 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
 
     public GuiRender getRender() {
         return render;
+    }
+
+    public TweenScheduler getTweenScheduler() {
+        return tweenScheduler;
     }
 
     public void setExternalSettingCursor(long handle) {

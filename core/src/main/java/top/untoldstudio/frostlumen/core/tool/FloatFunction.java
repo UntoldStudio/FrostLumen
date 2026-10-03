@@ -15,19 +15,7 @@
  */
 package top.untoldstudio.frostlumen.core.tool;
 
-import java.lang.ref.Cleaner;
-
-public abstract class GCCleanable {
-    protected static final Cleaner CLEANER = Cleaner.create();
-    protected static Cleaner.Cleanable cleanable;
-
-    public static Cleaner getGlobalCleaner() {
-        return CLEANER;
-    }
-
-    protected void setOnGCRecycle(Runnable onGCRecycleCallback) {
-        cleanable = CLEANER.register(this, onGCRecycleCallback);
-    }
-    protected GCCleanable() {
-    }
+@FunctionalInterface
+public interface FloatFunction<R> {
+    R apply(float value);
 }

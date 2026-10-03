@@ -13,21 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package top.untoldstudio.frostlumen.core.tool;
+package top.untoldstudio.frostlumen.core.exception;
 
-import java.lang.ref.Cleaner;
-
-public abstract class GCCleanable {
-    protected static final Cleaner CLEANER = Cleaner.create();
-    protected static Cleaner.Cleanable cleanable;
-
-    public static Cleaner getGlobalCleaner() {
-        return CLEANER;
-    }
-
-    protected void setOnGCRecycle(Runnable onGCRecycleCallback) {
-        cleanable = CLEANER.register(this, onGCRecycleCallback);
-    }
-    protected GCCleanable() {
+public class TweenException extends RuntimeException {
+    public TweenException(String message) {
+        super(message);
     }
 }

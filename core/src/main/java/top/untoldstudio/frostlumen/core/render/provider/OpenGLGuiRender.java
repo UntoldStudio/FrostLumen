@@ -23,6 +23,7 @@ import org.joml.Matrix4f;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.lwjgl.util.freetype.*;
+import top.untoldstudio.frostlumen.core.Debug;
 import top.untoldstudio.frostlumen.core.data.ThicknessPosition;
 import top.untoldstudio.frostlumen.core.exception.RenderException;
 import top.untoldstudio.frostlumen.core.exception.ResourceException;
@@ -57,9 +58,7 @@ public class OpenGLGuiRender extends GuiRender {
     private final int triangleVbo;
     private final int[] triangleScissorStateLocations;
     private int triangleVboCapacity;
-
-    private final int shapeStride;
-    private final int shapeProjectLocation;
+    private final int shapeStride;    private final int shapeProjectLocation;
     private final int shapeShaderProgram;
     private final int shapeVao;
     private final int shapeVbo;
@@ -1127,6 +1126,7 @@ public class OpenGLGuiRender extends GuiRender {
     }
 
     private static void checkGLState(String tag) {
+        if (!Debug.isDebugMode()) return;
         int error;
         while ((error = glGetError()) != GL_NO_ERROR) {
             System.err.println("[FrostLumen] Find GL Error in " + tag + ":0x" + Integer.toHexString(error));

@@ -94,6 +94,6 @@ public class DirectByteBuffer extends GCCleanable {
         buffer = MemoryUtil.memAlloc(capacity);
         buffer.order(ByteOrder.nativeOrder());
 
-        super.registerOnGCRecycle(() -> MemoryUtil.memFree(buffer));
+        super.setOnGCRecycle(() -> MemoryUtil.memFree(buffer));
     }
 }

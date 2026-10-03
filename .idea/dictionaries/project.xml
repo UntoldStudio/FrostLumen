@@ -3,6 +3,7 @@
     <words>
       <w>HRESIZE</w>
       <w>IBEAM</w>
+      <w>SMOOTHERSTEP</w>
       <w>VRESIZE</w>
       <w>aTexCoord</w>
       <w>clinit</w>
