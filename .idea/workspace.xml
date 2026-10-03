@@ -5,30 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1bc31957-5fa6-4663-b247-f00787c6193c" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/data/ScaleOffset.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/data/ScaleOffset.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/font/Font.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/font/Font.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/gui/node/ImageNode.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/gui/node/ImageNode.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/listener/AbstractListenerRegistry.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/listener/AbstractListenerRegistry.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/render/GuiRender.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/render/GuiRender.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/render/provider/OpenGLGuiRender.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/render/provider/OpenGLGuiRender.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/tool/GCCleanable.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/tool/GCCleanable.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/resources/shader/opengl/blur/frag.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/resources/shader/opengl/blur/frag.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/resources/shader/opengl/shape/frag.glsl" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/resources/shader/opengl/shape/frag.glsl" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/src/main/java/top/untoldstudio/frostlumen/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/example/src/main/java/top/untoldstudio/frostlumen/example/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/rimeui/neoforge/FrostLumenModBootstrap.java" beforeDir="false" afterPath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/frostlumen/neoforge/FrostLumenModBootstrap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/rimeui/neoforge/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/frostlumen/neoforge/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/rimeui/neoforge/mixin/CursorTypeAccessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/frostlumen/neoforge/mixin/CursorTypeAccessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/rimeui/neoforge/mixin/MainMixin.java" beforeDir="false" afterPath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/frostlumen/neoforge/mixin/MainMixin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/rimeui/neoforge/mixin/RenderSystemMixin.java" beforeDir="false" afterPath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/frostlumen/neoforge/mixin/RenderSystemMixin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/rimeui/neoforge/mixin/SpriteResourceLoaderMixin.java" beforeDir="false" afterPath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/frostlumen/neoforge/mixin/SpriteResourceLoaderMixin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/rimeui/neoforge/mixin/WindowMixin.java" beforeDir="false" afterPath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/frostlumen/neoforge/mixin/WindowMixin.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/rimeui/neoforge/tool/MinecraftResourceAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/frostlumen/neoforge/tool/MinecraftResourceAdapter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/rimeui/neoforge/tool/SpriteRawCache.java" beforeDir="false" afterPath="$PROJECT_DIR$/neoforge/src/main/java/top/untoldstudio/frostlumen/neoforge/tool/SpriteRawCache.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/neoforge/src/main/resources/forstlumen.mixins.json" beforeDir="false" afterPath="$PROJECT_DIR$/neoforge/src/main/resources/frostlumen.mixins.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,7 +106,7 @@
       <recent name="D:\Develop\FrostLumen\core\src\main\resources\shader\" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Release Version">
+  <component name="RunManager" selected="Gradle.Push Changes">
     <configuration name="Run" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="ms-21" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />

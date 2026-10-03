@@ -49,7 +49,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     protected float realAngle = 0;
     protected Set<MouseButton> currentMouseClickButtons = new HashSet<>();
     protected boolean mouseInNode;
-    protected float backgroundBlurStrength = 0;
+    protected double backgroundBlurStrength = 0;
 
     public T registerMouseEnterListener(Consumer<MouseMoveEvent> listener) {
         mouseEnterListenerRegistry.register(listener);
@@ -302,7 +302,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         return parent;
     }
 
-    public T setBackgroundBlurStrength(float strength) {
+    public T setBackgroundBlurStrength(double strength) {
         this.backgroundBlurStrength = strength;
         return self;
     }
@@ -413,7 +413,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     public int getZIndex() {
         return zIndex;
     }
-    public float getBackgroundBlurStrength() {
+    public double getBackgroundBlurStrength() {
         return backgroundBlurStrength;
     }
     public float getAngle() {

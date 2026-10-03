@@ -896,7 +896,7 @@ public abstract class GuiRender implements IResourceManager {
 
     public abstract RenderProviderType getProviderType();
 
-    public void blurRegion(int x, int y, int width, int height, float angle, float strength) {
+    public void blurRegion(int x, int y, int width, int height, float angle, double strength) {
         if (width == 0 || height == 0 || strength == 0) return;
         strength = Math.clamp(strength, 0, 1);
         int radius = MathTool.round(strength * 100);
