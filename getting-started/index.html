@@ -10,7 +10,7 @@
       
       
       
-        <link rel="canonical" href="https://untoldstudio.github.io/FrostLumen/getting-started/">
+        <link rel="canonical" href="https://frostlumen.untold.top/getting-started/">
       
       
         <link rel="prev" href="..">
@@ -508,7 +508,7 @@
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>你应该在渲染线程调用<code>Window.from()</code></p>
-<p>并且不要在<code>Window.from()</code>之后注册任何GLFW回调</p>
+<p>并且不要在<code>Window.from()</code>之后注册任何GLFW回调, 你的回调应该在Window.from之前注册</p>
 </div>
 <p>初始化Window后,你可以获取GUI节点根:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">NodeRoot</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">window</span><span class="p">.</span><span class="na">getNodeRoot</span><span class="p">();</span>
