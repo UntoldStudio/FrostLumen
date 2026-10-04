@@ -1,3 +1,53 @@
+plugins:
+  - search:
+      lang: [en, zh]
+      separator: '[\s\u200b\-]'
+  - i18n:
+      docs_structure: folder
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          name: English
+          build: true
+          site_name: FrostLumen Documentation
+        - locale: zh
+          name: 中文
+          default: true
+          build: true
+          site_name: FrostLumen 文档
+
+
+
+
+
+
+          nav_translations:
+            Home: 首页
+
+
+
+nav:
+  - Home: index.md
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 site_name: FrostLumen Docs
 site_description: FrostLumen Docs
 site_url: https://untoldstudio.github.io/FrostLumen/
@@ -40,34 +90,6 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
-plugins:
-  - search:
-      lang: [en, zh]
-      separator: '[\s\u200b\-]'
-  - i18n:
-      docs_structure: folder
-      fallback_to_default: true
-      reconfigure_material: true
-      reconfigure_search: true
-      languages:
-        - locale: en
-          name: English
-          default: true
-          build: true
-          site_name: FrostLumen Documentation
-        - locale: zh
-          name: 中文
-          build: true
-          site_name: FrostLumen 文档
-          nav_translations:
-            Home: 首页
-
-
-
-nav:
-  - Home: index.md
-
-
 
 markdown_extensions:
   - admonition

@@ -123,6 +123,15 @@ tasks.register("releaseVersion") {
     }
 }
 
+tasks.register<Exec>("docsServe") {
+    group = "documentation"
+    description = "本地预览文档"
+    workingDir = rootProject.projectDir
+    val isWindows = System.getProperty("os.name").lowercase().contains("win")
+    val exe = if (isWindows) ".venv/Scripts/mkdocs.exe" else ".venv/bin/mkdocs"
+    commandLine(exe, "serve")
+}
+
 fun runGit(dir: File, vararg args: String): String {
     val proc = ProcessBuilder(*args)
         .directory(dir)
