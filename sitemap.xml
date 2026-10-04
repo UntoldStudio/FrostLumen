@@ -4,14 +4,14 @@
         <loc>https://untoldstudio.github.io/FrostLumen/</loc>
         <lastmod>2026-10-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/zh/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/"/>
     </url>
     <url>
-        <loc>https://untoldstudio.github.io/FrostLumen/zh/</loc>
+        <loc>https://untoldstudio.github.io/FrostLumen/en/</loc>
         <lastmod>2026-10-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/zh/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/"/>
     </url>
 </urlset>
