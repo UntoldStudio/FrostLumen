@@ -17,6 +17,7 @@ package top.untoldstudio.frostlumen.core.gui.node;
 
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.gui.GuiNode;
+import top.untoldstudio.frostlumen.core.gui.ParentNode;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
 import top.untoldstudio.frostlumen.core.texture.Texture;
 
@@ -44,7 +45,7 @@ public class ImageLabel extends ImageNode<ImageLabel> {
     }
 
     @Override
-    public void operationPosition(GuiNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
+    public void operationPosition(ParentNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
         super.operationPosition(parentFrame, parentRealPositionX, parentRealPositionY);
         operationImageAlignment();
     }

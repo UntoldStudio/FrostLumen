@@ -174,7 +174,7 @@ Almost all APIs use it to represent a color, for example GuiNode's `backgroundCo
 
 It has four methods: `withRed`, `withGreen`, `withBlue`, and `withAlpha`.
 
-There are 2 ways to construct it:
+There are 1 ways to construct it:
 
 `new RGBA(red, green, blue, alpha)`
 

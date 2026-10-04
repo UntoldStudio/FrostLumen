@@ -37,6 +37,7 @@ nav:
   - Core:
       - core/core-concepts.md
       - core/node-tree.md
+      - core/node-appearance.md
 
 
 

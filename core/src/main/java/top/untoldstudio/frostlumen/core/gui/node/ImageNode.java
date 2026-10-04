@@ -19,6 +19,7 @@ import top.untoldstudio.frostlumen.core.data.ImageAlignment;
 import top.untoldstudio.frostlumen.core.data.RGBA;
 import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.gui.GuiNode;
+import top.untoldstudio.frostlumen.core.gui.ParentNode;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
 import top.untoldstudio.frostlumen.core.render.ResourceManager;
 import top.untoldstudio.frostlumen.core.texture.Texture;
@@ -31,7 +32,7 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
     private final Set<ImageRenderDescription> selfRenderDescriptions = new HashSet<>();
 
     @Override
-    protected void operationPosition(GuiNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
+    protected void operationPosition(ParentNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
         super.operationPosition(parentFrame, parentRealPositionX, parentRealPositionY);
         for (ImageRenderDescription renderDescription : selfRenderDescriptions) {
             renderDescription.operationImageAlignment();

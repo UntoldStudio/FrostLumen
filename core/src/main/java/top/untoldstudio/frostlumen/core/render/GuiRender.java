@@ -898,6 +898,7 @@ public abstract class GuiRender implements ResourceManager {
 
     public void blurRegion(int x, int y, int width, int height, float angle, double strength) {
         if (width == 0 || height == 0 || strength == 0) return;
+        strength = Math.clamp(strength, 0, 2);
         int radius = MathTool.round(strength * 100);
         blurFramebufferRegion(x, y, width, height, angle, radius);
     }

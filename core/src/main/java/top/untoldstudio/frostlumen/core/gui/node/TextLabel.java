@@ -21,6 +21,7 @@ import top.untoldstudio.frostlumen.core.data.ScaleOffset;
 import top.untoldstudio.frostlumen.core.data.VerticalAlignment;
 import top.untoldstudio.frostlumen.core.font.Font;
 import top.untoldstudio.frostlumen.core.gui.GuiNode;
+import top.untoldstudio.frostlumen.core.gui.ParentNode;
 import top.untoldstudio.frostlumen.core.render.GuiRender;
 
 public class TextLabel extends GuiNode<TextLabel> {
@@ -83,7 +84,7 @@ public class TextLabel extends GuiNode<TextLabel> {
     }
 
     @Override
-    public void operationPosition(GuiNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
+    public void operationPosition(ParentNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
         super.operationPosition(parentFrame, parentRealPositionX, parentRealPositionY);
         operationTextRenderPosition();
     }

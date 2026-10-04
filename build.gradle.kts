@@ -51,7 +51,6 @@ tasks.jar {
 tasks.named<Jar>("jar") {
     enabled = false
 }
-tasks.withType<Javadoc>().configureEach { enabled = false }
 
 val gitTargetBranch: String = "main"
 
@@ -65,6 +64,7 @@ tasks.register("pushChanges") {
     dependsOn(spotlessApplyAll)
     notCompatibleWithConfigurationCache("任务需要交互式输入并访问项目目录")
     description = "自动add,commit并推送当前分支"
+    dependsOn(tasks.named("build"))
     doLast {
         val projectDir = project.rootProject.projectDir
         val status = runGit(projectDir, "git", "status", "--porcelain")
@@ -91,6 +91,7 @@ tasks.register("releaseVersion") {
     dependsOn(spotlessApplyAll)
     notCompatibleWithConfigurationCache("任务需要交互式输入并访问项目目录")
     description = "自动add,commit,push并创建发布标签"
+    dependsOn(tasks.named("build"))
     doLast {
         val projectDir = project.rootProject.projectDir
         val tagName = project.version.toString()
@@ -127,9 +128,34 @@ tasks.register<Exec>("docsServe") {
     group = "documentation"
     description = "本地预览文档"
     workingDir = rootProject.projectDir
+    dependsOn(tasks.named("javadocAll"))
     val isWindows = System.getProperty("os.name").lowercase().contains("win")
     val exe = if (isWindows) ".venv/Scripts/mkdocs.exe" else ".venv/bin/mkdocs"
     commandLine(exe, "serve")
+}
+
+tasks.register<Javadoc>("javadocAll") {
+    group = "documentation"
+    description = "生成所有模块的统一Javadoc"
+
+    subprojects.forEach { sub ->
+        sub.pluginManager.withPlugin("java") {
+            source(sub.extensions.getByType<JavaPluginExtension>().sourceSets["main"].allJava)
+            classpath += sub.extensions.getByType<JavaPluginExtension>().sourceSets["main"].compileClasspath
+        }
+    }
+
+    destinationDir = rootProject.file("docs/javadoc")
+    isFailOnError = false
+
+    (options as StandardJavadocDocletOptions).apply {
+        encoding = "UTF-8"
+        charset("UTF-8")
+        author(true)
+        version(true)
+        quiet()
+        addStringOption("Xdoclint:none", "-quiet")
+    }
 }
 
 fun runGit(dir: File, vararg args: String): String {

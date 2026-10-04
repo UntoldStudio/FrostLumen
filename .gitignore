@@ -48,3 +48,4 @@ bin/
 
 ### MkDocs ###
 /site/
+/docs/javadoc/

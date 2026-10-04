@@ -48,7 +48,7 @@ GuiNode会在初始化,父项要求重算,改变父项或者更改position/size/
 
 ## ScaleOffset
 
-ScaleOffset是本库重要性较高的类.它是一个不可变记录类,定义为:
+ScaleOffset是本库重要性较高的类.它是一个不可变记录类,几乎所有节点的构造函数都要求ScaleOffset类型的position和size,定义为:
 
 ```java
 public record ScaleOffset(double xScale, int xOffset, double yScale, int yOffset) {...}
@@ -171,7 +171,7 @@ Alpha大致等于不透明度,值为0则完全透明,值为255则完全不透明
 API几乎全部用他表示一个颜色,例如GuiNode的backgroundColor
 它有withRed,withGreen,withBlue,withAlpha这四个方法
 
-构造方式有2种:
+构造方式有1种:
 
 `new RGBA(red, green, blue, alpha)`
 
