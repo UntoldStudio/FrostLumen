@@ -2,6 +2,7 @@ plugins {
     id("java-library")
     id("idea")
     id("net.neoforged.moddev") version "2.0.144"
+    id("maven-publish")
 }
 
 repositories {
@@ -42,7 +43,6 @@ sourceSets.main {
 
 dependencies {
     implementation(project(":core"))
-    implementation("org.lwjgl:lwjgl-harfbuzz:3.3.3")
 }
 
 val generateModMetadata = tasks.register<ProcessResources>("generateModMetadata") {
@@ -70,3 +70,12 @@ sourceSets.main {
 }
 
 neoForge.ideSyncTask(generateModMetadata)
+
+publishing {
+    publications {
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+            artifactId = "neoforge"
+        }
+    }
+}

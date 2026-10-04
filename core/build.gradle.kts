@@ -2,8 +2,6 @@ plugins {
     id("maven-publish")
 }
 
-val id: String = project.property("id") as String
-
 dependencies {
     compileOnly(platform(rootProject.libs.lwjgl.bom))
     compileOnly(rootProject.libs.bundles.lwjgl.all)
@@ -21,7 +19,7 @@ publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
-            artifactId = id
+            artifactId = "core"
         }
     }
 }

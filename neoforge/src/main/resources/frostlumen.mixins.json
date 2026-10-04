@@ -5,11 +5,11 @@
   "priority": 100,
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "RenderSystemMixin",
-    "WindowMixin",
-    "MainMixin",
-    "CursorTypeAccessor",
-    "SpriteResourceLoaderMixin"
+    "top.untold.frostlumen.neoforge.mixin.RenderSystemMixin",
+    "top.untold.frostlumen.neoforge.mixin.WindowMixin",
+    "top.untold.frostlumen.neoforge.mixin.MainMixin",
+    "top.untold.frostlumen.neoforge.mixin.CursorTypeAccessor",
+    "top.untold.frostlumen.neoforge.mixin.SpriteResourceLoaderMixin"
   ],
   "injectors": {
     "defaultRequire": 1
