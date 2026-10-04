@@ -386,6 +386,8 @@
       
         
       
+        
+      
     
     
     
@@ -597,6 +599,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../node-appearance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    节点外观
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -758,7 +788,7 @@
 <p>GuiNode会在初始化,父项要求重算,改变父项或者更改position/size/angle的时候重新算这7个值,并且自己算完后递归子项让它们重算</p>
 <p>它们都拥有自引用泛型,且不是builder,所有setter返回self字段,self定义为(T) this,因此你可以在任何时候链式调用它</p>
 <h2 id="scaleoffset">ScaleOffset<a class="headerlink" href="#scaleoffset" title="Permanent link">&para;</a></h2>
-<p>ScaleOffset是本库重要性较高的类.它是一个不可变记录类,定义为:</p>
+<p>ScaleOffset是本库重要性较高的类.它是一个不可变记录类,几乎所有节点的构造函数都要求ScaleOffset类型的position和size,定义为:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">ScaleOffset</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">xScale</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">xOffset</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">yScale</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">yOffset</span><span class="p">)</span><span class="w"> </span><span class="p">{...}</span>
 </span></code></pre></div>
 <p>节点的位置和大小的类型都是它</p>
@@ -830,7 +860,7 @@ addXOffset
 <p>它代表一种颜色
 API几乎全部用他表示一个颜色,例如GuiNode的backgroundColor
 它有withRed,withGreen,withBlue,withAlpha这四个方法</p>
-<p>构造方式有2种:</p>
+<p>构造方式有1种:</p>
 <p><code>new RGBA(red, green, blue, alpha)</code></p>
 <p>或者使用RGBA类定义的常量:
 <code>WHITE</code>
