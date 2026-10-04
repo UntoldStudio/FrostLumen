@@ -8,18 +8,25 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/"/>
     </url>
     <url>
-        <loc>https://untoldstudio.github.io/FrostLumen/getting-started/core-concepts/</loc>
+        <loc>https://untoldstudio.github.io/FrostLumen/core/core-concepts/</loc>
         <lastmod>2026-10-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/getting-started/core-concepts/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/getting-started/core-concepts/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/core/core-concepts/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/core/core-concepts/"/>
     </url>
     <url>
-        <loc>https://untoldstudio.github.io/FrostLumen/getting-started/first-time/</loc>
+        <loc>https://untoldstudio.github.io/FrostLumen/core/node-tree/</loc>
         <lastmod>2026-10-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/getting-started/first-time/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/getting-started/first-time/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/core/node-tree/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/core/node-tree/"/>
+    </url>
+    <url>
+        <loc>https://untoldstudio.github.io/FrostLumen/getting-started/</loc>
+        <lastmod>2026-10-04</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/getting-started/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/getting-started/"/>
     </url>
     <url>
         <loc>https://untoldstudio.github.io/FrostLumen/en/</loc>
@@ -29,17 +36,24 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/"/>
     </url>
     <url>
-        <loc>https://untoldstudio.github.io/FrostLumen/en/getting-started/core-concepts/</loc>
+        <loc>https://untoldstudio.github.io/FrostLumen/en/core/core-concepts/</loc>
         <lastmod>2026-10-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/getting-started/core-concepts/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/getting-started/core-concepts/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/core/core-concepts/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/core/core-concepts/"/>
     </url>
     <url>
-        <loc>https://untoldstudio.github.io/FrostLumen/en/getting-started/first-time/</loc>
+        <loc>https://untoldstudio.github.io/FrostLumen/en/core/node-tree/</loc>
         <lastmod>2026-10-04</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/getting-started/first-time/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/getting-started/first-time/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/core/node-tree/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/core/node-tree/"/>
+    </url>
+    <url>
+        <loc>https://untoldstudio.github.io/FrostLumen/en/getting-started/</loc>
+        <lastmod>2026-10-04</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/getting-started/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/getting-started/"/>
     </url>
 </urlset>
