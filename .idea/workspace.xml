@@ -5,17 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1bc31957-5fa6-4663-b247-f00787c6193c" name="更改" comment="">
-      <change afterPath="$PROJECT_DIR$/docs/en/index.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docs/zh/index.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mkdocs.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/requirements-docs.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/project.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/gui/NodeRoot.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/gui/NodeRoot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/tool/IntervalMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/tool/IntervalMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/tween/NumberTween.java" beforeDir="false" afterPath="$PROJECT_DIR$/core/src/main/java/top/untoldstudio/frostlumen/core/tween/NumberTween.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/docs.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -117,7 +107,7 @@
       <recent name="D:\Develop\FrostLumen\core\src\main\resources\shader\" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Build">
+  <component name="RunManager" selected="Gradle.Push Changes">
     <configuration name="Run" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="ms-21" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />

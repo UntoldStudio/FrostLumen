@@ -10,7 +10,6 @@ theme:
   name: material
   locale: en
   features:
-    - navigation.instant
     - navigation.instant.progress
     - navigation.tracking
     - navigation.indexes
