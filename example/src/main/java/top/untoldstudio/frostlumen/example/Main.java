@@ -109,7 +109,7 @@ public class Main {
             glfwPollEvents();
             glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
             glClear(GL_COLOR_BUFFER_BIT);
-            window.getNodeRoot().render();
+            root.render();
 
             glfwSwapBuffers(windowHandle);
 

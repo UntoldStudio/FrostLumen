@@ -10,6 +10,10 @@ When you have created a window and hold its window handle, you can do this to in
 Window window = Window.from(windowHandle, RenderProviderType.OPENGL); // Currently we only have an OpenGL backend
 ```
 
+!!! warning
+
+    This library does not currently support multiple windows.
+
 Internally, it will:
 
 Register GLFW callbacks
@@ -41,7 +45,7 @@ Now, we will render a rectangle covering the entire screen:
 
 ```java
 ScaleOffset position = ScaleOffset.ZERO; // Position at the top-left corner
-ScaleOffset size = ScaleOffset.fromScale(1, 1); // Fill the parent node; here the parent node is NodeRoot, filling the parent node means filling the entire screen
+ScaleOffset size = ScaleOffset.fromScale(1, 1); // Fill the parent node; here the parent node is NodeRoot, so filling the parent node means filling the entire screen
 Frame frame = new Frame(position, size); // Create a new Frame object
 root.addChild(frame); // Attach the Frame to the node root
 ```

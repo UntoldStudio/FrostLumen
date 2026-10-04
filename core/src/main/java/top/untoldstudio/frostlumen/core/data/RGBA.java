@@ -53,10 +53,12 @@ public record RGBA(int red, int green, int blue, int alpha) {
         buffer.put((byte)alpha);
         return buffer;
     }
+
     public static final RGBA WHITE = new RGBA(255, 255, 255, 255);
     public static final RGBA BLACK = new RGBA(0, 0, 0, 255);
     public static final RGBA RED = new RGBA(255, 0, 0, 255);
     public static final RGBA GREEN = new RGBA(0, 255, 0, 255);
     public static final RGBA BLUE = new RGBA(0, 0, 255, 255);
     public static final RGBA GRAY = new RGBA(128, 128, 128, 255);
+    public static final RGBA TRANSPARENT = WHITE.withAlpha(0);
 }

@@ -132,6 +132,9 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
     }
 
     public T addChild(GuiNode<?> child) {
+        if (child.parent != null) {
+            child.parent.removeChild(child);
+        }
         child.parent = this;
         children.add(child);
         sortChildren();
@@ -145,8 +148,10 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
         return self;
     }
     public T removeChild(GuiNode<?> child) {
-        children.remove(child);
-        child.parent = null;
+        if (children.remove(child)) {
+            child.parent = null;
+            setChildRootToNull(child);
+        }
         return self;
     }
     public T removeChildren(GuiNode<?>... children) {
@@ -155,13 +160,20 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
         }
         return self;
     }
+    private static void setChildRootToNull(GuiNode<?> node) {
+        node.root = null;
+        for (GuiNode<?> child : node.children) {
+            child.root = null;
+            setChildRootToNull(child);
+        }
+    }
     public List<GuiNode<?>> getChildren() {
         return Collections.unmodifiableList(children);
     }
 
     protected void forwardFor(Consumer<GuiNode<?>> consumer, CancelableEvent event) {
-        for (int i = 0; i < children.size(); i++) {
-            consumer.accept(children.get(i));
+        for (GuiNode<?> child : children) {
+            consumer.accept(child);
             if (event != null && event.isCancel()) break;
         }
     }

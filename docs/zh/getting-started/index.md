@@ -10,6 +10,10 @@
 Window window = Window.from(windowHandle, RenderProviderType.OPENGL); //目前我们只有OpenGL后端
 ```
 
+!!! warning
+
+    本库暂时不支持多窗口
+
 它内部将会:
 
 注册GLFW回调

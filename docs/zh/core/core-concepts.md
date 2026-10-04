@@ -48,7 +48,7 @@ GuiNode会在初始化,父项要求重算,改变父项或者更改position/size/
 
 ## ScaleOffset
 
-ScaleOffset是本库重要性较高的类.它是一个不可变Java记录,定义为:
+ScaleOffset是本库重要性较高的类.它是一个不可变记录类,定义为:
 
 ```java
 public record ScaleOffset(double xScale, int xOffset, double yScale, int yOffset) {...}
@@ -137,7 +137,7 @@ node.setAnchor(0.5, 0.5); //位于图形中心
 node.setAnchor(1, 1); //位于图形右下角
 ```
 
-## angle与realAngle
+## Angle与RealAngle
 
 它们控制节点渲染时候的顺时针角度
 
@@ -153,4 +153,39 @@ realAngle是通过自己的angle+父项的realAngle算出来的
 
 ```java
 node.setAngle(90f); //顺时针旋转90度
+```
+
+## RGBA
+
+RGBA是一个不可变记录类,定义为:
+
+```java
+public record RGBA(int red, int green, int blue, int alpha) {...}
+```
+
+注意:这四个值的范围必须全部是0-255, 否则会出现非预期行为
+
+Alpha大致等于不透明度,值为0则完全透明,值为255则完全不透明,只是范围从0-1换成了0-255
+
+它代表一种颜色
+API几乎全部用他表示一个颜色,例如GuiNode的backgroundColor
+它有withRed,withGreen,withBlue,withAlpha这四个方法
+
+构造方式有2种:
+
+`new RGBA(red, green, blue, alpha)`
+
+或者使用RGBA类定义的常量:
+`WHITE`
+`BLACK`
+`RED`
+`GREEN`
+`BLUE`
+`GRAY`
+`TRANSPARENT`
+
+示例:设置某node的背景色为不透明橙色
+
+```java
+node.setBackgroundColor(new RGBA(255, 128, 0, 255));
 ```

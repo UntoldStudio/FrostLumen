@@ -26,14 +26,17 @@ plugins:
           nav_translations:
             Home: 首页
             Getting Started: 快速指引
+            Core: 核心
 
 
 
 nav:
   - Home: index.md
   - Getting Started:
-      - getting-started/first-time.md
-      - getting-started/core-concepts.md
+      - getting-started/index.md
+  - Core:
+      - core/core-concepts.md
+      - core/node-tree.md
 
 
 
