@@ -5,8 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1bc31957-5fa6-4663-b247-f00787c6193c" name="更改" comment="">
+      <change afterPath="$PROJECT_DIR$/docs/zh/getting-started/first-time.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/docs.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/docs.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/en/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/en/index.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/zh/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/docs/zh/index.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/src/main/java/top/untoldstudio/frostlumen/example/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/example/src/main/java/top/untoldstudio/frostlumen/example/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mkdocs.yml" beforeDir="false" afterPath="$PROJECT_DIR$/mkdocs.yml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -66,6 +70,7 @@
   "keyToString": {
     "Gradle.Build.executor": "Run",
     "Gradle.Builld.executor": "Run",
+    "Gradle.Docs Serve.executor": "Run",
     "Gradle.FrostLumen [:application:top.untoldstudio.frostlumen.application.Main.main()].executor": "Run",
     "Gradle.FrostLumen [:example:top.untoldstudio.frostlumen.application.Main.main()].executor": "Run",
     "Gradle.FrostLumen [:example:top.untoldstudio.frostlumen.example.Main.main()].executor": "Run",
@@ -93,7 +98,7 @@
     "project.structure.last.edited": "模块",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.54137933",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "Settings.Markdown",
     "应用程序.Run.executor": "Run"
   }
 }]]></component>

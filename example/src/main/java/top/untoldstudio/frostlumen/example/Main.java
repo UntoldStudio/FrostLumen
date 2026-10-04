@@ -32,7 +32,10 @@ import static org.lwjgl.opengl.GL32.*;
 
 public class Main {
     public static void main(String[] args) {
-        glfwInit();
+        if (!glfwInit()) {
+            throw new RuntimeException("Unable to initialize GLFW");
+        }
+
         long windowHandle = glfwCreateWindow(800, 600, "Test", 0, 0);
 
         glfwMakeContextCurrent(windowHandle);

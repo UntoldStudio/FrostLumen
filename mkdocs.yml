@@ -25,11 +25,14 @@ plugins:
 
           nav_translations:
             Home: 首页
+            Getting Started: 快速指引
 
 
 
 nav:
   - Home: index.md
+  - Getting Started:
+      - getting-started/first-time.md
 
 
 
@@ -110,7 +113,8 @@ markdown_extensions:
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
-  - pymdownx.snippets
+  - pymdownx.snippets:
+      check_paths: true
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.critic

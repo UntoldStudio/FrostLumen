@@ -9,6 +9,7 @@ on:
       - 'mkdocs.yml'
       - 'requirements-docs.txt'
       - '.github/workflows/docs.yml'
+      - '**/*.java'
   workflow_dispatch:
 
 permissions:
