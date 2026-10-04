@@ -1,15 +1,15 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "top.untoldstudio.frostlumen.neoforge.mixin",
+  "package": "top.untold.frostlumen.neoforge.mixin",
   "priority": 100,
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "top.untold.frostlumen.neoforge.mixin.RenderSystemMixin",
-    "top.untold.frostlumen.neoforge.mixin.WindowMixin",
-    "top.untold.frostlumen.neoforge.mixin.MainMixin",
-    "top.untold.frostlumen.neoforge.mixin.CursorTypeAccessor",
-    "top.untold.frostlumen.neoforge.mixin.SpriteResourceLoaderMixin"
+    "RenderSystemMixin",
+    "WindowMixin",
+    "MainMixin",
+    "CursorTypeAccessor",
+    "SpriteResourceLoaderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

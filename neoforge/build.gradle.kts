@@ -15,6 +15,8 @@ base {
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+evaluationDependsOn(":core")
+
 neoForge {
     version = property("neo_version") as String
 
@@ -33,6 +35,9 @@ neoForge {
     mods {
         create("${property("id")}") {
             sourceSet(sourceSets.main.get())
+            sourceSet(project(":core").extensions
+                .getByType<JavaPluginExtension>()
+                .sourceSets["main"])
         }
     }
 }
@@ -42,7 +47,11 @@ sourceSets.main {
 }
 
 dependencies {
-    implementation(project(":core"))
+    compileOnly(project(":core"))
+}
+
+tasks.named<Jar>("jar") {
+    from(project(":core").sourceSets.main.get().output)
 }
 
 val generateModMetadata = tasks.register<ProcessResources>("generateModMetadata") {

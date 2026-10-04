@@ -25,8 +25,6 @@ subprojects {
         }
     }
 
-    tasks.named("build") { dependsOn(tasks.named("spotlessApply")) }
-
     extra["id"] = rootProject.findProperty("id")?.toString()
     extra["version"] = rootProject.version.toString()
     extra["group_id"] = rootProject.findProperty("group_id")?.toString()
@@ -46,9 +44,6 @@ tasks.named<JavaCompile>("compileJava") {
     enabled = false
 }
 tasks.jar {
-    enabled = false
-}
-tasks.named<Jar>("jar") {
     enabled = false
 }
 

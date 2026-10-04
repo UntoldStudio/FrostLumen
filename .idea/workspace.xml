@@ -5,10 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="1bc31957-5fa6-4663-b247-f00787c6193c" name="更改" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gradle.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/neoforge/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/neoforge/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/neoforge/src/main/resources/frostlumen.mixins.json" beforeDir="false" afterPath="$PROJECT_DIR$/neoforge/src/main/resources/frostlumen.mixins.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,7 +113,7 @@
       <recent name="D:\Develop\FrostLumen\libs" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Push Changes">
+  <component name="RunManager" selected="Gradle.Release Version">
     <configuration name="Run" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="ms-21" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -127,7 +129,7 @@
       <option name="MAIN_CLASS_NAME" value="net.neoforged.devlaunch.Main" />
       <module name="FrostLumen.neoforge.main" />
       <option name="PROGRAM_PARAMETERS" value="@D:\\Develop\\FrostLumen\\neoforge\\build\\moddev\\clientRunProgramArgs.txt" />
-      <option name="VM_PARAMETERS" value="@D:\\Develop\\FrostLumen\\neoforge\\build\\moddev\\clientRunVmArgs.txt -Dfml.modFolders=frostlumen%%D:\\Develop\\FrostLumen\\neoforge\\build\\classes\\java\\main;frostlumen%%D:\\Develop\\FrostLumen\\neoforge\\build\\resources\\main" />
+      <option name="VM_PARAMETERS" value="@D:\\Develop\\FrostLumen\\neoforge\\build\\moddev\\clientRunVmArgs.txt -Dfml.modFolders=frostlumen%%D:\\Develop\\FrostLumen\\neoforge\\build\\classes\\java\\main;frostlumen%%D:\\Develop\\FrostLumen\\neoforge\\build\\resources\\main;frostlumen%%D:\\Develop\\FrostLumen\\core\\build\\classes\\java\\main;frostlumen%%D:\\Develop\\FrostLumen\\core\\build\\resources\\main" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/neoforge/run" />
       <method v="2">
         <option name="Make" enabled="true" />
