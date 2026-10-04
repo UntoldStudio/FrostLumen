@@ -4,13 +4,13 @@
 ![LWJGL](https://img.shields.io/badge/LWJGL-3.3.3-red)
 ![Log4j](https://img.shields.io/badge/Log4j-2.24.1-brown)
 
-FrostLumen is an embedded UI library that only requires calling one rendering callback and one window handle per frame. The core module is the module you need to rely on, and the neoforge module is a Minecraft Mod bind, example Module is a Independent application example
+FrostLumen is an embedded UI library. You only need to call one rendering callback and pass in a window handle each frame. The core module is the one you depend on. The neoforge module binds it to Minecraft, and the example module is a standalone app example.
 
-This library currently does not support multiple windows
+Multiple windows aren't supported yet.
 
-Note: This library requires the host to provide dependencies for LWJGL and JOML and FastUtil
+Note: the host needs to provide LWJGL, JOML, and FastUtil.
 
-To use this library, add the following to your build script:
+To use it, add this to your build script:
 
 ```kotlin
 repositories {
@@ -18,12 +18,24 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.UntoldStudio:FrostLumen:${version}")
+    implementation("com.github.untoldstudio.frostlumen:core:${version}")
 }
 ```
 
-Documentation is available [here](https://frostlumen.untold.top/).
+If you're using it through NeoForge:
 
-If you encounter any bugs, feel free to open an issue!
+```kotlin
+repositories {
+    maven("https://jitpack.io")
+}
 
-This project is licensed under the Apache2.0
+dependencies {
+    implementation("com.github.untoldstudio.frostlumen:neoforge:${version}")
+}
+```
+
+Docs are [here](https://frostlumen.untold.top/).
+
+If you run into any bugs, open an issue.
+
+Licensed under Apache 2.0.
