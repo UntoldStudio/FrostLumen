@@ -33,6 +33,7 @@ nav:
   - Home: index.md
   - Getting Started:
       - getting-started/first-time.md
+      - getting-started/core-concepts.md
 
 
 
@@ -57,7 +58,7 @@ site_url: https://untoldstudio.github.io/FrostLumen/
 repo_url: https://github.com/UntoldStudio/FrostLumen
 repo_name: FrostLumen
 edit_uri: edit/main/docs/
-copyright: Copyright 2026 Untold Studio
+copyright: Copyright 2026 Untold Studio · <a href="https://github.com/UntoldStudio/FrostLumen/blob/main/LICENSE">Apache-2.0</a>
 
 theme:
   name: material
@@ -133,3 +134,5 @@ extra:
       link: https://github.com/UntoldStudio/FrostLumen/issues/new/choose
     - icon: fontawesome/solid/envelope
       link: mailto:doyouknowuser37@outlook.com
+    - icon: fontawesome/solid/scale-balanced
+      link: https://github.com/UntoldStudio/FrostLumen/blob/main/LICENSE

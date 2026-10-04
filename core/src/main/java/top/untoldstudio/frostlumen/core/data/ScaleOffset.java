@@ -15,9 +15,6 @@
  */
 package top.untoldstudio.frostlumen.core.data;
 
-import top.untoldstudio.frostlumen.core.tool.MathTool;
-import top.untoldstudio.frostlumen.core.gui.ParentNode;
-
 public record ScaleOffset(double xScale, int xOffset, double yScale, int yOffset) {
     public static final ScaleOffset ZERO = new ScaleOffset(0, 0, 0, 0);
 
@@ -76,36 +73,5 @@ public record ScaleOffset(double xScale, int xOffset, double yScale, int yOffset
     }
     public ScaleOffset add(ScaleOffset other){
         return add(other.xScale, other.xOffset, other.yScale, other.yOffset);
-    }
-    public ScaleOffset subScale(double xScale, double yScale){
-        return sub(xScale, 0, yScale, 0);
-    }
-    public ScaleOffset subXScale(double xScale){
-        return subScale(xScale, 0);
-    }
-    public ScaleOffset subYScale(double yScale){
-        return subScale(0, yScale);
-    }
-    public ScaleOffset subOffset(int xOffset, int yOffset){
-        return sub(0, xOffset, 0, yOffset);
-    }
-    public ScaleOffset subXOffset(int xOffset){
-        return subOffset(xOffset, 0);
-    }
-    public ScaleOffset subYOffset(int yOffset){
-        return subOffset(0, yOffset);
-    }
-    public ScaleOffset sub(ScaleOffset other){
-        return sub(other.xScale, other.xOffset, other.yScale, other.yOffset);
-    }
-    public ScaleOffset sub(double xScale, int xOffset, double yScale, int yOffset){
-        return new ScaleOffset(this.xScale - xScale, this.xOffset - xOffset, this.yScale - yScale, this.yOffset - yOffset);
-    }
-
-    public int getRealPixelXInParent(ParentNode<?> node) {
-        return MathTool.round(xOffset + xScale * node.getRealSizeX());
-    }
-    public int getRealPixelYInParent(ParentNode<?> node) {
-        return MathTool.round(yOffset + yScale * node.getRealSizeY());
     }
 }

@@ -38,6 +38,7 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
     protected int realPositionMaxY;
     protected int realSizeX;
     protected int realSizeY;
+    protected float realAngle;
     protected final List<GuiNode<?>> children = new ArrayList<>();
 
     public ScaleOffset getPosition() {

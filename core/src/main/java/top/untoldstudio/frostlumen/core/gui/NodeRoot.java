@@ -126,5 +126,6 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
         realSizeY = window.getFrameBufferHeight();
         realPositionMaxX = window.getFrameBufferWidth();
         realPositionMaxY = window.getFrameBufferHeight();
+        realAngle = 0;
     }
 }

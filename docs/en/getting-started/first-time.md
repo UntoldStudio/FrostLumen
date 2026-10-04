@@ -1,5 +1,7 @@
 # First Use
 
+This chapter will demonstrate initializing the library, embedding it into the render loop, and displaying a full-screen white rectangle.
+
 This UI library does not have its own render loop; it is usually embedded directly into the host program.
 
 When you have created a window and hold its window handle, you can do this to initialize the library:
@@ -17,7 +19,7 @@ Initialize the rendering backend
 
     You should call `Window.from()` on the rendering thread.
 
-    And do not register any GLFW callbacks after `Window.from()`**
+    And do not register any GLFW callbacks after `Window.from()`.
 
 After initializing the Window, you can get the GUI node root:
 
@@ -39,10 +41,12 @@ Now, we will render a rectangle covering the entire screen:
 
 ```java
 ScaleOffset position = ScaleOffset.ZERO; // Position at the top-left corner
-ScaleOffset size = ScaleOffset.fromScale(1, 1); // Size covers the entire screen
+ScaleOffset size = ScaleOffset.fromScale(1, 1); // Fill the parent node; here the parent node is NodeRoot, filling the parent node means filling the entire screen
 Frame frame = new Frame(position, size); // Create a new Frame object
 root.addChild(frame); // Attach the Frame to the node root
 ```
+
+The detailed usage of ScaleOffset can be found in the Core Concepts chapter.
 
 !!! warning
 

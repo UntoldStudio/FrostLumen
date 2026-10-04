@@ -46,7 +46,6 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     protected double xAnchor = 0;
     protected double yAnchor = 0;
     protected float angle = 0;
-    protected float realAngle = 0;
     protected Set<MouseButton> currentMouseClickButtons = new HashSet<>();
     protected boolean mouseInNode;
     protected double backgroundBlurStrength = 0;
@@ -100,13 +99,13 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     }
 
     protected void operationPosition(){
-        if (getParent() != null && getParent() instanceof GuiNode<?> node){
+        if (getParent() != null && getParent() instanceof ParentNode<?> node){
             operationPosition(node, node.realPositionX, node.realPositionY);
         } else {
             operationPosition(null, 0, 0);
         }
     }
-    protected void operationPosition(GuiNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
+    protected void operationPosition(ParentNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
         if (root == null) return;
         Window window = root.getWindow();
 

@@ -1,5 +1,7 @@
 # 首次使用
 
+本章节将会演示初始化库,嵌入渲染循环并且在屏幕上显示一个全屏的白色矩形
+
 本UI库没有自己的渲染循环, 它通常直接嵌入宿主程序中.
 
 当你创建了一个窗口并持有窗口句柄的时候,你可以这么做以初始化库:
@@ -17,7 +19,7 @@ Window window = Window.from(windowHandle, RenderProviderType.OPENGL); //目前�
 
     你应该在渲染线程调用`Window.from()`
 
-    并且不要在`Window.from()`之后注册任何GLFW回调**
+    并且不要在`Window.from()`之后注册任何GLFW回调
 
 初始化Window后,你可以获取GUI节点根:
 
@@ -39,10 +41,12 @@ root.render();
 
 ```java
 ScaleOffset position = ScaleOffset.ZERO; //位置在左上角
-ScaleOffset size = ScaleOffset.fromScale(1, 1); //大小覆盖全屏
+ScaleOffset size = ScaleOffset.fromScale(1, 1); //占满父节点,这里父节点是NodeRoot,占满父节点就是占满全屏
 Frame frame = new Frame(position, size); //新建Frame对象
 root.addChild(frame); //将Frame挂到节点根
 ```
+
+ScaleOffset可以在核心概念章节查看详细用法
 
 !!! warning
 
