@@ -31,22 +31,14 @@ public abstract class NumberTween extends Tween {
     }
 
     @Override
-    protected void resumeTween() {
-        if (isCompleted) {
-            pause();
-        }
-    }
-
-    @Override
     protected void stepTween(long delta) {
-        //resume但是Tween已经播放完成的时候会走这里
-        if (currentTime >= targetTime) {
+        /*if (currentTime >= targetTime) {
             playing = false;
             isCompleted = true;
             applyEased(1.0);
             triggerOnCompleteCallback();
             return;
-        }
+        }*/
 
         currentTime += delta;
 
@@ -70,8 +62,8 @@ public abstract class NumberTween extends Tween {
         return isCompleted;
     }
 
-    protected NumberTween(long time, TweenFunction function, boolean removeOnFinish) {
-        super(removeOnFinish);
+    protected NumberTween(long time, TweenFunction function, boolean removeOnComplete) {
+        super(removeOnComplete);
 
         if (time <= 0) throw new TweenException("time <= 0");
 

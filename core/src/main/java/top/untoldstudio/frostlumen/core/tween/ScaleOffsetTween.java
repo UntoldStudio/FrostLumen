@@ -33,8 +33,8 @@ public class ScaleOffsetTween extends ParentTween {
         registerOnUpdateCallback(() -> consumer.accept(getCurrentValue()));
     }
 
-    public ScaleOffsetTween(ScaleOffset start, ScaleOffset end, long time, TweenFunction function, boolean removeOnFinish) {
-        super(removeOnFinish);
+    public ScaleOffsetTween(ScaleOffset start, ScaleOffset end, long time, TweenFunction function, boolean removeOnComplete) {
+        super(removeOnComplete);
         xScaleTween = new DoubleTween(start.xScale(), end.xScale(), time, function, false);
         xOffsetTween = new IntTween(start.xOffset(), end.xOffset(), time, function, false);
         yScaleTween = new DoubleTween(start.yScale(), end.yScale(), time, function, false);

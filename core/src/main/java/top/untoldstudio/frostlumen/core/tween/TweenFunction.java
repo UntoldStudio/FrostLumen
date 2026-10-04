@@ -15,6 +15,7 @@
  */
 package top.untoldstudio.frostlumen.core.tween;
 
+@FunctionalInterface
 public interface TweenFunction {
     double computeEased(double percent);
 }

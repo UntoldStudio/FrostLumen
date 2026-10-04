@@ -62,6 +62,7 @@ public abstract class Tween {
     protected abstract void stepTween(long delta);
 
     public final void resume() {
+        if (isCompleted()) return;
         playing = true;
         resumeTween();
     }

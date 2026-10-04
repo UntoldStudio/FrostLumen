@@ -89,7 +89,7 @@ public abstract class ParentTween extends Tween {
         }
     }
 
-    protected ParentTween(boolean removeOnFinish) {
-        super(removeOnFinish);
+    protected ParentTween(boolean removeOnComplete) {
+        super(removeOnComplete);
     }
 }
