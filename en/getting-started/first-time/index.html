@@ -16,6 +16,8 @@
         <link rel="prev" href="../../">
       
       
+        <link rel="next" href="../core-concepts/">
+      
       
         
           <link rel="alternate" href="./" hreflang="en">
@@ -328,6 +330,8 @@
       
         
       
+        
+      
     
     
     
@@ -408,6 +412,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../core-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -467,6 +499,7 @@
 
 
 <h1 id="first-use">First Use<a class="headerlink" href="#first-use" title="Permanent link">&para;</a></h1>
+<p>This chapter will demonstrate initializing the library, embedding it into the render loop, and displaying a full-screen white rectangle.</p>
 <p>This UI library does not have its own render loop; it is usually embedded directly into the host program.</p>
 <p>When you have created a window and hold its window handle, you can do this to initialize the library:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">Window</span><span class="w"> </span><span class="n">window</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Window</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">windowHandle</span><span class="p">,</span><span class="w"> </span><span class="n">RenderProviderType</span><span class="p">.</span><span class="na">OPENGL</span><span class="p">);</span><span class="w"> </span><span class="c1">// Currently we only have an OpenGL backend</span>
@@ -477,7 +510,7 @@ Initialize the rendering backend</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>You should call <code>Window.from()</code> on the rendering thread.</p>
-<p>And do not register any GLFW callbacks after <code>Window.from()</code>**</p>
+<p>And do not register any GLFW callbacks after <code>Window.from()</code>.</p>
 </div>
 <p>After initializing the Window, you can get the GUI node root:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">NodeRoot</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">window</span><span class="p">.</span><span class="na">getNodeRoot</span><span class="p">();</span>
@@ -490,10 +523,11 @@ Initialize the rendering backend</p>
 <p>This way, the UI library can perform rendering normally.</p>
 <p>Now, we will render a rectangle covering the entire screen:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">ScaleOffset</span><span class="w"> </span><span class="n">position</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">ZERO</span><span class="p">;</span><span class="w"> </span><span class="c1">// Position at the top-left corner</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">ScaleOffset</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// Size covers the entire screen</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">ScaleOffset</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// Fill the parent node; here the parent node is NodeRoot, filling the parent node means filling the entire screen</span>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">Frame</span><span class="w"> </span><span class="n">frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Frame</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span><span class="w"> </span><span class="c1">// Create a new Frame object</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">root</span><span class="p">.</span><span class="na">addChild</span><span class="p">(</span><span class="n">frame</span><span class="p">);</span><span class="w"> </span><span class="c1">// Attach the Frame to the node root</span>
 </span></code></pre></div>
+<p>The detailed usage of ScaleOffset can be found in the Core Concepts chapter.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Do not recreate the above code every time in the render loop, because we are a retained-mode UI library. This will cause a new Frame to be attached to the node tree every frame, severely degrading performance.</p>
@@ -550,6 +584,22 @@ Initialize the rendering backend</p>
           </a>
         
         
+          
+          <a href="../core-concepts/" class="md-footer__link md-footer__link--next" aria-label="Next: Core Concepts">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Core Concepts
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
       </nav>
     
   
@@ -558,7 +608,7 @@ Initialize the rendering backend</p>
       <div class="md-copyright">
   
     <div class="md-copyright__highlight">
-      Copyright 2026 Untold Studio
+      Copyright 2026 Untold Studio · <a href="https://github.com/UntoldStudio/FrostLumen/blob/main/LICENSE">Apache-2.0</a>
     </div>
   
   
@@ -600,6 +650,17 @@ Initialize the rendering backend</p>
     
     <a href="mailto:doyouknowuser37@outlook.com" target="_blank" rel="noopener" title="" class="md-social__link">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4l208 156a48 48 0 0 0 57.6 0l208-156c12.1-9.1 19.2-23.3 19.2-38.4 0-26.5-21.5-48-48-48zM0 196v188c0 35.3 28.7 64 64 64h384c35.3 0 64-28.7 64-64V196L313.6 344.8c-34.1 25.6-81.1 25.6-115.2 0z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/UntoldStudio/FrostLumen/blob/main/LICENSE" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M384 32h128c17.7 0 32 14.3 32 32s-14.3 32-32 32H398.4c-5.2 25.8-22.9 47.1-46.4 57.3V448h160c17.7 0 32 14.3 32 32s-14.3 32-32 32H128c-17.7 0-32-14.3-32-32s14.3-32 32-32h160V153.3c-23.5-10.3-41.2-31.6-46.4-57.3H128c-17.7 0-32-14.3-32-32s14.3-32 32-32h128c14.6-19.4 37.8-32 64-32s49.4 12.6 64 32m55.6 288h144.8L512 195.8zm72.4 96c-62.9 0-115.2-34-126-78.9-2.6-11 1-22.3 6.7-32.1l95.2-163.2c5-8.6 14.2-13.8 24.1-13.8s19.1 5.3 24.1 13.8L631.3 305c5.7 9.8 9.3 21.1 6.7 32.1-10.8 44.8-63.1 78.9-126 78.9M126.8 195.8 54.4 320h144.9zM.9 337.1c-2.6-11 1-22.3 6.7-32.1l95.2-163.2c5-8.6 14.2-13.8 24.1-13.8s19.1 5.3 24.1 13.8L246.2 305c5.7 9.8 9.3 21.1 6.7 32.1-10.8 44.8-63.1 78.9-126 78.9S11.7 382 .9 337.1"/></svg>
     </a>
   
 </div>

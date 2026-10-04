@@ -8,6 +8,13 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/"/>
     </url>
     <url>
+        <loc>https://untoldstudio.github.io/FrostLumen/getting-started/core-concepts/</loc>
+        <lastmod>2026-10-04</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/getting-started/core-concepts/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/getting-started/core-concepts/"/>
+    </url>
+    <url>
         <loc>https://untoldstudio.github.io/FrostLumen/getting-started/first-time/</loc>
         <lastmod>2026-10-04</lastmod>
         <changefreq>daily</changefreq>
@@ -20,6 +27,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/"/>
+    </url>
+    <url>
+        <loc>https://untoldstudio.github.io/FrostLumen/en/getting-started/core-concepts/</loc>
+        <lastmod>2026-10-04</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://untoldstudio.github.io/FrostLumen/en/getting-started/core-concepts/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://untoldstudio.github.io/FrostLumen/getting-started/core-concepts/"/>
     </url>
     <url>
         <loc>https://untoldstudio.github.io/FrostLumen/en/getting-started/first-time/</loc>
