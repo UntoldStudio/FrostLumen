@@ -7,6 +7,7 @@ build/
 
 /run/
 /neoforge/run/
+/.venv/
 
 ### IntelliJ IDEA ###
 .idea/modules.xml
@@ -44,3 +45,6 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### MkDocs ###
+/site/

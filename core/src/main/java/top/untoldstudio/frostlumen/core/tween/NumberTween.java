@@ -31,11 +31,19 @@ public abstract class NumberTween extends Tween {
     }
 
     @Override
+    protected void resumeTween() {
+        if (isCompleted) {
+            pause();
+        }
+    }
+
+    @Override
     protected void stepTween(long delta) {
+        //resume但是Tween已经播放完成的时候会走这里
         if (currentTime >= targetTime) {
             playing = false;
-            applyEased(1.0);
             isCompleted = true;
+            applyEased(1.0);
             triggerOnCompleteCallback();
             return;
         }

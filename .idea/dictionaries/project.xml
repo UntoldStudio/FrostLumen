@@ -3,12 +3,15 @@
     <words>
       <w>HRESIZE</w>
       <w>IBEAM</w>
+      <w>Noto</w>
       <w>SMOOTHERSTEP</w>
       <w>VRESIZE</w>
       <w>aTexCoord</w>
       <w>clinit</w>
       <w>forstlumen</w>
       <w>frostlumen</w>
+      <w>linenums</w>
+      <w>mkdocs</w>
       <w>neoforge</w>
     </words>
   </dictionary>

@@ -1,0 +1,110 @@
+site_name: FrostLumen Docs
+site_description: FrostLumen Docs
+site_url: https://untoldstudio.github.io/FrostLumen/
+repo_url: https://github.com/UntoldStudio/FrostLumen
+repo_name: FrostLumen
+edit_uri: edit/main/docs/
+copyright: Copyright 2026 Untold Studio
+
+theme:
+  name: material
+  locale: en
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - navigation.prune
+    - search.suggest
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.action.edit
+    - content.action.view
+    - content.tooltips
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+plugins:
+  - search:
+      lang: [en, zh]
+      separator: '[\s\u200b\-]'
+  - i18n:
+      docs_structure: folder
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          name: English
+          default: true
+          build: true
+          site_name: FrostLumen Documentation
+        - locale: zh
+          name: 中文
+          build: true
+          site_name: FrostLumen 文档
+          nav_translations:
+            Home: 首页
+
+
+
+nav:
+  - Home: index.md
+
+
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - footnotes
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/UntoldStudio/FrostLumen
+    - icon: fontawesome/solid/bug
+      link: https://github.com/UntoldStudio/FrostLumen/issues/new/choose
+    - icon: fontawesome/solid/envelope
+      link: mailto:doyouknowuser37@outlook.com

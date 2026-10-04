@@ -27,7 +27,7 @@ public final class IntervalMap<V> {
     private final Double2ObjectRBTreeMap<Range<V>> map = new Double2ObjectRBTreeMap<>();
 
     /**
-     * 返回小于等于指定值的最大 key，不存在时返回 NaN。
+     * 返回小于等于指定值的最大 key, 不存在时返回 NaN
      */
     private double floorKey(double key) {
         if (map.containsKey(key)) return key;
@@ -36,7 +36,7 @@ public final class IntervalMap<V> {
     }
 
     /**
-     * 返回严格大于指定值的最小 key，不存在时返回 NaN。
+     * 返回严格大于指定值的最小 key, 不存在时返回 NaN
      */
     private double higherKey(double key) {
         Double2ObjectSortedMap<Range<V>> tail = map.tailMap(key);
@@ -49,16 +49,16 @@ public final class IntervalMap<V> {
     }
 
     /**
-     * 放入区间，与已有区间重叠时覆盖（删除重叠的旧区间）。
+     * 放入区间, 与已有区间重叠时覆盖（删除重叠的旧区间）
      */
     public void put(double start, double end, V value) {
         put(start, end, value, true);
     }
 
     /**
-     * 放入区间。
+     * 放入区间
      *
-     * @param overwrite 为 true 时删除所有重叠的旧区间，为 false 时抛出异常
+     * @param overwrite 为 true 时删除所有重叠的旧区间, 为 false 时抛出异常
      */
     public void put(double start, double end, V value, boolean overwrite) {
         if (Double.isNaN(start) || Double.isNaN(end)) {
@@ -108,7 +108,7 @@ public final class IntervalMap<V> {
     }
 
     /**
-     * 命中时返回所在区间，未命中时返回 null。
+     * 命中时返回所在区间, 未命中时返回 null
      */
     public Range<V> getRange(double key) {
         if (Double.isNaN(key)) return null;

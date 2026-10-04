@@ -36,7 +36,7 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
 
     public void init() {
         render.initRender();
-        lastRenderTime = System.currentTimeMillis();
+        lastRenderTime = System.nanoTime();
     }
 
     @Override
@@ -66,8 +66,9 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
         } else {
             render.setCursorShape(CursorShape.ARROW);
         }
-        long now = System.currentTimeMillis();
-        long delta = now - lastRenderTime;
+
+        long now = System.nanoTime();
+        long delta = (now - lastRenderTime) / 1_000_000;
 
         tweenScheduler.step(delta);
 
