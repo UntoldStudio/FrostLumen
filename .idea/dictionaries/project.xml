@@ -7,12 +7,14 @@
       <w>SMOOTHERSTEP</w>
       <w>VRESIZE</w>
       <w>aTexCoord</w>
+      <w>addY</w>
       <w>clinit</w>
       <w>forstlumen</w>
       <w>frostlumen</w>
       <w>linenums</w>
       <w>mkdocs</w>
       <w>neoforge</w>
+      <w>temurin</w>
     </words>
   </dictionary>
 </component>
