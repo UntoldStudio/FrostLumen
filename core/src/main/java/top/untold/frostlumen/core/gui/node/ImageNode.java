@@ -59,7 +59,7 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
         }
 
         /**
-         * {@link ResourceManager :getIResourceManagerFromThreadLocal()}
+         * {@link ResourceManager :getResourceManagerFromThreadLocal()}
          * 如果你正在使用MC绑定你可以看看top.untoldstudio.frostlumen.neoforge.tool.MinecraftResourceAdapter
          */
         public ImageRenderDescription setTexture(Texture texture) {

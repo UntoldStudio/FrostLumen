@@ -46,7 +46,7 @@ public class Main {
 
         Window window = Window.from(windowHandle, RenderProviderType.OPENGL);
 
-        ResourceManager resourceManager = ResourceManager.getIResourceManagerFromThreadLocal();
+        ResourceManager resourceManager = ResourceManager.getResourceManagerFromThreadLocal();
         ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-blue.jpg"), ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(1.5, 1.5))
                 .normal().setImageAlignment(ImageAlignment.FILL).getNode()
                 .onHover().setTexture(resourceManager.loadTexture("/oiiaioiiai-red.jpg")).getNode()

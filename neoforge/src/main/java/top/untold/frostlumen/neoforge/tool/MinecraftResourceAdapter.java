@@ -48,7 +48,7 @@ public class MinecraftResourceAdapter {
             throw new ResourceException("Cannot load texture from resource item:" + item);
         }
 
-        return ResourceManager.getIResourceManagerFromThreadLocal().loadTexture(data, false);
+        return ResourceManager.getResourceManagerFromThreadLocal().loadTexture(data, false);
     }
     public static Texture loadTextureFromResourceLocation(ResourceLocation location) {
         boolean isNiceSlice = false;
@@ -85,9 +85,9 @@ public class MinecraftResourceAdapter {
         }
 
         if (isNiceSlice) {
-            return ResourceManager.getIResourceManagerFromThreadLocal().loadNiceSliceTexture(data, NiceSliceType.FIXED_BORDER, stretchInner, false, left, right, top, bottom);
+            return ResourceManager.getResourceManagerFromThreadLocal().loadNiceSliceTexture(data, NiceSliceType.FIXED_BORDER, stretchInner, false, left, right, top, bottom);
         } else {
-            return ResourceManager.getIResourceManagerFromThreadLocal().loadTexture(data, false);
+            return ResourceManager.getResourceManagerFromThreadLocal().loadTexture(data, false);
         }
     }
 }

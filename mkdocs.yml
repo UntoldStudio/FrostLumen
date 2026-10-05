@@ -27,6 +27,7 @@ plugins:
             Home: 首页
             Getting Started: 快速指引
             Core: 核心
+            Advanced: 高级
 
 
 
@@ -39,6 +40,8 @@ nav:
       - core/node-tree.md
       - core/node-appearance.md
       - core/tween.md
+  - Advanced:
+      - advanced/custom-nodes.md
 
 
 

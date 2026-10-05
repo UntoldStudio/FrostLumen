@@ -104,7 +104,8 @@ public abstract class GuiRender implements ResourceManager {
     public void drawTriangle(int ax, int ay, int bx, int by, int cx, int cy, float angle,
                              int aRed, int aGreen, int aBlue, int aAlpha,
                              int bRed, int bGreen, int bBlue, int bAlpha,
-                             int cRed, int cGreen, int cBlue, int cAlpha) {
+                             int cRed, int cGreen, int cBlue, int cAlpha
+    ) {
         int centerX = (ax + bx + cx) / 3;
         int centerY = (ay + by + cy) / 3;
 
@@ -135,7 +136,8 @@ public abstract class GuiRender implements ResourceManager {
                                      int bRed, int bGreen, int bBlue, int bAlpha,
                                      int cRed, int cGreen, int cBlue, int cAlpha,
                                      int dRed, int dGreen, int dBlue, int dAlpha,
-                                     boolean stretchInner) {
+                                     boolean stretchInner
+    ) {
         switch (type) {
             case PROPORTIONAL -> drawNiceSliceTextureProportional(textureId, textureWidth, textureHeight, borderLeft, borderRight, borderTop, borderBottom, targetMinX, targetMinY, targetMaxX, targetMaxY, angle, textureU0, textureV0, textureU3, textureV3, aRed, aGreen, aBlue, aAlpha, bRed, bGreen, bBlue, bAlpha, cRed, cGreen, cBlue, cAlpha, dRed, dGreen, dBlue, dAlpha, stretchInner);
             case FIXED_BORDER -> drawNiceSliceTextureFixed(textureId, textureWidth, textureHeight, borderLeft, borderRight, borderTop, borderBottom, targetMinX, targetMinY, targetMaxX, targetMaxY, angle, textureU0, textureV0, textureU3, textureV3, aRed, aGreen, aBlue, aAlpha, bRed, bGreen, bBlue, bAlpha, cRed, cGreen, cBlue, cAlpha, dRed, dGreen, dBlue, dAlpha, stretchInner);
@@ -905,7 +907,7 @@ public abstract class GuiRender implements ResourceManager {
     protected abstract void blurFramebufferRegion(int x, int y, int width, int height, float angle, int radius);
 
     public GuiRender(long windowHandle) {
-        if (ResourceManager.getIResourceManagerFromThreadLocal() == null) {
+        if (ResourceManager.getResourceManagerFromThreadLocal() == null) {
             ResourceManager.THREAD_LOCAL.set(this);
         }
 

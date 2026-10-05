@@ -76,7 +76,7 @@ public record Font(FT_Face face, String path, ByteBuffer data, int id) {
     }
 
     public static Font loadFontFromCurrentResourceManager(String path) {
-        return ResourceManager.getIResourceManagerFromThreadLocal().loadFont(path);
+        return ResourceManager.getResourceManagerFromThreadLocal().loadFont(path);
     }
     public static Font getDefaultFont() {
         return loadFontFromCurrentResourceManager(DEFAULT_FONT_PATH);

@@ -31,9 +31,9 @@ import java.util.function.Consumer;
 public class ImageButton extends ImageNode<ImageButton> {
     private final OneArgListenerRegistry<MouseButtonEvent> mouseButtonEventListenerRegistry = new OneArgListenerRegistry<>();
     private final Set<MouseButton> canTriggerMouseButtons = new HashSet<>();
-    private final ImageNode<ImageButton>.ImageRenderDescription normal;
-    private final ImageNode<ImageButton>.ImageRenderDescription onHover = new ImageRenderDescription();
-    private final ImageNode<ImageButton>.ImageRenderDescription onClick = new ImageRenderDescription();
+    private final ImageRenderDescription normal;
+    private final ImageRenderDescription onHover = new ImageRenderDescription();
+    private final ImageRenderDescription onClick = new ImageRenderDescription();
     private boolean drawBackground = false;
 
     public ImageButton addCanTriggerMouseButton(MouseButton button) {
@@ -79,6 +79,7 @@ public class ImageButton extends ImageNode<ImageButton> {
     @Override
     protected void onMouseButtonEvent(MouseButtonEvent event) {
         if (!Collections.disjoint(canTriggerMouseButtons, currentMouseClickButtons)) {
+            event.cancel();
             mouseButtonEventListenerRegistry.trigger(event);
         }
     }
@@ -86,13 +87,13 @@ public class ImageButton extends ImageNode<ImageButton> {
     public boolean isDrawBackground() {
         return drawBackground;
     }
-    public ImageNode<ImageButton>.ImageRenderDescription normal() {
+    public ImageRenderDescription normal() {
         return normal;
     }
-    public ImageNode<ImageButton>.ImageRenderDescription onHover() {
+    public ImageRenderDescription onHover() {
         return onHover;
     }
-    public ImageNode<ImageButton>.ImageRenderDescription onClick() {
+    public ImageRenderDescription onClick() {
         return onClick;
     }
 
@@ -103,7 +104,7 @@ public class ImageButton extends ImageNode<ImageButton> {
 
     public ImageButton(Texture normal, ScaleOffset position, ScaleOffset size) {
         super(position, size);
-        this.normal = new ImageNode<ImageButton>.ImageRenderDescription().setTexture(normal);
+        this.normal = new ImageRenderDescription().setTexture(normal);
         canTriggerMouseButtons.add(MouseButton.LEFT);
     }
 }

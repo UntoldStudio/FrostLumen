@@ -20,6 +20,7 @@ import top.untold.frostlumen.core.gui.ParentNode;
 import top.untold.frostlumen.core.render.GuiRender;
 import top.untold.frostlumen.core.texture.Texture;
 
+// --8<-- [start:classDefinition]
 public class ImageLabel extends ImageNode<ImageLabel> {
     private final ImageRenderDescription imageRenderDescription;
     private boolean drawBackground = true;
@@ -58,3 +59,4 @@ public class ImageLabel extends ImageNode<ImageLabel> {
         this.imageRenderDescription = new ImageRenderDescription().setTexture(texture);
     }
 }
+// --8<-- [end:classDefinition]

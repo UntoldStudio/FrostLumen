@@ -32,7 +32,7 @@ public interface ResourceManager {
     Texture loadNiceSliceTexture(byte[] data, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom);
     Font loadFont(String path);
 
-    static ResourceManager getIResourceManagerFromThreadLocal() {
+    static ResourceManager getResourceManagerFromThreadLocal() {
         return THREAD_LOCAL.get();
     }
 }
