@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1bc31957-5fa6-4663-b247-f00787c6193c" name="更改" comment="" />
+    <list default="true" id="1bc31957-5fa6-4663-b247-f00787c6193c" name="更改" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/project.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/markdown.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/neoforge/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/neoforge/build.gradle.kts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -106,7 +117,7 @@
       <recent name="D:\Develop\FrostLumen\libs" />
     </key>
   </component>
-  <component name="RunManager" selected="Gradle.Push Changes">
+  <component name="RunManager" selected="应用程序.Run">
     <configuration name="Run" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="ms-21" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />

@@ -40,11 +40,15 @@ public class DoubleTween extends NumberTween {
         triggerOnUpdateCallback();
     }
 
+    // --8<-- [start:bindSetter]
     public void registerAutoCallOnSetter(DoubleConsumer consumer) {
         registerOnUpdateCallback(() -> consumer.accept(currentValue));
     }
+    // --8<-- [end:bindSetter]
 
+    // --8<-- [start:getCurrentValue]
     public double getCurrentValue() {
         return currentValue;
     }
+    // --8<-- [end:getCurrentValue]
 }

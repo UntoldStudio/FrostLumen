@@ -53,39 +53,46 @@ public class Main {
                 .onClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
                 .setAnchor(0.5, 0.5)
                 .setDrawBackground(true)
-                .setBackgroundCornerRadius(10)
-                ;
+                .setBackgroundCornerRadius(10);
         Frame frame1 = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
                 .setAnchor(0.5, 0.5).setBackgroundColor(new RGBA(210, 230, 255, 90))
                 .setClipChildren(true)
                 .setAngle(20f)
-                .setBackgroundCornerRadius(10)
-                ;
+                .setBackgroundCornerRadius(10);
         Frame frame2 = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.3, 0.3))
                 .setAnchor(0.5, 0.5)
                 .setBackgroundColor(new RGBA(210, 230, 255, 0))
                 .setBackgroundBlurStrength(0.7)
                 .setBackgroundCornerRadius(10)
-                .setAngle(100)
-                ;
+                .setAngle(100);
 
         CustomTweenFunction tweenFunction = new CustomTweenFunction(TweenFunctions.LINEAR)
-                .setSegment(0, 0.2, TweenFunctions.BOUNCE_IN_OUT, child1 -> {
-                    child1.setSegment(0, 0.8, TweenFunctions.QUINT_IN_OUT, childChild1 -> {
-                        childChild1.setSegment(0, 0.5, TweenFunctions.QUINT_IN_OUT, childChildChild1 -> {
-                        });
-                    })
-                            .setSegment(0.8, 1, child1, childChild2 -> {
+                .setNestedSegment(0, 0.2, TweenFunctions.BOUNCE_IN_OUT, child1 -> {
+                    child1.setNestedSegment(0, 0.8, TweenFunctions.QUINT_IN_OUT, childChild1 -> {
+                                childChild1.setNestedSegment(0, 0.5, TweenFunctions.QUINT_IN_OUT, childChildChild1 -> {
+                                });
+                            })
+                            .setNestedSegment(0.8, 1, child1, childChild2 -> {
                             })
                     ;
                 })
-                .setSegment(0.2, 0.5, TweenFunctions.SINE_IN_OUT, child2 -> {
+                .setNestedSegment(0.2, 0.5, TweenFunctions.SINE_IN_OUT, child2 -> {
                 })
-                .setSegment(0.5, 0.7, TweenFunctions.LINEAR, child3 -> {
+                .setNestedSegment(0.5, 0.7, TweenFunctions.LINEAR, child3 -> {
                 })
-                .setSegment(0.7, 1, TweenFunctions.BOUNCE_OUT, child4 -> {
-                })
-                ;
+                .setNestedSegment(0.7, 1, TweenFunctions.BOUNCE_OUT, child4 -> {
+                });
+        CustomTweenFunction tweenFunction1 = new CustomTweenFunction()
+                .setSegment(0, 0.5, TweenFunctions.LINEAR)
+                .setSegment(0.5, 1, TweenFunctions.QUAD_IN);
+        CustomTweenFunction tweenFunction2 = new CustomTweenFunction()
+                .setSegment(0, 0.5, tweenFunction1)
+                .setSegment(0.5, 1, TweenFunctions.CUBIC_IN);
+        CustomTweenFunction tweenFunction3 = new CustomTweenFunction()
+                .setNestedSegment(0, 0.5, function -> function
+                        .setSegment(0, 0.5, TweenFunctions.LINEAR)
+                        .setSegment(0.5, 1, TweenFunctions.QUAD_IN))
+                .setSegment(0.5, 1, TweenFunctions.CUBIC_IN);
 
         ScaleOffsetTween scaleOffsetTween = new ScaleOffsetTween(ScaleOffset.ZERO, ScaleOffset.fromScale(1, 1), 1000, tweenFunction, false);
         ScaleOffsetTween scaleOffsetTween1 = new ScaleOffsetTween(ScaleOffset.fromScale(1, 1), ScaleOffset.ZERO, 1000, tweenFunction, false);

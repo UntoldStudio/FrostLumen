@@ -4,7 +4,7 @@ Welcome to the official FrostLumen documentation.
 
 Here, we will demonstrate the usage of various APIs as well as important notes. Please see the navigation bar on the left.
 
-[Click me for the full Javadoc](javadoc/index.html){ .md-button .md-button--primary }
+Or view the [Javadoc](javadoc/index.html).
 
 FrostLumen is licensed under the [Apache License 2.0](https://github.com/UntoldStudio/FrostLumen/blob/main/LICENSE).
 

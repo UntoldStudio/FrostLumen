@@ -49,10 +49,19 @@ public class CustomTweenFunction implements TweenFunction {
 
     /**
      * 在当前对象上增加一段, 并新建一个 {@link CustomTweenFunction} 作为该段的缓动函数
-     * 新对象的越界函数由 {@code nestedOutOfRangeFunction} 指定, 随后通过 {@code nestedConfigurator} 配置
+     * 新对象的越界函数由为LINEAR, 新对象随后通过 {@code nestedConfigurator} 配置
      * 返回 {@code this}, 嵌套对象的配置在回调内完成
      */
-    public CustomTweenFunction setSegment(double start, double end, TweenFunction nestedOutOfRangeFunction, Consumer<CustomTweenFunction> nestedConfigurator) {
+    public CustomTweenFunction setNestedSegment(double start, double end, Consumer<CustomTweenFunction> function) {
+        return setNestedSegment(start, end, TweenFunctions.LINEAR, function);
+    }
+
+    /**
+     * 在当前对象上增加一段, 并新建一个 {@link CustomTweenFunction} 作为该段的缓动函数
+     * 新对象的越界函数由 {@code nestedOutOfRangeFunction} 指定, 新对象随后通过 {@code nestedConfigurator} 配置
+     * 返回 {@code this}, 嵌套对象的配置在回调内完成
+     */
+    public CustomTweenFunction setNestedSegment(double start, double end, TweenFunction nestedOutOfRangeFunction, Consumer<CustomTweenFunction> nestedConfigurator) {
         CustomTweenFunction function = new CustomTweenFunction(nestedOutOfRangeFunction);
         setSegment(start, end, function);
         nestedConfigurator.accept(function);
@@ -65,6 +74,9 @@ public class CustomTweenFunction implements TweenFunction {
         return this;
     }
 
+    public CustomTweenFunction() {
+        this(TweenFunctions.LINEAR);
+    }
     public CustomTweenFunction(TweenFunction outOfRangeFunction) {
         setOutOfRangeFunction(outOfRangeFunction);
     }

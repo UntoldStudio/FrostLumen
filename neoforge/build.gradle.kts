@@ -54,9 +54,12 @@ tasks.named<Jar>("jar") {
     from(project(":core").sourceSets.main.get().output)
 }
 
+val minecraftVersion = project.property("minecraft_version") as String
+
 val generateModMetadata = tasks.register<ProcessResources>("generateModMetadata") {
+    description = "生成模组数据"
     val replaceProperties = mapOf(
-        "minecraft_version" to (project.property("minecraft_version") as String),
+        "minecraft_version" to (minecraftVersion),
         "minecraft_version_range" to (project.property("minecraft_version_range") as String),
         "neo_version" to (project.property("neo_version") as String),
         "neo_version_range" to (project.property("neo_version_range") as String),
@@ -84,7 +87,7 @@ publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             from(components["java"])
-            artifactId = "neoforge"
+            artifactId = "neoforge+build${minecraftVersion}"
         }
     }
 }

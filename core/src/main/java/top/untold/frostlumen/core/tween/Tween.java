@@ -78,7 +78,7 @@ public abstract class Tween {
         resetTween();
     }
 
-    protected void resetTween() {}
+    protected abstract void resetTween();
 
     public final boolean isPlaying() {
         return playing;

@@ -89,10 +89,14 @@ public class Window {
     public static Window from(long windowHandle, RenderProviderType type) {
         Window window = WINDOW_MAP.get(windowHandle);
         if (window != null) return window;
-        return new Window(windowHandle, switch (type) {
+        return from(windowHandle, switch (type) {
             case OPENGL -> new OpenGLGuiRender(windowHandle);
             //TODO:Vulkan
         });
+    }
+
+    public static Window from(long windowHandle, GuiRender render) {
+        return new Window(windowHandle, render);
     }
 
     private void init() {

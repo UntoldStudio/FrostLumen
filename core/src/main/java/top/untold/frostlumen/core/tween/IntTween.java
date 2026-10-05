@@ -19,6 +19,7 @@ import top.untold.frostlumen.core.tool.MathTool;
 
 import java.util.function.IntConsumer;
 
+// --8<-- [start:classDefinition]
 public class IntTween extends NumberTween {
     private final int startValue;
     private final int endValue;
@@ -50,3 +51,4 @@ public class IntTween extends NumberTween {
         return currentValue;
     }
 }
+// --8<-- [end:classDefinition]

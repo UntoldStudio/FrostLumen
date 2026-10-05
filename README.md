@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.UntoldStudio.FrostLumen:neoforge:${version}")
+    implementation("com.github.UntoldStudio.FrostLumen:neoforge+build${minecraftVersion}:${version}")
 }
 ```
 

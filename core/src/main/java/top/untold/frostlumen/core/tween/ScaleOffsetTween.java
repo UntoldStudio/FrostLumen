@@ -19,6 +19,7 @@ import top.untold.frostlumen.core.data.ScaleOffset;
 
 import java.util.function.Consumer;
 
+// --8<-- [start:classDefinition]
 public class ScaleOffsetTween extends ParentTween {
     private final DoubleTween xScaleTween;
     private final IntTween xOffsetTween;
@@ -43,3 +44,4 @@ public class ScaleOffsetTween extends ParentTween {
         addChildren(xScaleTween, xOffsetTween, yScaleTween, yOffsetTween);
     }
 }
+// --8<-- [end:classDefinition]
