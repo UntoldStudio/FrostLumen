@@ -33,6 +33,7 @@ import top.untold.frostlumen.core.tween.TweenScheduler;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL32.*;
 
+// --8<-- [start:classDefinition]
 public class Main {
     public static void main(String[] args) {
         if (!glfwInit()) {
@@ -47,7 +48,7 @@ public class Main {
         Window window = Window.from(windowHandle, RenderProviderType.OPENGL);
 
         ResourceManager resourceManager = ResourceManager.getResourceManagerFromThreadLocal();
-        ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-blue.jpg"), ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(1.5, 1.5))
+        ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-blue.jpg"), ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(1.0, 1.0))
                 .normal().setImageAlignment(ImageAlignment.FILL).getNode()
                 .onHover().setTexture(resourceManager.loadTexture("/oiiaioiiai-red.jpg")).getNode()
                 .onClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
@@ -82,17 +83,6 @@ public class Main {
                 })
                 .setNestedSegment(0.7, 1, TweenFunctions.BOUNCE_OUT, child4 -> {
                 });
-        CustomTweenFunction tweenFunction1 = new CustomTweenFunction()
-                .setSegment(0, 0.5, TweenFunctions.LINEAR)
-                .setSegment(0.5, 1, TweenFunctions.QUAD_IN);
-        CustomTweenFunction tweenFunction2 = new CustomTweenFunction()
-                .setSegment(0, 0.5, tweenFunction1)
-                .setSegment(0.5, 1, TweenFunctions.CUBIC_IN);
-        CustomTweenFunction tweenFunction3 = new CustomTweenFunction()
-                .setNestedSegment(0, 0.5, function -> function
-                        .setSegment(0, 0.5, TweenFunctions.LINEAR)
-                        .setSegment(0.5, 1, TweenFunctions.QUAD_IN))
-                .setSegment(0.5, 1, TweenFunctions.CUBIC_IN);
 
         ScaleOffsetTween scaleOffsetTween = new ScaleOffsetTween(ScaleOffset.ZERO, ScaleOffset.fromScale(1, 1), 1000, tweenFunction, false);
         ScaleOffsetTween scaleOffsetTween1 = new ScaleOffsetTween(ScaleOffset.fromScale(1, 1), ScaleOffset.ZERO, 1000, tweenFunction, false);
@@ -137,3 +127,4 @@ public class Main {
         window.close();
     }
 }
+// --8<-- [end:classDefinition]

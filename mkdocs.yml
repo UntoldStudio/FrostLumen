@@ -39,7 +39,9 @@ nav:
       - core/core-concepts.md
       - core/node-tree.md
       - core/node-appearance.md
+      - core/resource.md
       - core/tween.md
+      - core/final.md
   - Advanced:
       - advanced/custom-nodes.md
 
