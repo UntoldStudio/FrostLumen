@@ -36,6 +36,13 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://frostlumen.untold.top/en/core/core-concepts/"/>
     </url>
     <url>
+        <loc>https://frostlumen.untold.top/core/final/</loc>
+        <lastmod>2026-10-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://frostlumen.untold.top/core/final/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://frostlumen.untold.top/en/core/final/"/>
+    </url>
+    <url>
         <loc>https://frostlumen.untold.top/core/node-appearance/</loc>
         <lastmod>2026-10-05</lastmod>
         <changefreq>daily</changefreq>
@@ -48,6 +55,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="zh" href="https://frostlumen.untold.top/core/node-tree/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://frostlumen.untold.top/en/core/node-tree/"/>
+    </url>
+    <url>
+        <loc>https://frostlumen.untold.top/core/resource/</loc>
+        <lastmod>2026-10-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://frostlumen.untold.top/core/resource/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://frostlumen.untold.top/en/core/resource/"/>
     </url>
     <url>
         <loc>https://frostlumen.untold.top/core/tween/</loc>
@@ -71,11 +85,25 @@
         <xhtml:link rel="alternate" hreflang="zh" href="https://frostlumen.untold.top/"/>
     </url>
     <url>
+        <loc>https://frostlumen.untold.top/en/advanced/custom-nodes/</loc>
+        <lastmod>2026-10-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://frostlumen.untold.top/en/advanced/custom-nodes/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://frostlumen.untold.top/advanced/custom-nodes/"/>
+    </url>
+    <url>
         <loc>https://frostlumen.untold.top/en/core/core-concepts/</loc>
         <lastmod>2026-10-05</lastmod>
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://frostlumen.untold.top/en/core/core-concepts/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://frostlumen.untold.top/core/core-concepts/"/>
+    </url>
+    <url>
+        <loc>https://frostlumen.untold.top/en/core/final/</loc>
+        <lastmod>2026-10-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://frostlumen.untold.top/en/core/final/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://frostlumen.untold.top/core/final/"/>
     </url>
     <url>
         <loc>https://frostlumen.untold.top/en/core/node-appearance/</loc>
@@ -90,6 +118,13 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://frostlumen.untold.top/en/core/node-tree/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://frostlumen.untold.top/core/node-tree/"/>
+    </url>
+    <url>
+        <loc>https://frostlumen.untold.top/en/core/resource/</loc>
+        <lastmod>2026-10-05</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://frostlumen.untold.top/en/core/resource/"/>
+        <xhtml:link rel="alternate" hreflang="zh" href="https://frostlumen.untold.top/core/resource/"/>
     </url>
     <url>
         <loc>https://frostlumen.untold.top/en/core/tween/</loc>
@@ -118,12 +153,5 @@
         <changefreq>daily</changefreq>
         <xhtml:link rel="alternate" hreflang="en" href="https://frostlumen.untold.top/en/javadoc/legal/jqueryUI/"/>
         <xhtml:link rel="alternate" hreflang="zh" href="https://frostlumen.untold.top/javadoc/legal/jqueryUI/"/>
-    </url>
-    <url>
-        <loc>https://frostlumen.untold.top/en/advanced/custom-nodes/</loc>
-        <lastmod>2026-10-05</lastmod>
-        <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://frostlumen.untold.top/en/advanced/custom-nodes/"/>
-        <xhtml:link rel="alternate" hreflang="zh" href="https://frostlumen.untold.top/advanced/custom-nodes/"/>
     </url>
 </urlset>
