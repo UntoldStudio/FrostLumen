@@ -5,7 +5,7 @@
   "priority": 100,
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "RenderSystemMixin",
+    "GlDeviceMixin",
     "WindowMixin",
     "MainMixin",
     "CursorTypeAccessor",

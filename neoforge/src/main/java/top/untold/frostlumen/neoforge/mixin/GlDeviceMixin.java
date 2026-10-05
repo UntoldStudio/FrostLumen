@@ -17,27 +17,32 @@ package top.untold.frostlumen.neoforge.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.systems.RenderSystem;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import top.untold.frostlumen.core.gui.NodeRoot;
 import top.untold.frostlumen.core.gui.Window;
 import top.untold.frostlumen.core.render.GuiRender;
 
-@Mixin(RenderSystem.class)
-public abstract class RenderSystemMixin {
+@Mixin(targets = "com.mojang.blaze3d.opengl.GlDevice")
+public abstract class GlDeviceMixin {
+    @Final
+    @Shadow
+    private long windowHandle;
+
     @WrapOperation(
-            method = "flipFrame",
+            method = "presentFrame",
             at = @At(value = "INVOKE", target = "Lorg/lwjgl/glfw/GLFW;glfwSwapBuffers(J)V")
     )
-    private static void beforeSwap(long windowHandle, Operation<Void> original) {
-        if (Window.get(windowHandle) != null) {
-            NodeRoot root = Window.get(windowHandle).getNodeRoot();
+    private void beforeSwap(long window, Operation<Void> original) {
+        if (Window.get(this.windowHandle) != null) {
+            NodeRoot root = Window.get(this.windowHandle).getNodeRoot();
             GuiRender render = root.getRender();
             render.saveContext();
             root.render();
             render.restoreContext();
         }
-        original.call(windowHandle);
+        original.call(window);
     }
 }

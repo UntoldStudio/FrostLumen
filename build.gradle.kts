@@ -18,6 +18,12 @@ subprojects {
     pluginManager.apply("java")
     pluginManager.apply("com.diffplug.spotless")
 
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(25)
+        }
+    }
+
     spotless {
         java {
             licenseHeaderFile(rootProject.file("HEADER"))
@@ -40,6 +46,9 @@ subprojects {
 tasks.build {
     dependsOn(subprojects.map { it.tasks.named("build") })
 }
+tasks.named("spotlessApply") {
+    dependsOn(subprojects.map { it.tasks.named("spotlessApply") })
+}
 tasks.named<JavaCompile>("compileJava") {
     enabled = false
 }
@@ -49,14 +58,8 @@ tasks.jar {
 
 val gitTargetBranch: String = "main"
 
-val spotlessApplyAll = tasks.register("spotlessApplyAll") {
-    group = "verification"
-    description = "对所有子项目执行spotlessApply"
-    dependsOn(subprojects.map { it.tasks.matching { t -> t.name == "spotlessApply" } })
-}
-
 tasks.register("pushChanges") {
-    dependsOn(spotlessApplyAll)
+    dependsOn(tasks.named("spotlessApply"))
     notCompatibleWithConfigurationCache("任务需要交互式输入并访问项目目录")
     description = "自动add,commit并推送当前分支"
     dependsOn(tasks.named("build"))
@@ -83,7 +86,7 @@ tasks.register("pushChanges") {
 }
 
 tasks.register("releaseVersion") {
-    dependsOn(spotlessApplyAll)
+    dependsOn(tasks.named("spotlessApply"))
     notCompatibleWithConfigurationCache("任务需要交互式输入并访问项目目录")
     description = "自动add,commit,push并创建发布标签"
     dependsOn(tasks.named("build"))

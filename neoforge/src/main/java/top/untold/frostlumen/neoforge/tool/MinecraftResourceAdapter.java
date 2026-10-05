@@ -23,7 +23,7 @@ import net.minecraft.client.resources.metadata.gui.GuiMetadataSection;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.AtlasIds;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import top.untold.frostlumen.core.data.NiceSliceType;
 import top.untold.frostlumen.core.exception.ResourceException;
@@ -34,13 +34,13 @@ import java.util.Optional;
 
 public class MinecraftResourceAdapter {
     public static Texture loadItemTexture(Item item) {
-        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
+        Identifier itemId = BuiltInRegistries.ITEM.getKey(item);
 
-        ResourceLocation itemSprite = ResourceLocation.fromNamespaceAndPath(itemId.getNamespace(), "item/" + itemId.getPath());
+        Identifier itemSprite = Identifier.fromNamespaceAndPath(itemId.getNamespace(), "item/" + itemId.getPath());
         byte[] data = SpriteRawCache.get(itemSprite);
 
         if (data == null) {
-            ResourceLocation blockSprite = ResourceLocation.fromNamespaceAndPath(itemId.getNamespace(), "block/" + itemId.getPath());
+            Identifier blockSprite = Identifier.fromNamespaceAndPath(itemId.getNamespace(), "block/" + itemId.getPath());
             data = SpriteRawCache.get(blockSprite);
         }
 
@@ -50,7 +50,7 @@ public class MinecraftResourceAdapter {
 
         return ResourceManager.getResourceManagerFromThreadLocal().loadTexture(data, false);
     }
-    public static Texture loadTextureFromResourceLocation(ResourceLocation location) {
+    public static Texture loadTextureFromIdentifier(Identifier location) {
         boolean isNiceSlice = false;
         int left = -1;
         int right = -1;

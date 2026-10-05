@@ -13,23 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package top.untold.frostlumen.neoforge.tool;
+package top.untold.frostlumen.fabric;
 
-import net.minecraft.resources.Identifier;
+import net.fabricmc.api.ModInitializer;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+public class Main implements ModInitializer {
 
-public class SpriteRawCache {
-    private static final Map<Identifier, byte[]> CACHE = new ConcurrentHashMap<>();
-
-    public static void put(Identifier id, byte[] data) {
-        CACHE.put(id, data);
-    }
-    public static byte[] get(Identifier id) {
-        return CACHE.get(id);
-    }
-    public static void clear() {
-        CACHE.clear();
+    @Override
+    public void onInitialize() {
     }
 }

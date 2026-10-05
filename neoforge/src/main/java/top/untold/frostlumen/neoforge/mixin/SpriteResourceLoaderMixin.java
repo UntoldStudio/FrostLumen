@@ -30,7 +30,7 @@ import java.util.Set;
 @Mixin(SpriteResourceLoader.class)
 public interface SpriteResourceLoaderMixin {
     @Inject(method = "create", at = @At("RETURN"), cancellable = true)
-    private static void captureRawPng(Set<MetadataSectionType<?>> meta, CallbackInfoReturnable<SpriteResourceLoader> callbackInfoReturnable) {
+    private static void captureRawPng(Set<MetadataSectionType<?>> additionalMetadataSections, CallbackInfoReturnable<SpriteResourceLoader> callbackInfoReturnable) {
         SpriteResourceLoader original = callbackInfoReturnable.getReturnValue();
 
         SpriteResourceLoader wrapped = (id, resource, constructor) -> {
