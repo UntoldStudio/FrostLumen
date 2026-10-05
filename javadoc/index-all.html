@@ -302,6 +302,8 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html" class="type-name-link" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a> - Class in <a href="top/untold/frostlumen/core/tween/package-summary.html">top.untold.frostlumen.core.tween</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html#%3Cinit%3E()" class="member-name-link">CustomTweenFunction()</a> - Constructor for class top.untold.frostlumen.core.tween.<a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html#%3Cinit%3E(top.untold.frostlumen.core.tween.TweenFunction)" class="member-name-link">CustomTweenFunction(TweenFunction)</a> - Constructor for class top.untold.frostlumen.core.tween.<a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a></dt>
 <dd>&nbsp;</dd>
 </dl>
@@ -653,6 +655,8 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">Creates an instance of a <code>FrameBufferSizeChangeEvent</code> record class.</div>
 </dd>
+<dt><a href="top/untold/frostlumen/core/gui/Window.html#from(long,top.untold.frostlumen.core.render.GuiRender)" class="member-name-link">from(long, GuiRender)</a> - Static method in class top.untold.frostlumen.core.gui.<a href="top/untold/frostlumen/core/gui/Window.html" title="class in top.untold.frostlumen.core.gui">Window</a></dt>
+<dd>&nbsp;</dd>
 <dt><a href="top/untold/frostlumen/core/gui/Window.html#from(long,top.untold.frostlumen.core.render.RenderProviderType)" class="member-name-link">from(long, RenderProviderType)</a> - Static method in class top.untold.frostlumen.core.gui.<a href="top/untold/frostlumen/core/gui/Window.html" title="class in top.untold.frostlumen.core.gui">Window</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="top/untold/frostlumen/core/data/CursorMode.html#fromGLFWValue(int)" class="member-name-link">fromGLFWValue(int)</a> - Static method in enum class top.untold.frostlumen.core.data.<a href="top/untold/frostlumen/core/data/CursorMode.html" title="enum class in top.untold.frostlumen.core.data">CursorMode</a></dt>
@@ -1832,6 +1836,18 @@ loadScripts(document, 'script');</script>
 <dd>&nbsp;</dd>
 <dt><a href="top/untold/frostlumen/core/tool/LruCacheMap.html#setMaxSize(int)" class="member-name-link">setMaxSize(int)</a> - Method in class top.untold.frostlumen.core.tool.<a href="top/untold/frostlumen/core/tool/LruCacheMap.html" title="class in top.untold.frostlumen.core.tool">LruCacheMap</a></dt>
 <dd>&nbsp;</dd>
+<dt><a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html#setNestedSegment(double,double,java.util.function.Consumer)" class="member-name-link">setNestedSegment(double, double, Consumer&lt;CustomTweenFunction&gt;)</a> - Method in class top.untold.frostlumen.core.tween.<a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a></dt>
+<dd>
+<div class="block">在当前对象上增加一段, 并新建一个 <a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween"><code>CustomTweenFunction</code></a> 作为该段的缓动函数
+ 新对象的越界函数由为LINEAR, 新对象随后通过 <code>nestedConfigurator</code> 配置
+ 返回 <code>this</code>, 嵌套对象的配置在回调内完成</div>
+</dd>
+<dt><a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html#setNestedSegment(double,double,top.untold.frostlumen.core.tween.TweenFunction,java.util.function.Consumer)" class="member-name-link">setNestedSegment(double, double, TweenFunction, Consumer&lt;CustomTweenFunction&gt;)</a> - Method in class top.untold.frostlumen.core.tween.<a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a></dt>
+<dd>
+<div class="block">在当前对象上增加一段, 并新建一个 <a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween"><code>CustomTweenFunction</code></a> 作为该段的缓动函数
+ 新对象的越界函数由 <code>nestedOutOfRangeFunction</code> 指定, 新对象随后通过 <code>nestedConfigurator</code> 配置
+ 返回 <code>this</code>, 嵌套对象的配置在回调内完成</div>
+</dd>
 <dt><a href="top/untold/frostlumen/core/tool/LruCacheMap.html#setOnAutoRemove(java.util.function.BiConsumer)" class="member-name-link">setOnAutoRemove(BiConsumer&lt;K, V&gt;)</a> - Method in class top.untold.frostlumen.core.tool.<a href="top/untold/frostlumen/core/tool/LruCacheMap.html" title="class in top.untold.frostlumen.core.tool">LruCacheMap</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="top/untold/frostlumen/core/tool/GCCleanable.html#setOnGCRecycle(java.lang.Runnable)" class="member-name-link">setOnGCRecycle(Runnable)</a> - Method in class top.untold.frostlumen.core.tool.<a href="top/untold/frostlumen/core/tool/GCCleanable.html" title="class in top.untold.frostlumen.core.tool">GCCleanable</a></dt>
@@ -1846,12 +1862,6 @@ loadScripts(document, 'script');</script>
 <dd>
 <div class="block">在当前对象上增加一段, 直接使用给定的 <code>function</code> 作为该段的缓动函数
  返回 <code>this</code> 以便继续链式配置</div>
-</dd>
-<dt><a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html#setSegment(double,double,top.untold.frostlumen.core.tween.TweenFunction,java.util.function.Consumer)" class="member-name-link">setSegment(double, double, TweenFunction, Consumer&lt;CustomTweenFunction&gt;)</a> - Method in class top.untold.frostlumen.core.tween.<a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a></dt>
-<dd>
-<div class="block">在当前对象上增加一段, 并新建一个 <a href="top/untold/frostlumen/core/tween/CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween"><code>CustomTweenFunction</code></a> 作为该段的缓动函数
- 新对象的越界函数由 <code>nestedOutOfRangeFunction</code> 指定, 随后通过 <code>nestedConfigurator</code> 配置
- 返回 <code>this</code>, 嵌套对象的配置在回调内完成</div>
 </dd>
 <dt><a href="top/untold/frostlumen/core/gui/GuiNode.html#setSize(top.untold.frostlumen.core.data.ScaleOffset)" class="member-name-link">setSize(ScaleOffset)</a> - Method in class top.untold.frostlumen.core.gui.<a href="top/untold/frostlumen/core/gui/GuiNode.html" title="class in top.untold.frostlumen.core.gui">GuiNode</a></dt>
 <dd>&nbsp;</dd>

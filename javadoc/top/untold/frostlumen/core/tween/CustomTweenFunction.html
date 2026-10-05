@@ -107,8 +107,10 @@ implements <a href="TweenFunction.html" title="interface in top.untold.frostlume
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(top.untold.frostlumen.core.tween.TweenFunction)" class="member-name-link">CustomTweenFunction</a><wbr>(<a href="TweenFunction.html" title="interface in top.untold.frostlumen.core.tween">TweenFunction</a>&nbsp;outOfRangeFunction)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E()" class="member-name-link">CustomTweenFunction</a>()</code></div>
 <div class="col-last even-row-color">&nbsp;</div>
+<div class="col-constructor-name odd-row-color"><code><a href="#%3Cinit%3E(top.untold.frostlumen.core.tween.TweenFunction)" class="member-name-link">CustomTweenFunction</a><wbr>(<a href="TweenFunction.html" title="interface in top.untold.frostlumen.core.tween">TweenFunction</a>&nbsp;outOfRangeFunction)</code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
 </div>
 </section>
 </li>
@@ -127,6 +129,25 @@ implements <a href="TweenFunction.html" title="interface in top.untold.frostlume
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#computeEased(double)" class="member-name-link">computeEased</a><wbr>(double&nbsp;percent)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setNestedSegment(double,double,java.util.function.Consumer)" class="member-name-link">setNestedSegment</a><wbr>(double&nbsp;start,
+ double&nbsp;end,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a>&gt;&nbsp;function)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">在当前对象上增加一段, 并新建一个 <a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween"><code>CustomTweenFunction</code></a> 作为该段的缓动函数
+ 新对象的越界函数由为LINEAR, 新对象随后通过 <code>nestedConfigurator</code> 配置
+ 返回 <code>this</code>, 嵌套对象的配置在回调内完成</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setNestedSegment(double,double,top.untold.frostlumen.core.tween.TweenFunction,java.util.function.Consumer)" class="member-name-link">setNestedSegment</a><wbr>(double&nbsp;start,
+ double&nbsp;end,
+ <a href="TweenFunction.html" title="interface in top.untold.frostlumen.core.tween">TweenFunction</a>&nbsp;nestedOutOfRangeFunction,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a>&gt;&nbsp;nestedConfigurator)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">在当前对象上增加一段, 并新建一个 <a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween"><code>CustomTweenFunction</code></a> 作为该段的缓动函数
+ 新对象的越界函数由 <code>nestedOutOfRangeFunction</code> 指定, 新对象随后通过 <code>nestedConfigurator</code> 配置
+ 返回 <code>this</code>, 嵌套对象的配置在回调内完成</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setOutOfRangeFunction(top.untold.frostlumen.core.tween.TweenFunction)" class="member-name-link">setOutOfRangeFunction</a><wbr>(<a href="TweenFunction.html" title="interface in top.untold.frostlumen.core.tween">TweenFunction</a>&nbsp;outOfRangeFunction)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a></code></div>
@@ -136,16 +157,6 @@ implements <a href="TweenFunction.html" title="interface in top.untold.frostlume
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">在当前对象上增加一段, 直接使用给定的 <code>function</code> 作为该段的缓动函数
  返回 <code>this</code> 以便继续链式配置</div>
-</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setSegment(double,double,top.untold.frostlumen.core.tween.TweenFunction,java.util.function.Consumer)" class="member-name-link">setSegment</a><wbr>(double&nbsp;start,
- double&nbsp;end,
- <a href="TweenFunction.html" title="interface in top.untold.frostlumen.core.tween">TweenFunction</a>&nbsp;nestedOutOfRangeFunction,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a>&gt;&nbsp;nestedConfigurator)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">在当前对象上增加一段, 并新建一个 <a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween"><code>CustomTweenFunction</code></a> 作为该段的缓动函数
- 新对象的越界函数由 <code>nestedOutOfRangeFunction</code> 指定, 随后通过 <code>nestedConfigurator</code> 配置
- 返回 <code>this</code>, 嵌套对象的配置在回调内完成</div>
 </div>
 </div>
 </div>
@@ -164,6 +175,12 @@ implements <a href="TweenFunction.html" title="interface in top.untold.frostlume
 <section class="constructor-details" id="constructor-detail">
 <h2>Constructor Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="&lt;init&gt;()">
+<h3>CustomTweenFunction</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="element-name">CustomTweenFunction</span>()</div>
+</section>
+</li>
 <li>
 <section class="detail" id="&lt;init&gt;(top.untold.frostlumen.core.tween.TweenFunction)">
 <h3>CustomTweenFunction</h3>
@@ -199,14 +216,25 @@ implements <a href="TweenFunction.html" title="interface in top.untold.frostlume
 </section>
 </li>
 <li>
-<section class="detail" id="setSegment(double,double,top.untold.frostlumen.core.tween.TweenFunction,java.util.function.Consumer)">
-<h3>setSegment</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a></span>&nbsp;<span class="element-name">setSegment</span><wbr><span class="parameters">(double&nbsp;start,
+<section class="detail" id="setNestedSegment(double,double,java.util.function.Consumer)">
+<h3>setNestedSegment</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a></span>&nbsp;<span class="element-name">setNestedSegment</span><wbr><span class="parameters">(double&nbsp;start,
+ double&nbsp;end,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a>&gt;&nbsp;function)</span></div>
+<div class="block">在当前对象上增加一段, 并新建一个 <a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween"><code>CustomTweenFunction</code></a> 作为该段的缓动函数
+ 新对象的越界函数由为LINEAR, 新对象随后通过 <code>nestedConfigurator</code> 配置
+ 返回 <code>this</code>, 嵌套对象的配置在回调内完成</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setNestedSegment(double,double,top.untold.frostlumen.core.tween.TweenFunction,java.util.function.Consumer)">
+<h3>setNestedSegment</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a></span>&nbsp;<span class="element-name">setNestedSegment</span><wbr><span class="parameters">(double&nbsp;start,
  double&nbsp;end,
  <a href="TweenFunction.html" title="interface in top.untold.frostlumen.core.tween">TweenFunction</a>&nbsp;nestedOutOfRangeFunction,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween">CustomTweenFunction</a>&gt;&nbsp;nestedConfigurator)</span></div>
 <div class="block">在当前对象上增加一段, 并新建一个 <a href="CustomTweenFunction.html" title="class in top.untold.frostlumen.core.tween"><code>CustomTweenFunction</code></a> 作为该段的缓动函数
- 新对象的越界函数由 <code>nestedOutOfRangeFunction</code> 指定, 随后通过 <code>nestedConfigurator</code> 配置
+ 新对象的越界函数由 <code>nestedOutOfRangeFunction</code> 指定, 新对象随后通过 <code>nestedConfigurator</code> 配置
  返回 <code>this</code>, 嵌套对象的配置在回调内完成</div>
 </section>
 </li>
