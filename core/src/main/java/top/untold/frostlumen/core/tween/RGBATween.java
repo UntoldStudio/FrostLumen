@@ -17,9 +17,7 @@ package top.untold.frostlumen.core.tween;
 
 import top.untold.frostlumen.core.data.RGBA;
 
-import java.util.function.Consumer;
-
-public class RGBATween extends ParentTween {
+public class RGBATween extends CompositeTween<RGBA> {
     private final IntTween redTween;
     private final IntTween greenTween;
     private final IntTween blueTween;
@@ -27,10 +25,6 @@ public class RGBATween extends ParentTween {
 
     public RGBA getCurrentValue() {
         return new RGBA(redTween.getCurrentValue(), greenTween.getCurrentValue(), blueTween.getCurrentValue(), alphaTween.getCurrentValue());
-    }
-
-    public void registerAutoCallOnSetter(Consumer<RGBA> consumer) {
-        registerOnUpdateCallback(() -> consumer.accept(getCurrentValue()));
     }
 
     public RGBATween(RGBA start, RGBA end, long time, TweenFunction function, boolean removeOnFinish) {

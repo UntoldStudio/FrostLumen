@@ -20,7 +20,7 @@ import top.untold.frostlumen.core.data.ScaleOffset;
 import java.util.function.Consumer;
 
 // --8<-- [start:classDefinition]
-public class ScaleOffsetTween extends ParentTween {
+public class ScaleOffsetTween extends CompositeTween<ScaleOffset> {
     private final DoubleTween xScaleTween;
     private final IntTween xOffsetTween;
     private final DoubleTween yScaleTween;
@@ -28,10 +28,6 @@ public class ScaleOffsetTween extends ParentTween {
 
     public ScaleOffset getCurrentValue() {
         return new ScaleOffset(xScaleTween.getCurrentValue(), xOffsetTween.getCurrentValue(), yScaleTween.getCurrentValue(), yOffsetTween.getCurrentValue());
-    }
-
-    public void registerAutoCallOnSetter(Consumer<ScaleOffset> consumer) {
-        registerOnUpdateCallback(() -> consumer.accept(getCurrentValue()));
     }
 
     public ScaleOffsetTween(ScaleOffset start, ScaleOffset end, long time, TweenFunction function, boolean removeOnComplete) {

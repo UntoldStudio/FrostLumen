@@ -43,8 +43,8 @@ public class IntTween extends NumberTween {
         triggerOnUpdateCallback();
     }
 
-    public void registerAutoCallOnSetter(IntConsumer consumer) {
-        registerOnUpdateCallback(() -> consumer.accept(currentValue));
+    public void bindSetter(IntConsumer consumer) {
+        onUpdate(() -> consumer.accept(currentValue));
     }
 
     public int getCurrentValue() {

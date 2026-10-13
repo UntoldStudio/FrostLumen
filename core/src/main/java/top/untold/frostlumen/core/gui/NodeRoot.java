@@ -68,7 +68,7 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
         }
 
         long now = System.nanoTime();
-        long delta = (now - lastRenderTime) / 1_000_000;
+        double delta = (now - lastRenderTime) / (double) 1_000_000;
 
         tweenScheduler.step(delta);
 

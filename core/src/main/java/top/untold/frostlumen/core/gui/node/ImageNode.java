@@ -53,7 +53,7 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
         }
 
         public void render(GuiRender render) {
-            render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, backgroundLeftTopCornerRadius, backgroundRightTopCornerRadius, backgroundLeftBottomCornerRadius, backgroundRightBottomCornerRadius);
+            render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, background.getLeftTopCornerRadius(), background.getRightTopCornerRadius(), background.getLeftBottomCornerRadius(), background.getRightBottomCornerRadius());
             render.drawTexture(texture, imagePositionX, imagePositionY, imagePositionMaxX, imagePositionMaxY, realAngle, color.red(), color.green(), color.blue(), color.alpha());
             render.disableScissor();
         }

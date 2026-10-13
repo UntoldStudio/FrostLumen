@@ -16,16 +16,20 @@
 package top.untold.frostlumen.core.tween;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 
-public abstract class ParentTween extends Tween {
+public abstract class CompositeTween<T> extends Tween {
+    private final Map<Consumer<T>, Runnable> bindSetters = new HashMap<>();
     private final List<Tween> children = new ArrayList<>();
     private boolean needUpdate = false;
 
     protected void addChild(Tween tween) {
         children.add(tween);
-        tween.registerOnUpdateCallback(() -> needUpdate = true);
-        tween.registerOnCompleteCallback(this::tryTriggerOnCompleteCallback);
+        tween.onUpdate(() -> needUpdate = true);
+        tween.onComplete(this::tryTriggerOnCompleteCallback);
     }
     protected void addChildren(Tween... tweenArray) {
         for (Tween tween : tweenArray) {
@@ -57,7 +61,7 @@ public abstract class ParentTween extends Tween {
     }
 
     @Override
-    protected void stepTween(long delta) {
+    protected void stepTween(double delta) {
         for (Tween child : children) {
             child.step(delta);
         }
@@ -89,7 +93,20 @@ public abstract class ParentTween extends Tween {
         }
     }
 
-    protected ParentTween(boolean removeOnComplete) {
+    public abstract T getCurrentValue();
+    public void bindSetter(Consumer<T> setter) {
+        Runnable runnable = () -> setter.accept(getCurrentValue());
+        bindSetters.put(setter, runnable);
+        onUpdate(runnable);
+    }
+    public void unbindSetter(Consumer<T> unbindSetter) {
+        Runnable runnable = bindSetters.remove(unbindSetter);
+        if (runnable != null) {
+            removeOnUpdate(runnable);
+        }
+    }
+
+    protected CompositeTween(boolean removeOnComplete) {
         super(removeOnComplete);
     }
 }

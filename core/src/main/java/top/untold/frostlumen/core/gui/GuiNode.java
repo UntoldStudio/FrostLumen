@@ -26,29 +26,22 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNode<T> {
-    private final OneArgListenerRegistry<MouseMoveEvent> mouseEnterListenerRegistry = new OneArgListenerRegistry<>();
-    private final OneArgListenerRegistry<MouseMoveEvent> mouseLeaveListenerRegistry = new OneArgListenerRegistry<>();
+    protected final OneArgListenerRegistry<MouseMoveEvent> mouseEnterListenerRegistry = new OneArgListenerRegistry<>();
+    protected final OneArgListenerRegistry<MouseMoveEvent> mouseLeaveListenerRegistry = new OneArgListenerRegistry<>();
+    protected final Background background = new Background();
     protected NodeRoot root;
     protected ParentNode<?> parent;
     protected int zIndex = 0;
-    protected RGBA backgroundColor = RGBA.WHITE;
-    protected RGBA backgroundBorderColor = RGBA.BLACK;
-    protected int backgroundLeftBorderThickness = 0;
-    protected int backgroundRightBorderThickness = 0;
-    protected int backgroundTopBorderThickness = 0;
-    protected int backgroundBottomBorderThickness = 0;
-    protected int backgroundLeftTopCornerRadius = 0;
-    protected int backgroundRightTopCornerRadius = 0;
-    protected int backgroundLeftBottomCornerRadius = 0;
-    protected int backgroundRightBottomCornerRadius = 0;
-    protected ThicknessPosition backgroundBorderThicknessPosition = ThicknessPosition.OUTSIDE;
     protected boolean clipChildren = false;
     protected double xAnchor = 0;
     protected double yAnchor = 0;
     protected float angle = 0;
     protected Set<MouseButton> currentMouseClickButtons = new HashSet<>();
     protected boolean mouseInNode;
-    protected double backgroundBlurStrength = 0;
+
+    public Background background() {
+        return background;
+    }
 
     public T registerMouseEnterListener(Consumer<MouseMoveEvent> listener) {
         mouseEnterListenerRegistry.register(listener);
@@ -65,37 +58,6 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     public T unregisterMouseLeaveListener(Consumer<MouseMoveEvent> listener) {
         mouseLeaveListenerRegistry.unregister(listener);
         return self;
-    }
-
-    protected void drawDefaultFrameBackground(GuiRender render) {
-        if (backgroundBlurStrength != 0 && backgroundColor.alpha() != 255) {
-            boolean hasRoundedCorner = backgroundLeftTopCornerRadius != 0 || backgroundRightTopCornerRadius != 0 || backgroundLeftBottomCornerRadius != 0 || backgroundRightBottomCornerRadius != 0;
-            if (hasRoundedCorner) {
-                render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, backgroundLeftTopCornerRadius, backgroundRightTopCornerRadius, backgroundLeftBottomCornerRadius, backgroundRightBottomCornerRadius);
-                render.blurRegion(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, backgroundBlurStrength);
-                render.disableScissor();
-            } else {
-                render.blurRegion(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, backgroundBlurStrength);
-            }
-        }
-
-        if (backgroundLeftBorderThickness == 0 && backgroundRightBorderThickness == 0 &&
-                backgroundTopBorderThickness == 0 && backgroundBottomBorderThickness == 0 &&
-                backgroundLeftTopCornerRadius == 0 && backgroundRightTopCornerRadius == 0 &&
-                backgroundLeftBottomCornerRadius == 0 && backgroundRightBottomCornerRadius == 0
-        ) {
-            render.drawRectangle(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY, realAngle, backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha());
-        } else {
-            render.drawShape(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY, realAngle,
-                    backgroundColor.red(), backgroundColor.green(), backgroundColor.blue(), backgroundColor.alpha(),
-                    backgroundLeftTopCornerRadius, backgroundRightTopCornerRadius,
-                    backgroundLeftBottomCornerRadius, backgroundRightBottomCornerRadius,
-                    backgroundLeftBorderThickness, backgroundRightBorderThickness,
-                    backgroundTopBorderThickness, backgroundBottomBorderThickness,
-                    backgroundBorderColor.red(), backgroundBorderColor.green(),
-                    backgroundBorderColor.blue(), backgroundBorderColor.alpha(),
-                    backgroundBorderThicknessPosition);
-        }
     }
 
     protected void operationPosition(){
@@ -152,9 +114,9 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     }
 
     @Override
-    public void dispatchRender(GuiRender render, long delta) {
+    public void dispatchRender(GuiRender render, double delta) {
         if (clipChildren) {
-            render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, backgroundLeftTopCornerRadius, backgroundRightTopCornerRadius, backgroundLeftBottomCornerRadius, backgroundRightBottomCornerRadius);
+            render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, background.leftTopCornerRadius, background.rightTopCornerRadius, background.leftBottomCornerRadius, background.rightBottomCornerRadius);
             render(render, delta);
             super.dispatchRender(render, delta);
             render.disableScissor();
@@ -262,7 +224,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         super.dispatchWindowMoveEvent(event);
     }
 
-    protected abstract void render(GuiRender render, long delta);
+    protected abstract void render(GuiRender render, double delta);
     protected void onKeyEvent(KeyEvent event) {}
     protected void onMouseButtonEvent(MouseButtonEvent event) {}
     protected void onMouseMoveEvent(MouseMoveEvent event) {}
@@ -301,10 +263,6 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         return parent;
     }
 
-    public T setBackgroundBlurStrength(double strength) {
-        this.backgroundBlurStrength = strength;
-        return self;
-    }
     public T setZIndex(int zIndex) {
         this.zIndex = zIndex;
         if (parent != null) {
@@ -327,14 +285,6 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         operationPosition();
         return self;
     }
-    public T setBackgroundColor(RGBA color) {
-        this.backgroundColor = color;
-        return self;
-    }
-    public T setBackgroundBorderThicknessPosition(ThicknessPosition position) {
-        this.backgroundBorderThicknessPosition = position;
-        return self;
-    }
     public T setXAnchor(double xAnchor) {
         this.xAnchor = xAnchor;
         operationPosition();
@@ -351,56 +301,6 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         operationPosition();
         return self;
     }
-    public T setBackgroundCornerRadius(int radius) {
-        this.backgroundLeftTopCornerRadius = radius;
-        this.backgroundRightTopCornerRadius = radius;
-        this.backgroundLeftBottomCornerRadius = radius;
-        this.backgroundRightBottomCornerRadius = radius;
-        return self;
-    }
-    public T setBackgroundLeftTopCornerRadius(int backgroundLeftTopCornerRadius) {
-        this.backgroundLeftTopCornerRadius = backgroundLeftTopCornerRadius;
-        return self;
-    }
-    public T setBackgroundRightTopCornerRadius(int backgroundRightTopCornerRadius) {
-        this.backgroundRightTopCornerRadius = backgroundRightTopCornerRadius;
-        return self;
-    }
-    public T setBackgroundLeftBottomCornerRadius(int backgroundLeftBottomCornerRadius) {
-        this.backgroundLeftBottomCornerRadius = backgroundLeftBottomCornerRadius;
-        return self;
-    }
-    public T setBackgroundRightBottomCornerRadius(int backgroundRightBottomCornerRadius) {
-        this.backgroundRightBottomCornerRadius = backgroundRightBottomCornerRadius;
-        return self;
-    }
-    public T setBackgroundLeftBorderThickness(int backgroundLeftBorderThickness) {
-        this.backgroundLeftBorderThickness = backgroundLeftBorderThickness;
-        return self;
-    }
-    public T setBackgroundRightBorderThickness(int backgroundRightBorderThickness) {
-        this.backgroundRightBorderThickness = backgroundRightBorderThickness;
-        return self;
-    }
-    public T setBackgroundTopBorderThickness(int backgroundTopBorderThickness) {
-        this.backgroundTopBorderThickness = backgroundTopBorderThickness;
-        return self;
-    }
-    public T setBackgroundBottomBorderThickness(int backgroundBottomBorderThickness) {
-        this.backgroundBottomBorderThickness = backgroundBottomBorderThickness;
-        return self;
-    }
-    public T setBackgroundBorderColor(RGBA color) {
-        this.backgroundBorderColor = color;
-        return self;
-    }
-    public T setBackgroundBorderThickness(int backgroundBorderThickness) {
-        this.backgroundLeftBorderThickness = backgroundBorderThickness;
-        this.backgroundRightBorderThickness = backgroundBorderThickness;
-        this.backgroundTopBorderThickness = backgroundBorderThickness;
-        this.backgroundBottomBorderThickness = backgroundBorderThickness;
-        return self;
-    }
     public T setClipChildren(boolean clipChildren) {
         this.clipChildren = clipChildren;
         return self;
@@ -412,14 +312,8 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     public int getZIndex() {
         return zIndex;
     }
-    public double getBackgroundBlurStrength() {
-        return backgroundBlurStrength;
-    }
     public float getAngle() {
         return angle;
-    }
-    public RGBA getBackgroundColor() {
-        return backgroundColor;
     }
     public double getXAnchor() {
         return xAnchor;
@@ -427,34 +321,6 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     public double getYAnchor() {
         return yAnchor;
     }
-    public ThicknessPosition getBackgroundBorderThicknessPosition() {
-        return backgroundBorderThicknessPosition;
-    }
-    public int getBackgroundLeftTopCornerRadius() {
-        return backgroundLeftTopCornerRadius;
-    }
-    public int getBackgroundRightTopCornerRadius() {
-        return backgroundRightTopCornerRadius;
-    }
-    public int getBackgroundLeftBottomCornerRadius() {
-        return backgroundLeftBottomCornerRadius;
-    }
-    public int getBackgroundRightBottomCornerRadius() {
-        return backgroundRightBottomCornerRadius;
-    }
-    public int getBackgroundLeftBorderThickness() {
-        return backgroundLeftBorderThickness;
-    }
-    public int getBackgroundRightBorderThickness() {
-        return backgroundRightBorderThickness;
-    }
-    public int getBackgroundTopBorderThickness() {
-        return backgroundTopBorderThickness;
-    }
-    public int getBackgroundBottomBorderThickness() {
-        return backgroundBottomBorderThickness;
-    }
-
     public boolean isMouseInNode() {
         return mouseInNode;
     }
@@ -503,5 +369,157 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     public GuiNode(ScaleOffset position, ScaleOffset size) {
         this.position = position;
         this.size = size;
+    }
+
+    public class Background {
+        protected RGBA color = RGBA.WHITE;
+        protected RGBA borderColor = RGBA.BLACK;
+        protected int leftBorderThickness = 0;
+        protected int rightBorderThickness = 0;
+        protected int topBorderThickness = 0;
+        protected int bottomBorderThickness = 0;
+        protected int leftTopCornerRadius = 0;
+        protected int rightTopCornerRadius = 0;
+        protected int leftBottomCornerRadius = 0;
+        protected int rightBottomCornerRadius = 0;
+        protected ThicknessPosition borderThicknessPosition = ThicknessPosition.OUTSIDE;
+        protected double blurStrength = 0;
+
+        public void render(GuiRender render) {
+            if (blurStrength != 0 && color.alpha() != 255) {
+                boolean hasRoundedCorner = leftTopCornerRadius != 0 || rightTopCornerRadius != 0 || leftBottomCornerRadius != 0 || rightBottomCornerRadius != 0;
+                if (hasRoundedCorner) {
+                    render.enableScissor(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, leftTopCornerRadius, rightTopCornerRadius, leftBottomCornerRadius, rightBottomCornerRadius);
+                    render.blurRegion(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, blurStrength);
+                    render.disableScissor();
+                } else {
+                    render.blurRegion(realPositionX, realPositionY, realSizeX, realSizeY, realAngle, blurStrength);
+                }
+            }
+
+            if (leftBorderThickness == 0 && rightBorderThickness == 0 &&
+                    topBorderThickness == 0 && bottomBorderThickness == 0 &&
+                    leftTopCornerRadius == 0 && rightTopCornerRadius == 0 &&
+                    leftBottomCornerRadius == 0 && rightBottomCornerRadius == 0
+            ) {
+                render.drawRectangle(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY, realAngle, color.red(), color.green(), color.blue(), color.alpha());
+            } else {
+                render.drawShape(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY, realAngle,
+                        color.red(), color.green(), color.blue(), color.alpha(),
+                        leftTopCornerRadius, rightTopCornerRadius,
+                        leftBottomCornerRadius, rightBottomCornerRadius,
+                        leftBorderThickness, rightBorderThickness,
+                        topBorderThickness, bottomBorderThickness,
+                        borderColor.red(), borderColor.green(),
+                        borderColor.blue(), borderColor.alpha(),
+                        borderThicknessPosition);
+            }
+        }
+
+        public Background setColor(RGBA color) {
+            this.color = color;
+            return this;
+        }
+        public Background setBorderColor(RGBA borderColor) {
+            this.borderColor = borderColor;
+            return this;
+        }
+        public Background setLeftBorderThickness(int leftBorderThickness) {
+            this.leftBorderThickness = leftBorderThickness;
+            return this;
+        }
+        public Background setRightBorderThickness(int rightBorderThickness) {
+            this.rightBorderThickness = rightBorderThickness;
+            return this;
+        }
+        public Background setTopBorderThickness(int topBorderThickness) {
+            this.topBorderThickness = topBorderThickness;
+            return this;
+        }
+        public Background setBottomBorderThickness(int bottomBorderThickness) {
+            this.bottomBorderThickness = bottomBorderThickness;
+            return this;
+        }
+        public Background setBorderThickness(int borderThickness) {
+            this.leftBorderThickness = borderThickness;
+            this.rightBorderThickness = borderThickness;
+            this.topBorderThickness = borderThickness;
+            this.bottomBorderThickness = borderThickness;
+            return this;
+        }
+
+        public Background setLeftTopCornerRadius(int leftTopCornerRadius) {
+            this.leftTopCornerRadius = leftTopCornerRadius;
+            return this;
+        }
+        public Background setRightTopCornerRadius(int rightTopCornerRadius) {
+            this.rightTopCornerRadius = rightTopCornerRadius;
+            return this;
+        }
+        public Background setLeftBottomCornerRadius(int leftBottomCornerRadius) {
+            this.leftBottomCornerRadius = leftBottomCornerRadius;
+            return this;
+        }
+        public Background setRightBottomCornerRadius(int rightBottomCornerRadius) {
+            this.rightBottomCornerRadius = rightBottomCornerRadius;
+            return this;
+        }
+        public Background setCornerRadius(int cornerRadius) {
+            this.leftTopCornerRadius = cornerRadius;
+            this.rightTopCornerRadius = cornerRadius;
+            this.leftBottomCornerRadius = cornerRadius;
+            this.rightBottomCornerRadius = cornerRadius;
+            return this;
+        }
+
+        public Background setBorderThicknessPosition(ThicknessPosition borderThicknessPosition) {
+            this.borderThicknessPosition = borderThicknessPosition;
+            return this;
+        }
+        public Background setBlurStrength(double blurStrength) {
+            this.blurStrength = blurStrength;
+            return this;
+        }
+
+        public RGBA getColor() {
+            return color;
+        }
+        public RGBA getBorderColor() {
+            return borderColor;
+        }
+        public int getLeftBorderThickness() {
+            return leftBorderThickness;
+        }
+        public int getRightBorderThickness() {
+            return rightBorderThickness;
+        }
+        public int getTopBorderThickness() {
+            return topBorderThickness;
+        }
+        public int getBottomBorderThickness() {
+            return bottomBorderThickness;
+        }
+        public int getLeftTopCornerRadius() {
+            return leftTopCornerRadius;
+        }
+        public int getRightTopCornerRadius() {
+            return rightTopCornerRadius;
+        }
+        public int getLeftBottomCornerRadius() {
+            return leftBottomCornerRadius;
+        }
+        public int getRightBottomCornerRadius() {
+            return rightBottomCornerRadius;
+        }
+        public ThicknessPosition getBorderThicknessPosition() {
+            return borderThicknessPosition;
+        }
+        public double getBlurStrength() {
+            return blurStrength;
+        }
+
+        public T getNode() {
+            return self;
+        }
     }
 }

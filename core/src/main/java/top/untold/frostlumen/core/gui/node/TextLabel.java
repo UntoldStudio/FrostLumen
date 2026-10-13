@@ -24,7 +24,7 @@ import top.untold.frostlumen.core.gui.GuiNode;
 import top.untold.frostlumen.core.gui.ParentNode;
 import top.untold.frostlumen.core.render.GuiRender;
 
-public class TextLabel extends GuiNode<TextLabel> {
+public class TextLabel extends GuiNode<TextLabel> implements HasDrawBackground<TextLabel> {
     private int textRenderPositionX;
     private int textRenderPositionY;
     private boolean drawBackground = false;
@@ -38,8 +38,8 @@ public class TextLabel extends GuiNode<TextLabel> {
     private VerticalAlignment verticalAlignment = VerticalAlignment.CENTER;
 
     @Override
-    protected void render(GuiRender render, long delta) {
-        if (drawBackground) super.drawDefaultFrameBackground(render);
+    protected void render(GuiRender render, double delta) {
+        if (drawBackground) background.render(render);
         render.drawString(text, font, textRenderPositionX, textRenderPositionY, angle, fontSize, italicDegrees, boldStrength, textColor.red(), textColor.green(), textColor.blue(), textColor.alpha());
     }
 
@@ -51,6 +51,7 @@ public class TextLabel extends GuiNode<TextLabel> {
         this.verticalAlignment = verticalAlignment;
         return this;
     }
+    @Override
     public TextLabel setDrawBackground(boolean drawBackground) {
         this.drawBackground = drawBackground;
         return this;
@@ -117,6 +118,7 @@ public class TextLabel extends GuiNode<TextLabel> {
     public VerticalAlignment getVerticalAlignment() {
         return verticalAlignment;
     }
+    @Override
     public boolean isDrawBackground() {
         return drawBackground;
     }

@@ -21,21 +21,22 @@ import top.untold.frostlumen.core.render.GuiRender;
 import top.untold.frostlumen.core.texture.Texture;
 
 // --8<-- [start:classDefinition]
-public class ImageLabel extends ImageNode<ImageLabel> {
+public class ImageLabel extends ImageNode<ImageLabel> implements HasDrawBackground<ImageLabel> {
     private final ImageRenderDescription imageRenderDescription;
     private boolean drawBackground = true;
 
     @Override
-    public void render(GuiRender render, long delta) {
-        if (drawBackground) super.drawDefaultFrameBackground(render);
+    public void render(GuiRender render, double delta) {
+        if (drawBackground) background.render(render);
         imageRenderDescription.render(render);
     }
 
+    @Override
     public ImageLabel setDrawBackground(boolean drawBackground) {
         this.drawBackground = drawBackground;
         return this;
     }
-
+    @Override
     public boolean isDrawBackground() {
         return drawBackground;
     }

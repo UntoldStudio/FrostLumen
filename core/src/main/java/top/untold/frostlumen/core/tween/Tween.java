@@ -22,19 +22,34 @@ public abstract class Tween {
     protected final List<Runnable> onCompleteCallbackList = new CopyOnWriteArrayList<>();
     protected final List<Runnable> onUpdateCallbackList = new CopyOnWriteArrayList<>();
     protected final boolean removeOnComplete;
+    protected int remainingRepeatCount = 0;
+    protected boolean alwaysRepeat = false;
     protected boolean playing;
 
-    public void registerOnCompleteCallback(Runnable runnable) {
+    public void setRemainingRepeatCount(int remainingRepeatCount) {
+        this.remainingRepeatCount = remainingRepeatCount;
+    }
+    public void setAlwaysRepeat(boolean alwaysRepeat) {
+        this.alwaysRepeat = alwaysRepeat;
+    }
+    public boolean isAlwaysRepeat() {
+        return alwaysRepeat;
+    }
+    public int getRemainingRepeatCount() {
+        return remainingRepeatCount;
+    }
+
+    public void onComplete(Runnable runnable) {
         onCompleteCallbackList.add(runnable);
     }
-    public void unregisterOnCompleteCallback(Runnable runnable) {
+    public void removeOnComplete(Runnable runnable) {
         onCompleteCallbackList.remove(runnable);
     }
 
-    public void registerOnUpdateCallback(Runnable runnable) {
+    public void onUpdate(Runnable runnable) {
         onUpdateCallbackList.add(runnable);
     }
-    public void unregisterOnUpdateCallback(Runnable runnable) {
+    public void removeOnUpdate(Runnable runnable) {
         onUpdateCallbackList.remove(runnable);
     }
 
@@ -54,12 +69,20 @@ public abstract class Tween {
         resume();
     }
 
-    public final void step(long delta) {
+    public final void step(double delta) {
         if (!playing) return;
         stepTween(delta);
+        if (isCompleted()) {
+            if (alwaysRepeat) {
+                reset();
+            } else if (remainingRepeatCount > 0) {
+                reset();
+                remainingRepeatCount--;
+            }
+        }
     }
 
-    protected abstract void stepTween(long delta);
+    protected abstract void stepTween(double delta);
 
     public final void resume() {
         if (isCompleted()) return;

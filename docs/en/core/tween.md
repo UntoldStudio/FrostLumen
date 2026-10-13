@@ -28,7 +28,7 @@ A Tween object should have a method that returns its own value, such as the `get
 
     The time unit of a Tween object is milliseconds.
 
-Example: DoubleTween's `getCurrentValue` method and setter-binding method (`registerAutoCallOnSetter`)
+Example: DoubleTween's `getCurrentValue` method and setter-binding method (`bindSetter`)
 
 ```java
 --8<-- "core/src/main/java/top/untold/frostlumen/core/tween/DoubleTween.java:getCurrentValue"
@@ -196,7 +196,7 @@ CustomTweenFunction tweenFunction3 = new CustomTweenFunction()
 
 ### NumberTween
 
-NumberTween is an abstract class. Primitive-type Tween classes generally directly inherit from it. It helps you manage the target time, easing function, etc. Subclasses only need to manage their own values and update their values by overriding the `applyEased(double eased)` method (generally you only need `startValue + (endValue - startValue) * eased`), reset their values by overriding `resetTween`, and provide the `getCurrentValue` method and the `registerAutoCallOnSetter` method.
+NumberTween is an abstract class. Primitive-type Tween classes generally directly inherit from it. It helps you manage the target time, easing function, etc. Subclasses only need to manage their own values and update their values by overriding the `applyEased(double eased)` method (generally you only need `startValue + (endValue - startValue) * eased`), reset their values by overriding `resetTween`, and provide the `getCurrentValue` method and the `bindSetter` method.
 
 !!! warning
 
@@ -210,7 +210,7 @@ Example: IntTween class
 
 ### ParentTween
 
-ParentTween is an abstract class. Composite-type Tween classes generally directly inherit from it. It helps you manage children, update callbacks, etc. Subclasses generally only need to register their child Tween objects with the parent class (using the parent class's `addChildren` or `addChild` methods), and provide the `getCurrentValue` method and the `registerAutoCallOnSetter` method.
+ParentTween is an abstract class. Composite-type Tween classes generally directly inherit from it. It helps you manage children, update callbacks, etc. Subclasses generally only need to register their child Tween objects with the parent class (using the parent class's `addChildren` or `addChild` methods), and provide the `getCurrentValue` method and the `bindSetter` method.
 
 Example: ScaleOffsetTween class
 

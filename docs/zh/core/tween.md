@@ -23,13 +23,26 @@ Tween调度器是一个调度一堆Tween的载体.在我们的库中,NodeRoot就
 Tween对象是承载数据的载体,它跟随时间增长自己的值.目前库内拥有`DoubleTween` `FloatTween` `IntTween`三种基本类型的Tween对象
 与`ScaleOffsetTween` `RGBATween` 两种复合类型的Tween对象
 
-一个Tween对象应有能返回自己值的方法,如上列五种对象的`getCurrentValue`方法,一个绑定Setter的方法
+一个Tween对象应有能返回自己值的方法,如上列五种对象的`getCurrentValue`方法
+
+Tween基类拥有pause(), resume(), reset(), play()等方法
+
+pause:暂停Tween
+
+resume:恢复Tween
+
+reset:重置Tween播放进度
+
+play:调用reset()和resume()
+
+你可以调用setAlwaysRepeat设置是否永久重复播放,调用setRemainingRepeatCount设置重复几次Tween(不含首次)
 
 !!! warning
 
     Tween对象的时间单位是毫秒
+    一个Tween new出来不会自动play(),你需要手动调用
 
-示例:DoubleTween的getCurrentValue方法与绑定Setter的方法(`registerAutoCallOnSetter`)
+示例:DoubleTween的绑定Setter的方法(`bindSetter`)
 
 ```java
 --8<-- "core/src/main/java/top/untold/frostlumen/core/tween/DoubleTween.java:getCurrentValue"
@@ -42,17 +55,19 @@ Tween对象是承载数据的载体,它跟随时间增长自己的值.目前库�
 示例:创建一个ScaleOffsetTween,使用5秒时间从Scale坐标(0, 0)平滑移到(1, 1),并让某node的position应用它,播放完成后自动被调度器移除
 
 ```java
-ScaleOffsetTween scaleOffsetTween = new ScaleOffsetTween(ScaleOffset.ZERO, ScaleOffset.fromScale(1, 1), TweenFunctions.LINEAR, 5000L, true);
+ScaleOffsetTween scaleOffsetTween = new ScaleOffsetTween(ScaleOffset.ZERO, ScaleOffset.fromScale(1, 1), 5000L, TweenFunctions.LINEAR, true);
 
-scaleOffsetTween.registerAutoCallOnSetter(node::setPosition);
+scaleOffsetTween.bindSetter(node::setPosition);
 //如果还没注册到调度器的话
 nodeRoot.getTweenScheduler().registerTween(scaleOffsetTween);
+
+scaleOffsetTween.play();
 ```
 
 示例:永久重复播放某tween
 
 ```java
-tween.registerOnCompleteCallback(tween::play);
+tween.setAlwaysRepeat(true);
 ```
 
 ## 缓动函数(TweenFunction)
@@ -197,7 +212,7 @@ CustomTweenFunction tweenFunction3 = new CustomTweenFunction()
 
 ### NumberTween
 
-NumberTween是一个抽象类,基本类型的Tween类一般直接继承他.它会帮你管理目标时间,缓动函数等,子类仅需管理自己的值并且通过重写`applyEased(double eased)`函数来更新自己的值(一般来说你只需要startValue + (endValue - startValue) * eased),通过重写`resetTween`来重置自己的值,提供`getCurrentValue`方法与`registerAutoCallOnSetter`方法
+NumberTween是一个抽象类,基本类型的Tween类一般直接继承他.它会帮你管理目标时间,缓动函数等,子类仅需管理自己的值并且通过重写`applyEased(double eased)`函数来更新自己的值(一般来说你只需要startValue + (endValue - startValue) * eased),通过重写`resetTween`来重置自己的值,并且提供`getCurrentValue`方法与`bindSetter`方法
 
 !!! warning
 
@@ -209,9 +224,9 @@ NumberTween是一个抽象类,基本类型的Tween类一般直接继承他.它�
 --8<-- "core/src/main/java/top/untold/frostlumen/core/tween/IntTween.java:classDefinition"
 ```
 
-### ParentTween
+### CompositeTween
 
-ParentTween是一个抽象类,复合类型的Tween类一般直接继承他,它会帮你管理子项,更新回调等,子类一般仅需把自己的子Tween对象注册给父类(使用父类的`addChildren`或`addChild`方法),提供`getCurrentValue`方法与`registerAutoCallOnSetter`方法
+CompositeTween,复合类型的Tween类一般直接继承他,它会帮你管理子项,更新回调,管理绑定的setter等,子类一般仅需把自己的子Tween对象注册给父类(使用父类的`addChildren`或`addChild`方法),提供`getCurrentValue`方法,将父类的泛型参数填为Tween的值的类型
 
 示例:ScaleOffsetTween类
 

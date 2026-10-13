@@ -40,8 +40,8 @@ public class FloatTween extends NumberTween {
         triggerOnUpdateCallback();
     }
 
-    public void registerAutoCallOnSetter(FloatConsumer consumer) {
-        registerOnUpdateCallback(() -> consumer.accept(currentValue));
+    public void bindSetter(FloatConsumer consumer) {
+        onUpdate(() -> consumer.accept(currentValue));
     }
 
     public float getCurrentValue() {

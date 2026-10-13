@@ -18,9 +18,9 @@ package top.untold.frostlumen.core.tween;
 import top.untold.frostlumen.core.exception.TweenException;
 
 public abstract class NumberTween extends Tween {
-    private final long targetTime;
+    private final double targetTime;
     private final TweenFunction function;
-    private long currentTime;
+    private double currentTime;
     private boolean isCompleted = false;
 
     @Override
@@ -31,7 +31,7 @@ public abstract class NumberTween extends Tween {
     }
 
     @Override
-    protected void stepTween(long delta) {
+    protected void stepTween(double delta) {
         /*if (currentTime >= targetTime) {
             playing = false;
             isCompleted = true;
@@ -42,7 +42,7 @@ public abstract class NumberTween extends Tween {
 
         currentTime += delta;
 
-        double percent = Math.min((double) currentTime / targetTime, 1.0);
+        double percent = Math.min(currentTime / targetTime, 1.0);
         double eased = function.computeEased(percent);
 
         applyEased(eased);
@@ -62,7 +62,7 @@ public abstract class NumberTween extends Tween {
         return isCompleted;
     }
 
-    protected NumberTween(long time, TweenFunction function, boolean removeOnComplete) {
+    protected NumberTween(double time, TweenFunction function, boolean removeOnComplete) {
         super(removeOnComplete);
 
         if (time <= 0) throw new TweenException("time <= 0");

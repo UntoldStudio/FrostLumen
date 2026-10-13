@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class ImageButton extends ImageNode<ImageButton> {
+public class ImageButton extends ImageNode<ImageButton> implements HasDrawBackground<ImageButton> {
     private final OneArgListenerRegistry<MouseButtonEvent> mouseButtonEventListenerRegistry = new OneArgListenerRegistry<>();
     private final Set<MouseButton> canTriggerMouseButtons = new HashSet<>();
     private final ImageRenderDescription normal;
@@ -46,8 +46,8 @@ public class ImageButton extends ImageNode<ImageButton> {
     }
 
     @Override
-    protected void render(GuiRender render, long delta) {
-        if (drawBackground) super.drawDefaultFrameBackground(render);
+    protected void render(GuiRender render, double delta) {
+        if (drawBackground) background.render(render);
         if (!Collections.disjoint(canTriggerMouseButtons, currentMouseClickButtons)) {
             if (onClick.canRender()) {
                 onClick.render(render);
@@ -84,9 +84,11 @@ public class ImageButton extends ImageNode<ImageButton> {
         }
     }
 
+    @Override
     public boolean isDrawBackground() {
         return drawBackground;
     }
+
     public ImageRenderDescription normal() {
         return normal;
     }
@@ -97,6 +99,7 @@ public class ImageButton extends ImageNode<ImageButton> {
         return onClick;
     }
 
+    @Override
     public ImageButton setDrawBackground(boolean drawBackground) {
         this.drawBackground = drawBackground;
         return this;

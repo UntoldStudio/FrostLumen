@@ -16,18 +16,47 @@
 
 你的所有setter方法应当返回this,如果你造的是抽象类那么请你定义为:`Example<T extends Example<T>> extends GuiNode<T>`并且所有setter返回T(使用父类字段self)
 
-如果你希望绘制默认背景,请调用父类的`drawDefaultFrameBackground(GuiRender render)`方法,如果你的背景绘制是可选的,请加`drawBackground`属性(字段,setter与getter),默认值由节点类型自由决定
+如果你希望绘制默认背景,请调用父类字段background的`render`方法,如果你的背景绘制是可选的,请加`drawBackground`属性(字段,setter与getter)并实现HasDrawBackground接口,泛型填自己的类型,默认值由节点类型自由决定
 
-示例:最简单的仅仅调用父类`drawDefaultFrameBackground`的Frame类
+示例:最简单的仅仅调用父类background字段的`render`方法的Frame类
 
 ```java
 public class Frame extends GuiNode<Frame> {
     @Override
     protected void render(GuiRender render, long delta) {
-        super.drawDefaultFrameBackground(render);
+        background.render(render);
     }
 
     public Frame(ScaleOffset position, ScaleOffset size) {
+        super(position, size);
+    }
+}
+```
+
+示例:可选绘制背景的DemoFrame类
+
+```java
+public class DemoFrame extends GuiNode<DemoFrame> implements HasDrawBackground<DemoFrame> {
+    private boolean drawBackground = false;
+    
+    @Override
+    public DemoFrame setDrawBackground(boolean drawBackground) {
+        this.drawBackground = drawBackground;
+        return self;
+    }
+    @Override
+    public boolean isDrawBackground() {
+        return drawBackground;
+    }
+    
+    @Override
+    protected void render(GuiRender render, long delta) {
+        if (drawBackground) {
+            background.render(render);
+        }
+    }
+
+    public DemoFrame(ScaleOffset position, ScaleOffset size) {
         super(position, size);
     }
 }

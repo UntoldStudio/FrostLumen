@@ -17,16 +17,16 @@ package top.untold.frostlumen.core.gui;
 
 import top.untold.frostlumen.core.data.ScaleOffset;
 import top.untold.frostlumen.core.event.*;
-import top.untold.frostlumen.core.listener.GuiRenderAndLongListenerRegistry;
-import top.untold.frostlumen.core.listener.consumer.GuiRenderAndLongConsumer;
+import top.untold.frostlumen.core.listener.GuiRenderAndDoubleListenerRegistry;
+import top.untold.frostlumen.core.listener.consumer.GuiRenderAndDoubleConsumer;
 import top.untold.frostlumen.core.render.GuiRender;
 
 import java.util.*;
 import java.util.function.Consumer;
 
 public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoot, GuiNode {
-    private final GuiRenderAndLongListenerRegistry beforeRenderListenerRegistry = new GuiRenderAndLongListenerRegistry();
-    private final GuiRenderAndLongListenerRegistry afterRenderListenerRegistry = new GuiRenderAndLongListenerRegistry();
+    private final GuiRenderAndDoubleListenerRegistry beforeRenderListenerRegistry = new GuiRenderAndDoubleListenerRegistry();
+    private final GuiRenderAndDoubleListenerRegistry afterRenderListenerRegistry = new GuiRenderAndDoubleListenerRegistry();
 
     @SuppressWarnings("unchecked")
     protected final T self = (T) this;
@@ -66,20 +66,20 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
         return realSizeY;
     }
 
-    public void registerBeforeRenderListener(GuiRenderAndLongConsumer consumer) {
+    public void registerBeforeRenderListener(GuiRenderAndDoubleConsumer consumer) {
         beforeRenderListenerRegistry.register(consumer);
     }
-    public void unregisterBeforeRenderListener(GuiRenderAndLongConsumer consumer) {
+    public void unregisterBeforeRenderListener(GuiRenderAndDoubleConsumer consumer) {
         beforeRenderListenerRegistry.unregister(consumer);
     }
-    public void registerAfterRenderListener(GuiRenderAndLongConsumer consumer) {
+    public void registerAfterRenderListener(GuiRenderAndDoubleConsumer consumer) {
         afterRenderListenerRegistry.register(consumer);
     }
-    public void unregisterAfterRenderListener(GuiRenderAndLongConsumer consumer) {
+    public void unregisterAfterRenderListener(GuiRenderAndDoubleConsumer consumer) {
         afterRenderListenerRegistry.unregister(consumer);
     }
 
-    public void dispatchRender(GuiRender render, long delta) {
+    public void dispatchRender(GuiRender render, double delta) {
         beforeRenderListenerRegistry.trigger(render, delta);
         forwardFor(node -> node.dispatchRender(render, delta), null);
         afterRenderListenerRegistry.trigger(render, delta);

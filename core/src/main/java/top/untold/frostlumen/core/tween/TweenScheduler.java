@@ -21,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class TweenScheduler {
     private final List<Tween> tweenList = new CopyOnWriteArrayList<>();
 
-    public void step(long delta) {
+    public void step(double delta) {
         for (Tween tween : tweenList) {
             tween.step(delta);
         }

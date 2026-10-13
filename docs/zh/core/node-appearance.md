@@ -26,11 +26,28 @@ node.setClipChildren(true);
 
 大部分节点都有这个属性,如果有这个属性那么该节点就必定有对应setter
 
+一般拥有该属性的节点都会实现HasDrawBackground接口
+
 如果该值为false,整个背景将不会渲染
 
 如果你没看到背景,且节点有drawBackground属性,优先考虑将它设为true
 
-## BackgroundBlurStrength
+## Background
+
+background是每个节点都会有的字段,但是如果子类未暴露出绘制背景的能力则设置他无效
+背景配置项通过GuiNode基类的`background()`方法访问,你可以通过背景配置项的`getNode()`方法来回到节点
+
+示例:配置背景
+
+```java
+Frame frame = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+                .background()
+                .setColor(new RGBA(210, 230, 255, 90))
+                .setCornerRadius(10)
+                .getNode();
+```
+
+### BackgroundBlurStrength
 
 类型:double
 
@@ -45,46 +62,46 @@ node.setClipChildren(true);
 示例:
 
 ```java
-node.setBackgroundBlurStrength(0.7);
+background.setBlurStrength(0.7);
 ```
 
-## BackgroundColor
+### BackgroundColor
 
 类型:RGBA
 
 默认值:RGBA.WHITE
 
-背景的颜色.
+背景的颜色
 
 示例:
 
 ```java
-node.setBackgroundColor(new RGBA(210, 230, 255, 90));
+background.setColor(new RGBA(210, 230, 255, 90));
 ```
 
-## BackgroundBorder
+### BackgroundBorder
 
 BackgroundBorder属性实际由6个类型不同的独立分量组成
 
 类型为int的:
-`backgroundLeftBorderThickness`
-`backgroundRightBorderThickness`
-`backgroundTopBorderThickness`
-`backgroundBottomBorderThickness`
+`leftBorderThickness`
+`rightBorderThickness`
+`topBorderThickness`
+`bottomBorderThickness`
 
 (以上这四个值必须>=0否则会出现非预期行为,默认值都是0,单位为像素)
 
-(如果你不想一个个调用这四个的setter,可以使用`setBackgroundBorderThickness(int thickness)`一键设置四个)
+(如果你不想一个个调用这四个的setter,可以使用`setBorderThickness(int thickness)`一键设置四个)
 
 类型为RGBA的:
 
-`backgroundBorderColor`
+`borderColor`
 
 (默认值为RGBA.BLACK)
 
 类型为ThicknessPosition的:
 
-`backgroundBorderThicknessPosition`
+`borderThicknessPosition`
 
 (默认值为OUTSIDE)
 
@@ -103,23 +120,23 @@ CENTER(渲染在背景的边框中心)
 示例:设置一个大小为5像素的蓝色边框,渲染在背景内,使用链式API
 
 ```java
-node.setBackgroundBorderThickness(5)
-    .setBackgroundBorderColor(RGBA.BLUE)
-    .setBackgroundBorderThicknessPosition(ThicknessPosition.INSIDE);
+background.setBorderThickness(5)
+    .setBorderColor(RGBA.BLUE)
+    .setBorderThicknessPosition(ThicknessPosition.INSIDE);
 ```
 
-## CornerRadius
+### BackgroundCornerRadius
 
 它由4个类型为int的独立分量组成
 
-`backgroundLeftTopCornerRadius`
-`backgroundRightTopCornerRadius`
-`backgroundLeftBottomCornerRadius`
-`backgroundRightBottomCornerRadius`
+`leftTopCornerRadius`
+`rightTopCornerRadius`
+`leftBottomCornerRadius`
+`rightBottomCornerRadius`
 
 (它们必须>=0否则会出现非预期行为,默认值都是0,单位是像素圆角半径)
 
-(如果你不想一个个调用setter,可以使用`setBackgroundCornerRadius(int radius)`一键设置四个)
+(如果你不想一个个调用setter,可以使用`setCornerRadius(int radius)`一键设置四个)
 
 !!! warning
 
@@ -128,8 +145,8 @@ node.setBackgroundBorderThickness(5)
 示例:设置左上角圆角半径为5,右下角为20,右上角为30,左下角为0,使用链式API
 
 ```java
-node.setBackgroundLeftTopCornerRadius(5)
-    .setBackgroundRightTopCornerRadius(30)
-    .setBackgroundLeftBottomCornerRadius(0)
-    .setBackgroundRightBottomCornerRadius(20);
+background.setLeftTopCornerRadius(5)
+    .setRightTopCornerRadius(30)
+    .setLeftBottomCornerRadius(0)
+    .setRightBottomCornerRadius(20);
 ```

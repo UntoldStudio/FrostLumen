@@ -54,18 +54,24 @@ public class Main {
                 .onClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
                 .setAnchor(0.5, 0.5)
                 .setDrawBackground(true)
-                .setBackgroundCornerRadius(10);
+                .background()
+                .setCornerRadius(10)
+                .getNode();
         Frame frame1 = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
-                .setAnchor(0.5, 0.5).setBackgroundColor(new RGBA(210, 230, 255, 90))
+                .setAnchor(0.5, 0.5)
                 .setClipChildren(true)
                 .setAngle(20f)
-                .setBackgroundCornerRadius(10);
+                .background()
+                .setColor(new RGBA(210, 230, 255, 90))
+                .setCornerRadius(10)
+                .getNode();
         Frame frame2 = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.3, 0.3))
                 .setAnchor(0.5, 0.5)
-                .setBackgroundColor(new RGBA(210, 230, 255, 0))
-                .setBackgroundBlurStrength(0.7)
-                .setBackgroundCornerRadius(10)
-                .setAngle(100);
+                .setAngle(100)
+                .background()
+                .setColor(new RGBA(210, 230, 255, 0))
+                .setBlurStrength(0.7)
+                .getNode();
 
         CustomTweenFunction tweenFunction = new CustomTweenFunction(TweenFunctions.LINEAR)
                 .setNestedSegment(0, 0.2, TweenFunctions.BOUNCE_IN_OUT, child1 -> {
@@ -86,8 +92,8 @@ public class Main {
 
         ScaleOffsetTween scaleOffsetTween = new ScaleOffsetTween(ScaleOffset.ZERO, ScaleOffset.fromScale(1, 1), 1000, tweenFunction, false);
         ScaleOffsetTween scaleOffsetTween1 = new ScaleOffsetTween(ScaleOffset.fromScale(1, 1), ScaleOffset.ZERO, 1000, tweenFunction, false);
-        scaleOffsetTween.registerOnCompleteCallback(scaleOffsetTween1::play);
-        scaleOffsetTween1.registerOnCompleteCallback(scaleOffsetTween::play);
+        scaleOffsetTween.onComplete(scaleOffsetTween1::play);
+        scaleOffsetTween1.onComplete(scaleOffsetTween::play);
 
         frame1.addChild(button);
 
@@ -96,8 +102,8 @@ public class Main {
         TweenScheduler tweenScheduler = root.getTweenScheduler();
         tweenScheduler.registerTween(scaleOffsetTween);
         tweenScheduler.registerTween(scaleOffsetTween1);
-        scaleOffsetTween.registerAutoCallOnSetter(frame1::setPosition);
-        scaleOffsetTween1.registerAutoCallOnSetter(frame1::setPosition);
+        scaleOffsetTween.bindSetter(frame1::setPosition);
+        scaleOffsetTween1.bindSetter(frame1::setPosition);
         scaleOffsetTween.play();
 
         long previousTime = System.nanoTime();

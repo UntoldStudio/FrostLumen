@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.UntoldStudio.FrostLumen:neoforge+build${minecraftVersion}:${version}")
+    implementation("com.github.UntoldStudio.FrostLumen:neoforge-build${minecraftVersion}:${version}")
 }
 ```
 
@@ -42,7 +42,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.UntoldStudio.FrostLumen:fabric+build${minecraftVersion}:${version}")
+    implementation("com.github.UntoldStudio.FrostLumen:fabric-build${minecraftVersion}:${version}")
 }
 ```
 

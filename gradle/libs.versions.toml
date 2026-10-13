@@ -1,5 +1,5 @@
 [versions]
-lwjgl = "3.3.3"
+lwjgl = "3.4.1"
 joml = "1.10.8"
 shadow = "9.6.1"
 log4j = "2.24.1"
