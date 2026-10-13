@@ -36,6 +36,8 @@ dependencies {
 
 If you're using it through Fabric, depend on the fabric module, which already bundles the core classes internally:
 
+Note:The Fabric module is not ready yet
+
 ```kotlin
 repositories {
     maven("https://jitpack.io")
