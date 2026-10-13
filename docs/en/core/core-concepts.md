@@ -48,7 +48,7 @@ They all have self-referential generics and are not builders. All setters return
 
 ## ScaleOffset
 
-ScaleOffset is a relatively important class in this library. It is an immutable record class, defined as:
+ScaleOffset is a relatively important class in this library. It is an immutable record class. Almost all node constructors require `position` and `size` of type ScaleOffset. It is defined as:
 
 ```java
 public record ScaleOffset(double xScale, int xOffset, double yScale, int yOffset) {...}
@@ -174,7 +174,7 @@ Almost all APIs use it to represent a color, for example GuiNode's `backgroundCo
 
 It has four methods: `withRed`, `withGreen`, `withBlue`, and `withAlpha`.
 
-There are 1 ways to construct it:
+There is 1 way to construct it:
 
 `new RGBA(red, green, blue, alpha)`
 

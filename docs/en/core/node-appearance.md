@@ -26,11 +26,29 @@ Default value: varies; true for some nodes, false for others.
 
 Most nodes have this property. If a node has this property, then it must have a corresponding setter.
 
+Nodes that have this property generally implement the `HasDrawBackground` interface.
+
 If this value is false, the entire background will not be rendered.
 
 If you do not see a background, and the node has the drawBackground property, first consider setting it to true.
 
-## BackgroundBlurStrength
+## Background
+
+`background` is a field that every node has, but if a subclass does not expose the ability to draw the background, setting it will have no effect.
+
+Background configuration items are accessed through the `background()` method of the GuiNode base class. You can return to the node via the background configuration item's `getNode()` method.
+
+Example: Configuring the background
+
+```java
+Frame frame = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+                .background()
+                .setColor(new RGBA(210, 230, 255, 90))
+                .setCornerRadius(10)
+                .getNode();
+```
+
+### BackgroundBlurStrength
 
 Type: double
 
@@ -45,10 +63,10 @@ If Alpha=255, it will have no effect no matter what value is set, because an opa
 Example:
 
 ```java
-node.setBackgroundBlurStrength(0.7);
+background.setBlurStrength(0.7);
 ```
 
-## BackgroundColor
+### BackgroundColor
 
 Type: RGBA
 
@@ -59,32 +77,32 @@ The background color.
 Example:
 
 ```java
-node.setBackgroundColor(new RGBA(210, 230, 255, 90));
+background.setColor(new RGBA(210, 230, 255, 90));
 ```
 
-## BackgroundBorder
+### BackgroundBorder
 
 The BackgroundBorder property is actually composed of 6 independent components of different types.
 
 The four of type int:
-`backgroundLeftBorderThickness`
-`backgroundRightBorderThickness`
-`backgroundTopBorderThickness`
-`backgroundBottomBorderThickness`
+`leftBorderThickness`
+`rightBorderThickness`
+`topBorderThickness`
+`bottomBorderThickness`
 
 (The four values above must be >= 0; otherwise, unexpected behavior may occur. Their default values are all 0, and the unit is pixels.)
 
-(If you do not want to call the setters for these four one by one, you can use `setBackgroundBorderThickness(int thickness)` to set all four at once.)
+(If you do not want to call the setters for these four one by one, you can use `setBorderThickness(int thickness)` to set all four at once.)
 
 The one of type RGBA:
 
-`backgroundBorderColor`
+`borderColor`
 
 (Default value is RGBA.BLACK)
 
 The one of type ThicknessPosition:
 
-`backgroundBorderThicknessPosition`
+`borderThicknessPosition`
 
 (Default value is OUTSIDE)
 
@@ -103,23 +121,23 @@ The above values are all borders, so even if the node rotates, they will stay at
 Example: Set a blue border with a thickness of 5 pixels, rendered inside the background, using the chained API.
 
 ```java
-node.setBackgroundBorderThickness(5)
-    .setBackgroundBorderColor(RGBA.BLUE)
-    .setBackgroundBorderThicknessPosition(ThicknessPosition.INSIDE);
+background.setBorderThickness(5)
+    .setBorderColor(RGBA.BLUE)
+    .setBorderThicknessPosition(ThicknessPosition.INSIDE);
 ```
 
-## CornerRadius
+### BackgroundCornerRadius
 
 It consists of 4 independent components of type int:
 
-`backgroundLeftTopCornerRadius`
-`backgroundRightTopCornerRadius`
-`backgroundLeftBottomCornerRadius`
-`backgroundRightBottomCornerRadius`
+`leftTopCornerRadius`
+`rightTopCornerRadius`
+`leftBottomCornerRadius`
+`rightBottomCornerRadius`
 
 (They must be >= 0; otherwise, unexpected behavior may occur. Their default values are all 0, and the unit is pixels for the corner radius.)
 
-(If you do not want to call the setters one by one, you can use `setBackgroundCornerRadius(int radius)` to set all four at once.)
+(If you do not want to call the setters one by one, you can use `setCornerRadius(int radius)` to set all four at once.)
 
 !!! warning
 
@@ -128,8 +146,8 @@ It consists of 4 independent components of type int:
 Example: Set the top-left corner radius to 5, the bottom-right to 20, the top-right to 30, and the bottom-left to 0, using the chained API.
 
 ```java
-node.setBackgroundLeftTopCornerRadius(5)
-    .setBackgroundRightTopCornerRadius(30)
-    .setBackgroundLeftBottomCornerRadius(0)
-    .setBackgroundRightBottomCornerRadius(20);
+background.setLeftTopCornerRadius(5)
+    .setRightTopCornerRadius(30)
+    .setLeftBottomCornerRadius(0)
+    .setRightBottomCornerRadius(20);
 ```

@@ -10,7 +10,7 @@
 
 如果你最终决定自己制作自定义节点,那么你**必须直接调用**我们的渲染抽象层
 
-你的类继承GuiNode后,必须重写`render(GuiRender render, long delta)`方法,其中delta单位为毫秒,当前版本我们不推荐使用delta来做动画,我们推荐使用Tween来做,Tween介绍在上一章节
+你的类继承GuiNode后,必须重写`render(GuiRender render, double delta)`方法,其中delta单位为毫秒,当前版本我们不推荐使用delta来做动画,我们推荐使用Tween来做,Tween介绍在上一章节
 
 你的构造函数应该至少拥有`ScaleOffset position, ScaleOffset size`并调用`super(position, size)`
 
@@ -50,7 +50,7 @@ public class DemoFrame extends GuiNode<DemoFrame> implements HasDrawBackground<D
     }
     
     @Override
-    protected void render(GuiRender render, long delta) {
+    protected void render(GuiRender render, double delta) {
         if (drawBackground) {
             background.render(render);
         }

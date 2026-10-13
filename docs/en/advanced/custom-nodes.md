@@ -1,6 +1,6 @@
 # Custom Nodes
 
-Custom nodes are suitable for drawing that built-in nodes cannot express. If you can compose it using existing nodes, do not create a custom one.
+Custom nodes are suitable for drawing that built-in nodes cannot express. If you can compose it using existing nodes, do not customize it.
 
 This chapter will introduce how to inherit from GuiNode, how to call GuiRender's methods, and how to respond to events. Which scenarios are worth customizing depends on your project. If a requirement is common enough, the library will provide a built-in node.
 
@@ -10,24 +10,53 @@ Your custom node should inherit from the `GuiNode<?>` abstract class, and fill i
 
 If you ultimately decide to create your own custom node, then you **must directly call** our rendering abstraction layer.
 
-After your class inherits from GuiNode, you must override the `render(GuiRender render, long delta)` method, where `delta` is in milliseconds. In the current version, we do not recommend using `delta` for animations; we recommend using Tween instead. The introduction to Tween is in the previous chapter.
+After your class inherits from GuiNode, you must override the `render(GuiRender render, double delta)` method, where `delta` is in milliseconds. In the current version, we do not recommend using `delta` for animations; we recommend using Tween instead. The introduction to Tween is in the previous chapter.
 
 Your constructor should at least have `ScaleOffset position, ScaleOffset size` and call `super(position, size)`.
 
 All your setter methods should return `this`. If you are creating an abstract class, then please define it as: `Example<T extends Example<T>> extends GuiNode<T>` and have all setters return `T` (using the parent class field `self`).
 
-If you want to draw the default background, please call the parent class's `drawDefaultFrameBackground(GuiRender render)` method. If your background drawing is optional, please add a `drawBackground` property (field, setter, and getter). The default value is freely determined by the node type.
+If you want to draw the default background, please call the `render` method of the parent class field `background`. If your background drawing is optional, please add a `drawBackground` property (field, setter, and getter) and implement the `HasDrawBackground` interface, with the generic parameter filled with your own type. The default value is freely determined by the node type.
 
-Example: The simplest Frame class that only calls the parent class's `drawDefaultFrameBackground`
+Example: The simplest Frame class that only calls the `render` method of the parent class `background` field
 
 ```java
 public class Frame extends GuiNode<Frame> {
     @Override
     protected void render(GuiRender render, long delta) {
-        super.drawDefaultFrameBackground(render);
+        background.render(render);
     }
 
     public Frame(ScaleOffset position, ScaleOffset size) {
+        super(position, size);
+    }
+}
+```
+
+Example: A DemoFrame class with optional background drawing
+
+```java
+public class DemoFrame extends GuiNode<DemoFrame> implements HasDrawBackground<DemoFrame> {
+    private boolean drawBackground = false;
+    
+    @Override
+    public DemoFrame setDrawBackground(boolean drawBackground) {
+        this.drawBackground = drawBackground;
+        return self;
+    }
+    @Override
+    public boolean isDrawBackground() {
+        return drawBackground;
+    }
+    
+    @Override
+    protected void render(GuiRender render, double delta) {
+        if (drawBackground) {
+            background.render(render);
+        }
+    }
+
+    public DemoFrame(ScaleOffset position, ScaleOffset size) {
         super(position, size);
     }
 }
@@ -89,7 +118,7 @@ Note: For method details, please see the Javadoc.
 
 // Rendering methods
 
-// Draw a rectangle with the same color at all four corners. For all methods below, min* generally directly uses the parent class's realPosition*, and max* generally directly uses the parent class's realPositionMax*
+// Draw a rectangle with the same color at all four corners. For all methods below, min* generally directly passes the parent class's realPosition*, and max* generally directly passes the parent class's realPositionMax*
 public void drawRectangle(int minX, int minY, int maxX, int maxY, float angle, int red, int green, int blue, int alpha)
 // Draw a rectangle with independently specified four-corner colors (gradient)
 public void drawRectangle(int minX, int minY, int maxX, int maxY, float angle,
