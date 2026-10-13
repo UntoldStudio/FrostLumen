@@ -1,7 +1,7 @@
 # FrostLumen
 [![](https://jitpack.io/v/UntoldStudio/FrostLumen.svg)](https://jitpack.io/#UntoldStudio/FrostLumen)
 ![fastutil](https://img.shields.io/badge/fastutil-8.5.19-purple)
-![LWJGL](https://img.shields.io/badge/LWJGL-3.3.3-red)
+![LWJGL](https://img.shields.io/badge/LWJGL-3.4.1-red)
 ![Log4j](https://img.shields.io/badge/Log4j-2.24.1-brown)
 
 FrostLumen is an embedded UI library. You only need to call one rendering callback and pass in one window handle per frame. The core module is the main library. The neoforge module and the fabric module is the Minecraft Mod binding that bundles the core classes internally. The example module is a standalone application example.
