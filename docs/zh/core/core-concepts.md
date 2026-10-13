@@ -187,5 +187,5 @@ API几乎全部用他表示一个颜色,例如GuiNode的backgroundColor
 示例:设置某node的背景色为不透明橙色
 
 ```java
-node.setBackgroundColor(new RGBA(255, 128, 0, 255));
+node.background().setColor(new RGBA(255, 128, 0, 255));
 ```

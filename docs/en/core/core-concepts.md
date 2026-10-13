@@ -190,5 +190,5 @@ or use constants defined by the RGBA class:
 Example: Set a node's background color to opaque orange
 
 ```java
-node.setBackgroundColor(new RGBA(255, 128, 0, 255));
+node.background().setColor(new RGBA(255, 128, 0, 255));
 ```
