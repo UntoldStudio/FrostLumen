@@ -930,7 +930,7 @@
 <p>GuiNode recalculates these 7 values when it is initialized, when the parent requests recalculation, or when the parent is changed or position/size/angle is changed. After calculating them itself, it recursively asks its children to recalculate.</p>
 <p>They all have self-referential generics and are not builders. All setters return the <code>self</code> field, where <code>self</code> is defined as <code>(T) this</code>, so you can chain calls on it at any time.</p>
 <h2 id="scaleoffset">ScaleOffset<a class="headerlink" href="#scaleoffset" title="Permanent link">&para;</a></h2>
-<p>ScaleOffset is a relatively important class in this library. It is an immutable record class, defined as:</p>
+<p>ScaleOffset is a relatively important class in this library. It is an immutable record class. Almost all node constructors require <code>position</code> and <code>size</code> of type ScaleOffset. It is defined as:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">record</span> <span class="nc">ScaleOffset</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">xScale</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">xOffset</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">yScale</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">yOffset</span><span class="p">)</span><span class="w"> </span><span class="p">{...}</span>
 </span></code></pre></div>
 <p>The type of a node's position and size is both this.</p>
@@ -1002,7 +1002,7 @@ addXOffset
 <p>It represents a color.</p>
 <p>Almost all APIs use it to represent a color, for example GuiNode's <code>backgroundColor</code>.</p>
 <p>It has four methods: <code>withRed</code>, <code>withGreen</code>, <code>withBlue</code>, and <code>withAlpha</code>.</p>
-<p>There are 1 ways to construct it:</p>
+<p>There is 1 way to construct it:</p>
 <p><code>new RGBA(red, green, blue, alpha)</code></p>
 <p>or use constants defined by the RGBA class:
 <code>WHITE</code>
