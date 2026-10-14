@@ -335,10 +335,10 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         double mouseY = root.getWindow().getMouseY();
 
         if (this.realAngle == 0 || this.realAngle == 180) {
-            return root.getWindow().isMouseInRange(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY);
-        }
-
-        if (isPointNotInNodeRect(this, mouseX, mouseY)) {
+            if (!root.getWindow().isMouseInRange(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY)) {
+                return false;
+            }
+        } else if (isPointNotInNodeRect(this, mouseX, mouseY)) {
             return false;
         }
 
