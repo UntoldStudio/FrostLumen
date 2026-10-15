@@ -851,7 +851,7 @@
 <p>本章将会讲解如何使用ResourceManager加载资源,以及资源对象如何使用.</p>
 <h2 id="resourcemanager">ResourceManager<a class="headerlink" href="#resourcemanager" title="Permanent link">&para;</a></h2>
 <p>所有资源的加载都应该通过ResourceManager.加载资源的调用应该在渲染线程使用,并且必须在Window.from调用之后</p>
-<p>你可以通过<code>ResourceManager.getResourceManagerFromThreadLocal()</code>静态方法获取ResourceManager实例.</p>
+<p>你可以通过<code>NodeRoot</code>的<code>getResourceManager</code>方法获取ResourceManager实例.</p>
 <p>ResourceManager定义了这些方法:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">Texture</span><span class="w"> </span><span class="nf">loadTexture</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">path</span><span class="p">);</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">Texture</span><span class="w"> </span><span class="nf">loadTexture</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">path</span><span class="p">,</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">isLinear</span><span class="p">);</span>

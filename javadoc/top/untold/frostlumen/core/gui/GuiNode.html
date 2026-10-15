@@ -65,12 +65,14 @@ loadScripts(document, 'script');</script>
 <li><a href="#root" tabindex="0">root</a></li>
 <li><a href="#parent" tabindex="0">parent</a></li>
 <li><a href="#zIndex" tabindex="0">zIndex</a></li>
+<li><a href="#layoutOrder" tabindex="0">layoutOrder</a></li>
 <li><a href="#clipChildren" tabindex="0">clipChildren</a></li>
 <li><a href="#xAnchor" tabindex="0">xAnchor</a></li>
 <li><a href="#yAnchor" tabindex="0">yAnchor</a></li>
 <li><a href="#angle" tabindex="0">angle</a></li>
 <li><a href="#currentMouseClickButtons" tabindex="0">currentMouseClickButtons</a></li>
 <li><a href="#mouseInNode" tabindex="0">mouseInNode</a></li>
+<li><a href="#init" tabindex="0">init</a></li>
 </ol>
 </li>
 <li><a href="#constructor-detail" tabindex="0">Constructor Details</a>
@@ -104,6 +106,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#dispatchWindowMinimizeEvent(top.untold.frostlumen.core.event.WindowMinimizeEvent)" tabindex="0">dispatchWindowMinimizeEvent(WindowMinimizeEvent)</a></li>
 <li><a href="#dispatchWindowMaximizeEvent(top.untold.frostlumen.core.event.WindowMaximizeEvent)" tabindex="0">dispatchWindowMaximizeEvent(WindowMaximizeEvent)</a></li>
 <li><a href="#dispatchWindowMoveEvent(top.untold.frostlumen.core.event.WindowMoveEvent)" tabindex="0">dispatchWindowMoveEvent(WindowMoveEvent)</a></li>
+<li><a href="#dispatchInit(top.untold.frostlumen.core.render.GuiRender)" tabindex="0">dispatchInit(GuiRender)</a></li>
 <li><a href="#render(top.untold.frostlumen.core.render.GuiRender,double)" tabindex="0">render(GuiRender, double)</a></li>
 <li><a href="#onKeyEvent(top.untold.frostlumen.core.event.KeyEvent)" tabindex="0">onKeyEvent(KeyEvent)</a></li>
 <li><a href="#onMouseButtonEvent(top.untold.frostlumen.core.event.MouseButtonEvent)" tabindex="0">onMouseButtonEvent(MouseButtonEvent)</a></li>
@@ -120,7 +123,9 @@ loadScripts(document, 'script');</script>
 <li><a href="#onWindowMinimizeEvent(top.untold.frostlumen.core.event.WindowMinimizeEvent)" tabindex="0">onWindowMinimizeEvent(WindowMinimizeEvent)</a></li>
 <li><a href="#onWindowMaximizeEvent(top.untold.frostlumen.core.event.WindowMaximizeEvent)" tabindex="0">onWindowMaximizeEvent(WindowMaximizeEvent)</a></li>
 <li><a href="#onWindowMoveEvent(top.untold.frostlumen.core.event.WindowMoveEvent)" tabindex="0">onWindowMoveEvent(WindowMoveEvent)</a></li>
+<li><a href="#init(top.untold.frostlumen.core.render.GuiRender)" tabindex="0">init(GuiRender)</a></li>
 <li><a href="#addChild(top.untold.frostlumen.core.gui.GuiNode)" tabindex="0">addChild(GuiNode)</a></li>
+<li><a href="#setLayoutOrder(int)" tabindex="0">setLayoutOrder(int)</a></li>
 <li><a href="#setParent(top.untold.frostlumen.core.gui.ParentNode)" tabindex="0">setParent(ParentNode)</a></li>
 <li><a href="#getParent()" tabindex="0">getParent()</a></li>
 <li><a href="#setZIndex(int)" tabindex="0">setZIndex(int)</a></li>
@@ -132,6 +137,7 @@ loadScripts(document, 'script');</script>
 <li><a href="#setAnchor(double,double)" tabindex="0">setAnchor(double, double)</a></li>
 <li><a href="#setClipChildren(boolean)" tabindex="0">setClipChildren(boolean)</a></li>
 <li><a href="#isClipChildren()" tabindex="0">isClipChildren()</a></li>
+<li><a href="#getLayoutOrder()" tabindex="0">getLayoutOrder()</a></li>
 <li><a href="#getZIndex()" tabindex="0">getZIndex()</a></li>
 <li><a href="#getAngle()" tabindex="0">getAngle()</a></li>
 <li><a href="#getXAnchor()" tabindex="0">getXAnchor()</a></li>
@@ -155,7 +161,7 @@ loadScripts(document, 'script');</script>
 <section class="class-description" id="class-description">
 <dl class="notes">
 <dt>Direct Known Subclasses:</dt>
-<dd><code><a href="node/Frame.html" title="class in top.untold.frostlumen.core.gui.node">Frame</a>, <a href="node/ImageNode.html" title="class in top.untold.frostlumen.core.gui.node">ImageNode</a>, <a href="node/TextLabel.html" title="class in top.untold.frostlumen.core.gui.node">TextLabel</a></code></dd>
+<dd><code><a href="node/Frame.html" title="class in top.untold.frostlumen.core.gui.node">Frame</a>, <a href="node/ImageNode.html" title="class in top.untold.frostlumen.core.gui.node">ImageNode</a>, <a href="node/LayoutBox.html" title="class in top.untold.frostlumen.core.gui.node">LayoutBox</a>, <a href="node/ScrollFrame.html" title="class in top.untold.frostlumen.core.gui.node">ScrollFrame</a>, <a href="node/TextLabel.html" title="class in top.untold.frostlumen.core.gui.node">TextLabel</a></code></dd>
 </dl>
 <hr>
 <div class="horizontal-scroll">
@@ -200,6 +206,12 @@ loadScripts(document, 'script');</script>
 <div class="col-last even-row-color">&nbsp;</div>
 <div class="col-first odd-row-color"><code>protected <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="../data/MouseButton.html" title="enum class in top.untold.frostlumen.core.data">MouseButton</a>&gt;</code></div>
 <div class="col-second odd-row-color"><code><a href="#currentMouseClickButtons" class="member-name-link">currentMouseClickButtons</a></code></div>
+<div class="col-last odd-row-color">&nbsp;</div>
+<div class="col-first even-row-color"><code>protected boolean</code></div>
+<div class="col-second even-row-color"><code><a href="#init" class="member-name-link">init</a></code></div>
+<div class="col-last even-row-color">&nbsp;</div>
+<div class="col-first odd-row-color"><code>protected int</code></div>
+<div class="col-second odd-row-color"><code><a href="#layoutOrder" class="member-name-link">layoutOrder</a></code></div>
 <div class="col-last odd-row-color">&nbsp;</div>
 <div class="col-first even-row-color"><code>protected final <a href="../listener/OneArgListenerRegistry.html" title="class in top.untold.frostlumen.core.listener">OneArgListenerRegistry</a><wbr>&lt;<a href="../event/MouseMoveEvent.html" title="class in top.untold.frostlumen.core.event">MouseMoveEvent</a>&gt;</code></div>
 <div class="col-second even-row-color"><code><a href="#mouseEnterListenerRegistry" class="member-name-link">mouseEnterListenerRegistry</a></code></div>
@@ -265,57 +277,63 @@ loadScripts(document, 'script');</script>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchFrameBufferSizeChangeEvent(top.untold.frostlumen.core.event.FrameBufferSizeChangeEvent)" class="member-name-link">dispatchFrameBufferSizeChangeEvent</a><wbr>(<a href="../event/FrameBufferSizeChangeEvent.html" title="class in top.untold.frostlumen.core.event">FrameBufferSizeChangeEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchKeyEvent(top.untold.frostlumen.core.event.KeyEvent)" class="member-name-link">dispatchKeyEvent</a><wbr>(<a href="../event/KeyEvent.html" title="class in top.untold.frostlumen.core.event">KeyEvent</a>&nbsp;event)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchInit(top.untold.frostlumen.core.render.GuiRender)" class="member-name-link">dispatchInit</a><wbr>(<a href="../render/GuiRender.html" title="class in top.untold.frostlumen.core.render">GuiRender</a>&nbsp;render)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchMouseButtonEvent(top.untold.frostlumen.core.event.MouseButtonEvent)" class="member-name-link">dispatchMouseButtonEvent</a><wbr>(<a href="../event/MouseButtonEvent.html" title="class in top.untold.frostlumen.core.event">MouseButtonEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchKeyEvent(top.untold.frostlumen.core.event.KeyEvent)" class="member-name-link">dispatchKeyEvent</a><wbr>(<a href="../event/KeyEvent.html" title="class in top.untold.frostlumen.core.event">KeyEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchMouseEnterWindowEvent(top.untold.frostlumen.core.event.MouseEnterWindowEvent)" class="member-name-link">dispatchMouseEnterWindowEvent</a><wbr>(<a href="../event/MouseEnterWindowEvent.html" title="class in top.untold.frostlumen.core.event">MouseEnterWindowEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchMouseButtonEvent(top.untold.frostlumen.core.event.MouseButtonEvent)" class="member-name-link">dispatchMouseButtonEvent</a><wbr>(<a href="../event/MouseButtonEvent.html" title="class in top.untold.frostlumen.core.event">MouseButtonEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchMouseLeaveWindowEvent(top.untold.frostlumen.core.event.MouseLeaveWindowEvent)" class="member-name-link">dispatchMouseLeaveWindowEvent</a><wbr>(<a href="../event/MouseLeaveWindowEvent.html" title="class in top.untold.frostlumen.core.event">MouseLeaveWindowEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchMouseEnterWindowEvent(top.untold.frostlumen.core.event.MouseEnterWindowEvent)" class="member-name-link">dispatchMouseEnterWindowEvent</a><wbr>(<a href="../event/MouseEnterWindowEvent.html" title="class in top.untold.frostlumen.core.event">MouseEnterWindowEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchMouseMoveEvent(top.untold.frostlumen.core.event.MouseMoveEvent)" class="member-name-link">dispatchMouseMoveEvent</a><wbr>(<a href="../event/MouseMoveEvent.html" title="class in top.untold.frostlumen.core.event">MouseMoveEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchMouseLeaveWindowEvent(top.untold.frostlumen.core.event.MouseLeaveWindowEvent)" class="member-name-link">dispatchMouseLeaveWindowEvent</a><wbr>(<a href="../event/MouseLeaveWindowEvent.html" title="class in top.untold.frostlumen.core.event">MouseLeaveWindowEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchMouseScrollEvent(top.untold.frostlumen.core.event.MouseScrollEvent)" class="member-name-link">dispatchMouseScrollEvent</a><wbr>(<a href="../event/MouseScrollEvent.html" title="class in top.untold.frostlumen.core.event">MouseScrollEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchMouseMoveEvent(top.untold.frostlumen.core.event.MouseMoveEvent)" class="member-name-link">dispatchMouseMoveEvent</a><wbr>(<a href="../event/MouseMoveEvent.html" title="class in top.untold.frostlumen.core.event">MouseMoveEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchRender(top.untold.frostlumen.core.render.GuiRender,double)" class="member-name-link">dispatchRender</a><wbr>(<a href="../render/GuiRender.html" title="class in top.untold.frostlumen.core.render">GuiRender</a>&nbsp;render,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchMouseScrollEvent(top.untold.frostlumen.core.event.MouseScrollEvent)" class="member-name-link">dispatchMouseScrollEvent</a><wbr>(<a href="../event/MouseScrollEvent.html" title="class in top.untold.frostlumen.core.event">MouseScrollEvent</a>&nbsp;event)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchRender(top.untold.frostlumen.core.render.GuiRender,double)" class="member-name-link">dispatchRender</a><wbr>(<a href="../render/GuiRender.html" title="class in top.untold.frostlumen.core.render">GuiRender</a>&nbsp;render,
  double&nbsp;delta)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchUserDropFilesEvent(top.untold.frostlumen.core.event.UserDropFilesEvent)" class="member-name-link">dispatchUserDropFilesEvent</a><wbr>(<a href="../event/UserDropFilesEvent.html" title="class in top.untold.frostlumen.core.event">UserDropFilesEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchUserInputTextEvent(top.untold.frostlumen.core.event.UserInputTextEvent)" class="member-name-link">dispatchUserInputTextEvent</a><wbr>(<a href="../event/UserInputTextEvent.html" title="class in top.untold.frostlumen.core.event">UserInputTextEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchUserDropFilesEvent(top.untold.frostlumen.core.event.UserDropFilesEvent)" class="member-name-link">dispatchUserDropFilesEvent</a><wbr>(<a href="../event/UserDropFilesEvent.html" title="class in top.untold.frostlumen.core.event">UserDropFilesEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchUserRequestWindowCloseEvent(top.untold.frostlumen.core.event.UserRequestWindowCloseEvent)" class="member-name-link">dispatchUserRequestWindowCloseEvent</a><wbr>(<a href="../event/UserRequestWindowCloseEvent.html" title="class in top.untold.frostlumen.core.event">UserRequestWindowCloseEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchUserInputTextEvent(top.untold.frostlumen.core.event.UserInputTextEvent)" class="member-name-link">dispatchUserInputTextEvent</a><wbr>(<a href="../event/UserInputTextEvent.html" title="class in top.untold.frostlumen.core.event">UserInputTextEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchWindowCloseEvent(top.untold.frostlumen.core.event.WindowCloseEvent)" class="member-name-link">dispatchWindowCloseEvent</a><wbr>(<a href="../event/WindowCloseEvent.html" title="class in top.untold.frostlumen.core.event">WindowCloseEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchUserRequestWindowCloseEvent(top.untold.frostlumen.core.event.UserRequestWindowCloseEvent)" class="member-name-link">dispatchUserRequestWindowCloseEvent</a><wbr>(<a href="../event/UserRequestWindowCloseEvent.html" title="class in top.untold.frostlumen.core.event">UserRequestWindowCloseEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchWindowFocusChangeEvent(top.untold.frostlumen.core.event.WindowFocusChangeEvent)" class="member-name-link">dispatchWindowFocusChangeEvent</a><wbr>(<a href="../event/WindowFocusChangeEvent.html" title="class in top.untold.frostlumen.core.event">WindowFocusChangeEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchWindowCloseEvent(top.untold.frostlumen.core.event.WindowCloseEvent)" class="member-name-link">dispatchWindowCloseEvent</a><wbr>(<a href="../event/WindowCloseEvent.html" title="class in top.untold.frostlumen.core.event">WindowCloseEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchWindowMaximizeEvent(top.untold.frostlumen.core.event.WindowMaximizeEvent)" class="member-name-link">dispatchWindowMaximizeEvent</a><wbr>(<a href="../event/WindowMaximizeEvent.html" title="class in top.untold.frostlumen.core.event">WindowMaximizeEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchWindowFocusChangeEvent(top.untold.frostlumen.core.event.WindowFocusChangeEvent)" class="member-name-link">dispatchWindowFocusChangeEvent</a><wbr>(<a href="../event/WindowFocusChangeEvent.html" title="class in top.untold.frostlumen.core.event">WindowFocusChangeEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchWindowMinimizeEvent(top.untold.frostlumen.core.event.WindowMinimizeEvent)" class="member-name-link">dispatchWindowMinimizeEvent</a><wbr>(<a href="../event/WindowMinimizeEvent.html" title="class in top.untold.frostlumen.core.event">WindowMinimizeEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchWindowMaximizeEvent(top.untold.frostlumen.core.event.WindowMaximizeEvent)" class="member-name-link">dispatchWindowMaximizeEvent</a><wbr>(<a href="../event/WindowMaximizeEvent.html" title="class in top.untold.frostlumen.core.event">WindowMaximizeEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchWindowMoveEvent(top.untold.frostlumen.core.event.WindowMoveEvent)" class="member-name-link">dispatchWindowMoveEvent</a><wbr>(<a href="../event/WindowMoveEvent.html" title="class in top.untold.frostlumen.core.event">WindowMoveEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchWindowMinimizeEvent(top.untold.frostlumen.core.event.WindowMinimizeEvent)" class="member-name-link">dispatchWindowMinimizeEvent</a><wbr>(<a href="../event/WindowMinimizeEvent.html" title="class in top.untold.frostlumen.core.event">WindowMinimizeEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAngle()" class="member-name-link">getAngle</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#dispatchWindowMoveEvent(top.untold.frostlumen.core.event.WindowMoveEvent)" class="member-name-link">dispatchWindowMoveEvent</a><wbr>(<a href="../event/WindowMoveEvent.html" title="class in top.untold.frostlumen.core.event">WindowMoveEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="../data/MouseButton.html" title="enum class in top.untold.frostlumen.core.data">MouseButton</a>&gt;</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCurrentMouseClickButtons()" class="member-name-link">getCurrentMouseClickButtons</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>float</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAngle()" class="member-name-link">getAngle</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Set.html" title="class or interface in java.util" class="external-link">Set</a><wbr>&lt;<a href="../data/MouseButton.html" title="enum class in top.untold.frostlumen.core.data">MouseButton</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCurrentMouseClickButtons()" class="member-name-link">getCurrentMouseClickButtons</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getLayoutOrder()" class="member-name-link">getLayoutOrder</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="ParentNode.html" title="class in top.untold.frostlumen.core.gui">ParentNode</a><wbr>&lt;?&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getParent()" class="member-name-link">getParent</a>()</code></div>
@@ -329,87 +347,93 @@ loadScripts(document, 'script');</script>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getZIndex()" class="member-name-link">getZIndex</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isClipChildren()" class="member-name-link">isClipChildren</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#init(top.untold.frostlumen.core.render.GuiRender)" class="member-name-link">init</a><wbr>(<a href="../render/GuiRender.html" title="class in top.untold.frostlumen.core.render">GuiRender</a>&nbsp;render)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isMouseInNode()" class="member-name-link">isMouseInNode</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isClipChildren()" class="member-name-link">isClipChildren</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#letChildrenOperationPosition()" class="member-name-link">letChildrenOperationPosition</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isMouseInNode()" class="member-name-link">isMouseInNode</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onFrameBufferSizeChangeEvent(top.untold.frostlumen.core.event.FrameBufferSizeChangeEvent)" class="member-name-link">onFrameBufferSizeChangeEvent</a><wbr>(<a href="../event/FrameBufferSizeChangeEvent.html" title="class in top.untold.frostlumen.core.event">FrameBufferSizeChangeEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#letChildrenOperationPosition()" class="member-name-link">letChildrenOperationPosition</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onKeyEvent(top.untold.frostlumen.core.event.KeyEvent)" class="member-name-link">onKeyEvent</a><wbr>(<a href="../event/KeyEvent.html" title="class in top.untold.frostlumen.core.event">KeyEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onFrameBufferSizeChangeEvent(top.untold.frostlumen.core.event.FrameBufferSizeChangeEvent)" class="member-name-link">onFrameBufferSizeChangeEvent</a><wbr>(<a href="../event/FrameBufferSizeChangeEvent.html" title="class in top.untold.frostlumen.core.event">FrameBufferSizeChangeEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onMouseButtonEvent(top.untold.frostlumen.core.event.MouseButtonEvent)" class="member-name-link">onMouseButtonEvent</a><wbr>(<a href="../event/MouseButtonEvent.html" title="class in top.untold.frostlumen.core.event">MouseButtonEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onKeyEvent(top.untold.frostlumen.core.event.KeyEvent)" class="member-name-link">onKeyEvent</a><wbr>(<a href="../event/KeyEvent.html" title="class in top.untold.frostlumen.core.event">KeyEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onMouseEnterWindowEvent(top.untold.frostlumen.core.event.MouseEnterWindowEvent)" class="member-name-link">onMouseEnterWindowEvent</a><wbr>(<a href="../event/MouseEnterWindowEvent.html" title="class in top.untold.frostlumen.core.event">MouseEnterWindowEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onMouseButtonEvent(top.untold.frostlumen.core.event.MouseButtonEvent)" class="member-name-link">onMouseButtonEvent</a><wbr>(<a href="../event/MouseButtonEvent.html" title="class in top.untold.frostlumen.core.event">MouseButtonEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onMouseLeaveWindowEvent(top.untold.frostlumen.core.event.MouseLeaveWindowEvent)" class="member-name-link">onMouseLeaveWindowEvent</a><wbr>(<a href="../event/MouseLeaveWindowEvent.html" title="class in top.untold.frostlumen.core.event">MouseLeaveWindowEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onMouseEnterWindowEvent(top.untold.frostlumen.core.event.MouseEnterWindowEvent)" class="member-name-link">onMouseEnterWindowEvent</a><wbr>(<a href="../event/MouseEnterWindowEvent.html" title="class in top.untold.frostlumen.core.event">MouseEnterWindowEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onMouseMoveEvent(top.untold.frostlumen.core.event.MouseMoveEvent)" class="member-name-link">onMouseMoveEvent</a><wbr>(<a href="../event/MouseMoveEvent.html" title="class in top.untold.frostlumen.core.event">MouseMoveEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onMouseLeaveWindowEvent(top.untold.frostlumen.core.event.MouseLeaveWindowEvent)" class="member-name-link">onMouseLeaveWindowEvent</a><wbr>(<a href="../event/MouseLeaveWindowEvent.html" title="class in top.untold.frostlumen.core.event">MouseLeaveWindowEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onMouseScrollEvent(top.untold.frostlumen.core.event.MouseScrollEvent)" class="member-name-link">onMouseScrollEvent</a><wbr>(<a href="../event/MouseScrollEvent.html" title="class in top.untold.frostlumen.core.event">MouseScrollEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onMouseMoveEvent(top.untold.frostlumen.core.event.MouseMoveEvent)" class="member-name-link">onMouseMoveEvent</a><wbr>(<a href="../event/MouseMoveEvent.html" title="class in top.untold.frostlumen.core.event">MouseMoveEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onUserDropFilesEvent(top.untold.frostlumen.core.event.UserDropFilesEvent)" class="member-name-link">onUserDropFilesEvent</a><wbr>(<a href="../event/UserDropFilesEvent.html" title="class in top.untold.frostlumen.core.event">UserDropFilesEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onMouseScrollEvent(top.untold.frostlumen.core.event.MouseScrollEvent)" class="member-name-link">onMouseScrollEvent</a><wbr>(<a href="../event/MouseScrollEvent.html" title="class in top.untold.frostlumen.core.event">MouseScrollEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onUserInputTextEvent(top.untold.frostlumen.core.event.UserInputTextEvent)" class="member-name-link">onUserInputTextEvent</a><wbr>(<a href="../event/UserInputTextEvent.html" title="class in top.untold.frostlumen.core.event">UserInputTextEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onUserDropFilesEvent(top.untold.frostlumen.core.event.UserDropFilesEvent)" class="member-name-link">onUserDropFilesEvent</a><wbr>(<a href="../event/UserDropFilesEvent.html" title="class in top.untold.frostlumen.core.event">UserDropFilesEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onUserRequestWindowCloseEvent(top.untold.frostlumen.core.event.UserRequestWindowCloseEvent)" class="member-name-link">onUserRequestWindowCloseEvent</a><wbr>(<a href="../event/UserRequestWindowCloseEvent.html" title="class in top.untold.frostlumen.core.event">UserRequestWindowCloseEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onUserInputTextEvent(top.untold.frostlumen.core.event.UserInputTextEvent)" class="member-name-link">onUserInputTextEvent</a><wbr>(<a href="../event/UserInputTextEvent.html" title="class in top.untold.frostlumen.core.event">UserInputTextEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onWindowCloseEvent(top.untold.frostlumen.core.event.WindowCloseEvent)" class="member-name-link">onWindowCloseEvent</a><wbr>(<a href="../event/WindowCloseEvent.html" title="class in top.untold.frostlumen.core.event">WindowCloseEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onUserRequestWindowCloseEvent(top.untold.frostlumen.core.event.UserRequestWindowCloseEvent)" class="member-name-link">onUserRequestWindowCloseEvent</a><wbr>(<a href="../event/UserRequestWindowCloseEvent.html" title="class in top.untold.frostlumen.core.event">UserRequestWindowCloseEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onWindowFocusChangeEvent(top.untold.frostlumen.core.event.WindowFocusChangeEvent)" class="member-name-link">onWindowFocusChangeEvent</a><wbr>(<a href="../event/WindowFocusChangeEvent.html" title="class in top.untold.frostlumen.core.event">WindowFocusChangeEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onWindowCloseEvent(top.untold.frostlumen.core.event.WindowCloseEvent)" class="member-name-link">onWindowCloseEvent</a><wbr>(<a href="../event/WindowCloseEvent.html" title="class in top.untold.frostlumen.core.event">WindowCloseEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onWindowMaximizeEvent(top.untold.frostlumen.core.event.WindowMaximizeEvent)" class="member-name-link">onWindowMaximizeEvent</a><wbr>(<a href="../event/WindowMaximizeEvent.html" title="class in top.untold.frostlumen.core.event">WindowMaximizeEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onWindowFocusChangeEvent(top.untold.frostlumen.core.event.WindowFocusChangeEvent)" class="member-name-link">onWindowFocusChangeEvent</a><wbr>(<a href="../event/WindowFocusChangeEvent.html" title="class in top.untold.frostlumen.core.event">WindowFocusChangeEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onWindowMinimizeEvent(top.untold.frostlumen.core.event.WindowMinimizeEvent)" class="member-name-link">onWindowMinimizeEvent</a><wbr>(<a href="../event/WindowMinimizeEvent.html" title="class in top.untold.frostlumen.core.event">WindowMinimizeEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onWindowMaximizeEvent(top.untold.frostlumen.core.event.WindowMaximizeEvent)" class="member-name-link">onWindowMaximizeEvent</a><wbr>(<a href="../event/WindowMaximizeEvent.html" title="class in top.untold.frostlumen.core.event">WindowMaximizeEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onWindowMoveEvent(top.untold.frostlumen.core.event.WindowMoveEvent)" class="member-name-link">onWindowMoveEvent</a><wbr>(<a href="../event/WindowMoveEvent.html" title="class in top.untold.frostlumen.core.event">WindowMoveEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onWindowMinimizeEvent(top.untold.frostlumen.core.event.WindowMinimizeEvent)" class="member-name-link">onWindowMinimizeEvent</a><wbr>(<a href="../event/WindowMinimizeEvent.html" title="class in top.untold.frostlumen.core.event">WindowMinimizeEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#operationPosition()" class="member-name-link">operationPosition</a>()</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onWindowMoveEvent(top.untold.frostlumen.core.event.WindowMoveEvent)" class="member-name-link">onWindowMoveEvent</a><wbr>(<a href="../event/WindowMoveEvent.html" title="class in top.untold.frostlumen.core.event">WindowMoveEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#operationPosition(top.untold.frostlumen.core.gui.ParentNode,int,int)" class="member-name-link">operationPosition</a><wbr>(<a href="ParentNode.html" title="class in top.untold.frostlumen.core.gui">ParentNode</a>&lt;?&gt;&nbsp;parentFrame,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#operationPosition()" class="member-name-link">operationPosition</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#operationPosition(top.untold.frostlumen.core.gui.ParentNode,int,int)" class="member-name-link">operationPosition</a><wbr>(<a href="ParentNode.html" title="class in top.untold.frostlumen.core.gui">ParentNode</a>&lt;?&gt;&nbsp;parentFrame,
  int&nbsp;parentRealPositionX,
  int&nbsp;parentRealPositionY)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-T" title="type parameter in GuiNode">T</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerMouseEnterListener(java.util.function.Consumer)" class="member-name-link">registerMouseEnterListener</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../event/MouseMoveEvent.html" title="class in top.untold.frostlumen.core.event">MouseMoveEvent</a>&gt;&nbsp;listener)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-T" title="type parameter in GuiNode">T</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerMouseLeaveListener(java.util.function.Consumer)" class="member-name-link">registerMouseLeaveListener</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../event/MouseMoveEvent.html" title="class in top.untold.frostlumen.core.event">MouseMoveEvent</a>&gt;&nbsp;listener)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerMouseEnterListener(java.util.function.Consumer)" class="member-name-link">registerMouseEnterListener</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../event/MouseMoveEvent.html" title="class in top.untold.frostlumen.core.event">MouseMoveEvent</a>&gt;&nbsp;listener)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#render(top.untold.frostlumen.core.render.GuiRender,double)" class="member-name-link">render</a><wbr>(<a href="../render/GuiRender.html" title="class in top.untold.frostlumen.core.render">GuiRender</a>&nbsp;render,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-T" title="type parameter in GuiNode">T</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#registerMouseLeaveListener(java.util.function.Consumer)" class="member-name-link">registerMouseLeaveListener</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/Consumer.html" title="class or interface in java.util.function" class="external-link">Consumer</a>&lt;<a href="../event/MouseMoveEvent.html" title="class in top.untold.frostlumen.core.event">MouseMoveEvent</a>&gt;&nbsp;listener)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code>protected abstract void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#render(top.untold.frostlumen.core.render.GuiRender,double)" class="member-name-link">render</a><wbr>(<a href="../render/GuiRender.html" title="class in top.untold.frostlumen.core.render">GuiRender</a>&nbsp;render,
  double&nbsp;delta)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-T" title="type parameter in GuiNode">T</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAnchor(double,double)" class="member-name-link">setAnchor</a><wbr>(double&nbsp;xAnchor,
- double&nbsp;yAnchor)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-T" title="type parameter in GuiNode">T</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAngle(float)" class="member-name-link">setAngle</a><wbr>(float&nbsp;angle)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAnchor(double,double)" class="member-name-link">setAnchor</a><wbr>(double&nbsp;xAnchor,
+ double&nbsp;yAnchor)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-T" title="type parameter in GuiNode">T</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setClipChildren(boolean)" class="member-name-link">setClipChildren</a><wbr>(boolean&nbsp;clipChildren)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAngle(float)" class="member-name-link">setAngle</a><wbr>(float&nbsp;angle)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-T" title="type parameter in GuiNode">T</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setClipChildren(boolean)" class="member-name-link">setClipChildren</a><wbr>(boolean&nbsp;clipChildren)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-T" title="type parameter in GuiNode">T</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setLayoutOrder(int)" class="member-name-link">setLayoutOrder</a><wbr>(int&nbsp;layoutOrder)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#type-param-T" title="type parameter in GuiNode">T</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setParent(top.untold.frostlumen.core.gui.ParentNode)" class="member-name-link">setParent</a><wbr>(<a href="ParentNode.html" title="class in top.untold.frostlumen.core.gui">ParentNode</a>&lt;?&gt;&nbsp;parent)</code></div>
@@ -504,6 +528,14 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="layoutOrder">
+<h3>layoutOrder</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">layoutOrder</span></div>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="clipChildren">
 <h3>clipChildren</h3>
 <div class="horizontal-scroll">
@@ -548,6 +580,14 @@ loadScripts(document, 'script');</script>
 <h3>mouseInNode</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">mouseInNode</span></div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="init">
+<h3>init</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">init</span></div>
 </div>
 </section>
 </li>
@@ -836,6 +876,14 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="dispatchInit(top.untold.frostlumen.core.render.GuiRender)">
+<h3>dispatchInit</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">dispatchInit</span><wbr><span class="parameters">(<a href="../render/GuiRender.html" title="class in top.untold.frostlumen.core.render">GuiRender</a>&nbsp;render)</span></div>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="render(top.untold.frostlumen.core.render.GuiRender,double)">
 <h3>render</h3>
 <div class="horizontal-scroll">
@@ -965,6 +1013,14 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="init(top.untold.frostlumen.core.render.GuiRender)">
+<h3>init</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">protected</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">init</span><wbr><span class="parameters">(<a href="../render/GuiRender.html" title="class in top.untold.frostlumen.core.render">GuiRender</a>&nbsp;render)</span></div>
+</div>
+</section>
+</li>
+<li>
 <section class="detail" id="addChild(top.untold.frostlumen.core.gui.GuiNode)">
 <h3>addChild</h3>
 <div class="horizontal-scroll">
@@ -973,6 +1029,14 @@ loadScripts(document, 'script');</script>
 <dt>Overrides:</dt>
 <dd><code><a href="ParentNode.html#addChild(top.untold.frostlumen.core.gui.GuiNode)">addChild</a></code>&nbsp;in class&nbsp;<code><a href="ParentNode.html" title="class in top.untold.frostlumen.core.gui">ParentNode</a>&lt;<a href="#type-param-T" title="type parameter in GuiNode">T</a> extends <a href="GuiNode.html" title="class in top.untold.frostlumen.core.gui">GuiNode</a>&lt;<a href="#type-param-T" title="type parameter in GuiNode">T</a>&gt;&gt;</code></dd>
 </dl>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setLayoutOrder(int)">
+<h3>setLayoutOrder</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="#type-param-T" title="type parameter in GuiNode">T</a></span>&nbsp;<span class="element-name">setLayoutOrder</span><wbr><span class="parameters">(int&nbsp;layoutOrder)</span></div>
 </div>
 </section>
 </li>
@@ -1062,6 +1126,14 @@ loadScripts(document, 'script');</script>
 <h3>isClipChildren</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name">isClipChildren</span>()</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getLayoutOrder()">
+<h3>getLayoutOrder</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getLayoutOrder</span>()</div>
 </div>
 </section>
 </li>

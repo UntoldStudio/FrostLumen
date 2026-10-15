@@ -53,13 +53,7 @@ loadScripts(document, 'script');</script>
 <div class="toc-header">Contents&nbsp;<input type="text" class="filter-input" disabled placeholder="Filter contents (type .)" aria-label="Filter table of contents" autocomplete="off" spellcheck="false"><input type="reset" class="reset-filter" disabled tabindex="-1" value="Reset"></div>
 <ol class="toc-list" tabindex="-1">
 <li><a href="#" tabindex="0">Description</a></li>
-<li><a href="#field-summary" tabindex="0">Field Summary</a></li>
 <li><a href="#method-summary" tabindex="0">Method Summary</a></li>
-<li><a href="#field-detail" tabindex="0">Field Details</a>
-<ol class="toc-list">
-<li><a href="#THREAD_LOCAL" tabindex="0">THREAD_LOCAL</a></li>
-</ol>
-</li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
 <li><a href="#loadTexture(java.lang.String)" tabindex="0">loadTexture(String)</a></li>
@@ -71,7 +65,6 @@ loadScripts(document, 'script');</script>
 <li><a href="#loadNiceSliceTexture(byte%5B%5D,top.untold.frostlumen.core.data.NiceSliceType,boolean,int,int,int,int)" tabindex="0">loadNiceSliceTexture(byte[], NiceSliceType, boolean, int, int, int, int)</a></li>
 <li><a href="#loadNiceSliceTexture(byte%5B%5D,top.untold.frostlumen.core.data.NiceSliceType,boolean,boolean,int,int,int,int)" tabindex="0">loadNiceSliceTexture(byte[], NiceSliceType, boolean, boolean, int, int, int, int)</a></li>
 <li><a href="#loadFont(java.lang.String)" tabindex="0">loadFont(String)</a></li>
-<li><a href="#getResourceManagerFromThreadLocal()" tabindex="0">getResourceManagerFromThreadLocal()</a></li>
 </ol>
 </li>
 </ol>
@@ -93,40 +86,22 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="summary">
 <ul class="summary-list">
-<!-- =========== FIELD SUMMARY =========== -->
-<li>
-<section class="field-summary" id="field-summary">
-<h2>Field Summary</h2>
-<div class="caption"><span>Fields</span></div>
-<div class="summary-table three-column-summary">
-<div class="table-header col-first">Modifier and Type</div>
-<div class="table-header col-second">Field</div>
-<div class="table-header col-last">Description</div>
-<div class="col-first even-row-color"><code>static final <a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadLocal.html" title="class or interface in java.lang" class="external-link">ThreadLocal</a><wbr>&lt;<a href="ResourceManager.html" title="interface in top.untold.frostlumen.core.render">ResourceManager</a>&gt;</code></div>
-<div class="col-second even-row-color"><code><a href="#THREAD_LOCAL" class="member-name-link">THREAD_LOCAL</a></code></div>
-<div class="col-last even-row-color">&nbsp;</div>
-</div>
-</section>
-</li>
 <!-- ========== METHOD SUMMARY =========== -->
 <li>
 <section class="method-summary" id="method-summary">
 <h2>Method Summary</h2>
 <div id="method-summary-table">
-<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab1" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab1', 3)" class="table-tab">Static Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
+<div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab3" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab3', 3)" class="table-tab">Abstract Methods</button></div>
 <div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
 <div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab1"><code>static <a href="ResourceManager.html" title="interface in top.untold.frostlumen.core.render">ResourceManager</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab1"><code><a href="#getResourceManagerFromThreadLocal()" class="member-name-link">getResourceManagerFromThreadLocal</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab1">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../font/Font.html" title="class in top.untold.frostlumen.core.font">Font</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadFont(java.lang.String)" class="member-name-link">loadFont</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../texture/Texture.html" title="class in top.untold.frostlumen.core.texture">Texture</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadNiceSliceTexture(byte%5B%5D,top.untold.frostlumen.core.data.NiceSliceType,boolean,boolean,int,int,int,int)" class="member-name-link">loadNiceSliceTexture</a><wbr>(byte[]&nbsp;data,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../font/Font.html" title="class in top.untold.frostlumen.core.font">Font</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadFont(java.lang.String)" class="member-name-link">loadFont</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../texture/Texture.html" title="class in top.untold.frostlumen.core.texture">Texture</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadNiceSliceTexture(byte%5B%5D,top.untold.frostlumen.core.data.NiceSliceType,boolean,boolean,int,int,int,int)" class="member-name-link">loadNiceSliceTexture</a><wbr>(byte[]&nbsp;data,
  <a href="../data/NiceSliceType.html" title="enum class in top.untold.frostlumen.core.data">NiceSliceType</a>&nbsp;type,
  boolean&nbsp;stretchInner,
  boolean&nbsp;isLinear,
@@ -134,18 +109,18 @@ loadScripts(document, 'script');</script>
  int&nbsp;right,
  int&nbsp;top,
  int&nbsp;bottom)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../texture/Texture.html" title="class in top.untold.frostlumen.core.texture">Texture</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadNiceSliceTexture(byte%5B%5D,top.untold.frostlumen.core.data.NiceSliceType,boolean,int,int,int,int)" class="member-name-link">loadNiceSliceTexture</a><wbr>(byte[]&nbsp;data,
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../texture/Texture.html" title="class in top.untold.frostlumen.core.texture">Texture</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadNiceSliceTexture(byte%5B%5D,top.untold.frostlumen.core.data.NiceSliceType,boolean,int,int,int,int)" class="member-name-link">loadNiceSliceTexture</a><wbr>(byte[]&nbsp;data,
  <a href="../data/NiceSliceType.html" title="enum class in top.untold.frostlumen.core.data">NiceSliceType</a>&nbsp;type,
  boolean&nbsp;stretchInner,
  int&nbsp;left,
  int&nbsp;right,
  int&nbsp;top,
  int&nbsp;bottom)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../texture/Texture.html" title="class in top.untold.frostlumen.core.texture">Texture</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadNiceSliceTexture(java.lang.String,top.untold.frostlumen.core.data.NiceSliceType,boolean,boolean,int,int,int,int)" class="member-name-link">loadNiceSliceTexture</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path,
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../texture/Texture.html" title="class in top.untold.frostlumen.core.texture">Texture</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadNiceSliceTexture(java.lang.String,top.untold.frostlumen.core.data.NiceSliceType,boolean,boolean,int,int,int,int)" class="member-name-link">loadNiceSliceTexture</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path,
  <a href="../data/NiceSliceType.html" title="enum class in top.untold.frostlumen.core.data">NiceSliceType</a>&nbsp;type,
  boolean&nbsp;stretchInner,
  boolean&nbsp;isLinear,
@@ -153,30 +128,30 @@ loadScripts(document, 'script');</script>
  int&nbsp;right,
  int&nbsp;top,
  int&nbsp;bottom)</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../texture/Texture.html" title="class in top.untold.frostlumen.core.texture">Texture</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadNiceSliceTexture(java.lang.String,top.untold.frostlumen.core.data.NiceSliceType,boolean,int,int,int,int)" class="member-name-link">loadNiceSliceTexture</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path,
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../texture/Texture.html" title="class in top.untold.frostlumen.core.texture">Texture</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadNiceSliceTexture(java.lang.String,top.untold.frostlumen.core.data.NiceSliceType,boolean,int,int,int,int)" class="member-name-link">loadNiceSliceTexture</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path,
  <a href="../data/NiceSliceType.html" title="enum class in top.untold.frostlumen.core.data">NiceSliceType</a>&nbsp;type,
  boolean&nbsp;stretchInner,
  int&nbsp;left,
  int&nbsp;right,
  int&nbsp;top,
  int&nbsp;bottom)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../texture/Texture.html" title="class in top.untold.frostlumen.core.texture">Texture</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadTexture(byte%5B%5D)" class="member-name-link">loadTexture</a><wbr>(byte[]&nbsp;data)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../texture/Texture.html" title="class in top.untold.frostlumen.core.texture">Texture</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadTexture(byte%5B%5D,boolean)" class="member-name-link">loadTexture</a><wbr>(byte[]&nbsp;data,
- boolean&nbsp;isLinear)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadTexture(byte%5B%5D)" class="member-name-link">loadTexture</a><wbr>(byte[]&nbsp;data)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../texture/Texture.html" title="class in top.untold.frostlumen.core.texture">Texture</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadTexture(java.lang.String)" class="member-name-link">loadTexture</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadTexture(byte%5B%5D,boolean)" class="member-name-link">loadTexture</a><wbr>(byte[]&nbsp;data,
+ boolean&nbsp;isLinear)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../texture/Texture.html" title="class in top.untold.frostlumen.core.texture">Texture</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadTexture(java.lang.String,boolean)" class="member-name-link">loadTexture</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path,
- boolean&nbsp;isLinear)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadTexture(java.lang.String)" class="member-name-link">loadTexture</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../texture/Texture.html" title="class in top.untold.frostlumen.core.texture">Texture</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#loadTexture(java.lang.String,boolean)" class="member-name-link">loadTexture</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path,
+ boolean&nbsp;isLinear)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">&nbsp;</div>
 </div>
 </div>
 </div>
@@ -186,22 +161,6 @@ loadScripts(document, 'script');</script>
 </section>
 <section class="details">
 <ul class="details-list">
-<!-- ============ FIELD DETAIL =========== -->
-<li>
-<section class="field-details" id="field-detail">
-<h2>Field Details</h2>
-<ul class="member-list">
-<li>
-<section class="detail" id="THREAD_LOCAL">
-<h3>THREAD_LOCAL</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">static final</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/ThreadLocal.html" title="class or interface in java.lang" class="external-link">ThreadLocal</a>&lt;<a href="ResourceManager.html" title="interface in top.untold.frostlumen.core.render">ResourceManager</a>&gt;</span>&nbsp;<span class="element-name">THREAD_LOCAL</span></div>
-</div>
-</section>
-</li>
-</ul>
-</section>
-</li>
 <!-- ============ METHOD DETAIL ========== -->
 <li>
 <section class="method-details" id="method-detail">
@@ -304,14 +263,6 @@ loadScripts(document, 'script');</script>
 <h3>loadFont</h3>
 <div class="horizontal-scroll">
 <div class="member-signature"><span class="return-type"><a href="../font/Font.html" title="class in top.untold.frostlumen.core.font">Font</a></span>&nbsp;<span class="element-name">loadFont</span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;path)</span></div>
-</div>
-</section>
-</li>
-<li>
-<section class="detail" id="getResourceManagerFromThreadLocal()">
-<h3>getResourceManagerFromThreadLocal</h3>
-<div class="horizontal-scroll">
-<div class="member-signature"><span class="modifiers">static</span>&nbsp;<span class="return-type"><a href="ResourceManager.html" title="interface in top.untold.frostlumen.core.render">ResourceManager</a></span>&nbsp;<span class="element-name">getResourceManagerFromThreadLocal</span>()</div>
 </div>
 </section>
 </li>
