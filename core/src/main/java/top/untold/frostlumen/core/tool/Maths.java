@@ -15,7 +15,7 @@
  */
 package top.untold.frostlumen.core.tool;
 
-public class MathTool {
+public class Maths {
     public static int round(double value){
         return (int)Math.round(value);
     }

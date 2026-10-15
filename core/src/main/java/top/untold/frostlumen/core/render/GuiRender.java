@@ -34,10 +34,7 @@ import top.untold.frostlumen.core.exception.RenderException;
 import top.untold.frostlumen.core.exception.ResourceException;
 import top.untold.frostlumen.core.font.Font;
 import top.untold.frostlumen.core.texture.Texture;
-import top.untold.frostlumen.core.tool.GCCleanable;
-import top.untold.frostlumen.core.tool.LruCacheMap;
-import top.untold.frostlumen.core.tool.MathTool;
-import top.untold.frostlumen.core.tool.ResourceReader;
+import top.untold.frostlumen.core.tool.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -56,7 +53,7 @@ public abstract class GuiRender implements ResourceManager {
         return ftVector;
     });
     protected final Map<Font, Int2FloatMap> ascenderCache = new HashMap<>();
-    protected final Map<Double, FT_Matrix> italicDegreesCache = new LruCacheMap<>(128, (key, value) -> value.free());
+    protected final Map<Double, FT_Matrix> italicDegreesCache = new LruCacheMap<>(128, (_, value) -> value.free());
     protected final long windowHandle;
     protected final Map<String, Font> fontMap = new HashMap<>();
     protected long ftLibrary;
@@ -64,6 +61,7 @@ public abstract class GuiRender implements ResourceManager {
     protected int cursorModeInThisFrame;
     protected final Int2LongMap cursorShapeMap = new Int2LongOpenHashMap();
     protected final Deque<ScissorState> scissorStateDeque = new ArrayDeque<>();
+
     protected record ScissorState(
             float centerX, float centerY,
             float halfWidth, float halfHeight,
@@ -437,100 +435,100 @@ public abstract class GuiRender implements ResourceManager {
         float inverseNormalizedY0 = 1f - normalizedY0;
         float inverseNormalizedY1 = 1f - normalizedY1;
 
-        int topLeftRed = MathTool.round(
+        int topLeftRed = Maths.round(
                 inverseNormalizedX0 * inverseNormalizedY0 * aRed +
                         normalizedX0 * inverseNormalizedY0 * bRed +
                         inverseNormalizedX0 * normalizedY0 * cRed +
                         normalizedX0 * normalizedY0 * dRed
         );
-        int topLeftGreen = MathTool.round(
+        int topLeftGreen = Maths.round(
                 inverseNormalizedX0 * inverseNormalizedY0 * aGreen +
                         normalizedX0 * inverseNormalizedY0 * bGreen +
                         inverseNormalizedX0 * normalizedY0 * cGreen +
                         normalizedX0 * normalizedY0 * dGreen
         );
-        int topLeftBlue = MathTool.round(
+        int topLeftBlue = Maths.round(
                 inverseNormalizedX0 * inverseNormalizedY0 * aBlue +
                         normalizedX0 * inverseNormalizedY0 * bBlue +
                         inverseNormalizedX0 * normalizedY0 * cBlue +
                         normalizedX0 * normalizedY0 * dBlue
         );
-        int topLeftAlpha = MathTool.round(
+        int topLeftAlpha = Maths.round(
                 inverseNormalizedX0 * inverseNormalizedY0 * aAlpha +
                         normalizedX0 * inverseNormalizedY0 * bAlpha +
                         inverseNormalizedX0 * normalizedY0 * cAlpha +
                         normalizedX0 * normalizedY0 * dAlpha
         );
 
-        int topRightRed = MathTool.round(
+        int topRightRed = Maths.round(
                 inverseNormalizedX1 * inverseNormalizedY0 * aRed +
                         normalizedX1 * inverseNormalizedY0 * bRed +
                         inverseNormalizedX1 * normalizedY0 * cRed +
                         normalizedX1 * normalizedY0 * dRed
         );
-        int topRightGreen = MathTool.round(
+        int topRightGreen = Maths.round(
                 inverseNormalizedX1 * inverseNormalizedY0 * aGreen +
                         normalizedX1 * inverseNormalizedY0 * bGreen +
                         inverseNormalizedX1 * normalizedY0 * cGreen +
                         normalizedX1 * normalizedY0 * dGreen
         );
-        int topRightBlue = MathTool.round(
+        int topRightBlue = Maths.round(
                 inverseNormalizedX1 * inverseNormalizedY0 * aBlue +
                         normalizedX1 * inverseNormalizedY0 * bBlue +
                         inverseNormalizedX1 * normalizedY0 * cBlue +
                         normalizedX1 * normalizedY0 * dBlue
         );
-        int topRightAlpha = MathTool.round(
+        int topRightAlpha = Maths.round(
                 inverseNormalizedX1 * inverseNormalizedY0 * aAlpha +
                         normalizedX1 * inverseNormalizedY0 * bAlpha +
                         inverseNormalizedX1 * normalizedY0 * cAlpha +
                         normalizedX1 * normalizedY0 * dAlpha
         );
 
-        int bottomLeftRed = MathTool.round(
+        int bottomLeftRed = Maths.round(
                 inverseNormalizedX0 * inverseNormalizedY1 * aRed +
                         normalizedX0 * inverseNormalizedY1 * bRed +
                         inverseNormalizedX0 * normalizedY1 * cRed +
                         normalizedX0 * normalizedY1 * dRed
         );
-        int bottomLeftGreen = MathTool.round(
+        int bottomLeftGreen = Maths.round(
                 inverseNormalizedX0 * inverseNormalizedY1 * aGreen +
                         normalizedX0 * inverseNormalizedY1 * bGreen +
                         inverseNormalizedX0 * normalizedY1 * cGreen +
                         normalizedX0 * normalizedY1 * dGreen
         );
-        int bottomLeftBlue = MathTool.round(
+        int bottomLeftBlue = Maths.round(
                 inverseNormalizedX0 * inverseNormalizedY1 * aBlue +
                         normalizedX0 * inverseNormalizedY1 * bBlue +
                         inverseNormalizedX0 * normalizedY1 * cBlue +
                         normalizedX0 * normalizedY1 * dBlue
         );
-        int bottomLeftAlpha = MathTool.round(
+        int bottomLeftAlpha = Maths.round(
                 inverseNormalizedX0 * inverseNormalizedY1 * aAlpha +
                         normalizedX0 * inverseNormalizedY1 * bAlpha +
                         inverseNormalizedX0 * normalizedY1 * cAlpha +
                         normalizedX0 * normalizedY1 * dAlpha
         );
 
-        int bottomRightRed = MathTool.round(
+        int bottomRightRed = Maths.round(
                 inverseNormalizedX1 * inverseNormalizedY1 * aRed +
                         normalizedX1 * inverseNormalizedY1 * bRed +
                         inverseNormalizedX1 * normalizedY1 * cRed +
                         normalizedX1 * normalizedY1 * dRed
         );
-        int bottomRightGreen = MathTool.round(
+        int bottomRightGreen = Maths.round(
                 inverseNormalizedX1 * inverseNormalizedY1 * aGreen +
                         normalizedX1 * inverseNormalizedY1 * bGreen +
                         inverseNormalizedX1 * normalizedY1 * cGreen +
                         normalizedX1 * normalizedY1 * dGreen
         );
-        int bottomRightBlue = MathTool.round(
+        int bottomRightBlue = Maths.round(
                 inverseNormalizedX1 * inverseNormalizedY1 * aBlue +
                         normalizedX1 * inverseNormalizedY1 * bBlue +
                         inverseNormalizedX1 * normalizedY1 * cBlue +
                         normalizedX1 * normalizedY1 * dBlue
         );
-        int bottomRightAlpha = MathTool.round(
+        int bottomRightAlpha = Maths.round(
                 inverseNormalizedX1 * inverseNormalizedY1 * aAlpha +
                         normalizedX1 * inverseNormalizedY1 * bAlpha +
                         inverseNormalizedX1 * normalizedY1 * cAlpha +
@@ -547,7 +545,6 @@ public abstract class GuiRender implements ResourceManager {
     public abstract void submitBuffer();
 
     public void beginFrame() {
-        ResourceManager.THREAD_LOCAL.set(this);
         cursorShapeInThisFrame = -1;
         cursorModeInThisFrame = -1;
         begin();
@@ -681,7 +678,7 @@ public abstract class GuiRender implements ResourceManager {
             throw new ResourceException("Failed to set pixel sizes!");
         }
 
-        float ascenderPx = ascenderCache.computeIfAbsent(font, f -> new Int2FloatOpenHashMap()).computeIfAbsent(fontSize, s -> Objects.requireNonNull(face.size()).metrics().ascender() / 64.0f);
+        float ascenderPx = ascenderCache.computeIfAbsent(font, _ -> new Int2FloatOpenHashMap()).computeIfAbsent(fontSize, _ -> Objects.requireNonNull(face.size()).metrics().ascender() / 64.0f);
 
         float penX = startDrawX;
         float penY = startDrawY + ascenderPx;
@@ -751,25 +748,25 @@ public abstract class GuiRender implements ResourceManager {
                 float tStart = widthCursor / totalWidth;
                 float tEnd = (widthCursor + advance) / totalWidth;
 
-                int aRedNew = MathTool.round(aRed + (bRed - aRed) * tStart);
-                int aGreenNew = MathTool.round(aGreen + (bGreen - aGreen) * tStart);
-                int aBlueNew = MathTool.round(aBlue + (bBlue - aBlue) * tStart);
-                int aAlphaNew = MathTool.round(aAlpha + (bAlpha - aAlpha) * tStart);
+                int aRedNew = Maths.round(aRed + (bRed - aRed) * tStart);
+                int aGreenNew = Maths.round(aGreen + (bGreen - aGreen) * tStart);
+                int aBlueNew = Maths.round(aBlue + (bBlue - aBlue) * tStart);
+                int aAlphaNew = Maths.round(aAlpha + (bAlpha - aAlpha) * tStart);
 
-                int bRedNew = MathTool.round(aRed + (bRed - aRed) * tEnd);
-                int bGreenNew = MathTool.round(aGreen + (bGreen - aGreen) * tEnd);
-                int bBlueNew = MathTool.round(aBlue + (bBlue - aBlue) * tEnd);
-                int bAlphaNew = MathTool.round(aAlpha + (bAlpha - aAlpha) * tEnd);
+                int bRedNew = Maths.round(aRed + (bRed - aRed) * tEnd);
+                int bGreenNew = Maths.round(aGreen + (bGreen - aGreen) * tEnd);
+                int bBlueNew = Maths.round(aBlue + (bBlue - aBlue) * tEnd);
+                int bAlphaNew = Maths.round(aAlpha + (bAlpha - aAlpha) * tEnd);
 
-                int cRedNew = MathTool.round(cRed + (dRed - cRed) * tStart);
-                int cGreenNew = MathTool.round(cGreen + (dGreen - cGreen) * tStart);
-                int cBlueNew = MathTool.round(cBlue + (dBlue - cBlue) * tStart);
-                int cAlphaNew = MathTool.round(cAlpha + (dAlpha - cAlpha) * tStart);
+                int cRedNew = Maths.round(cRed + (dRed - cRed) * tStart);
+                int cGreenNew = Maths.round(cGreen + (dGreen - cGreen) * tStart);
+                int cBlueNew = Maths.round(cBlue + (dBlue - cBlue) * tStart);
+                int cAlphaNew = Maths.round(cAlpha + (dAlpha - cAlpha) * tStart);
 
-                int dRedNew = MathTool.round(cRed + (dRed - cRed) * tEnd);
-                int dGreenNew = MathTool.round(cGreen + (dGreen - cGreen) * tEnd);
-                int dBlueNew = MathTool.round(cBlue + (dBlue - cBlue) * tEnd);
-                int dAlphaNew = MathTool.round(cAlpha + (dAlpha - cAlpha) * tEnd);
+                int dRedNew = Maths.round(cRed + (dRed - cRed) * tEnd);
+                int dGreenNew = Maths.round(cGreen + (dGreen - cGreen) * tEnd);
+                int dBlueNew = Maths.round(cBlue + (dBlue - cBlue) * tEnd);
+                int dAlphaNew = Maths.round(cAlpha + (dAlpha - cAlpha) * tEnd);
 
                 penX = drawGlyph(font, glyphIndex, fontSize, italicDegrees, boldStrength, italicMatrix, penX, penY, centerX, centerY, angle,
                         aRedNew, aGreenNew, aBlueNew, aAlphaNew,
@@ -901,16 +898,12 @@ public abstract class GuiRender implements ResourceManager {
     public void blurRegion(int x, int y, int width, int height, float angle, double strength) {
         if (width == 0 || height == 0 || strength == 0) return;
         strength = Math.clamp(strength, 0, 2);
-        int radius = MathTool.round(strength * 100);
+        int radius = Maths.round(strength * 100);
         blurFramebufferRegion(x, y, width, height, angle, radius);
     }
     protected abstract void blurFramebufferRegion(int x, int y, int width, int height, float angle, int radius);
 
     public GuiRender(long windowHandle) {
-        if (ResourceManager.getResourceManagerFromThreadLocal() == null) {
-            ResourceManager.THREAD_LOCAL.set(this);
-        }
-
         this.windowHandle = windowHandle;
 
         for (CursorShape shape : CursorShape.values()) {

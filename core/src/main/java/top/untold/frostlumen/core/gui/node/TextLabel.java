@@ -38,8 +38,14 @@ public class TextLabel extends GuiNode<TextLabel> implements HasDrawBackground<T
     private VerticalAlignment verticalAlignment = VerticalAlignment.CENTER;
 
     @Override
+    protected void init(GuiRender render) {
+        font = Font.loadDefaultFont(render);
+    }
+
+    @Override
     protected void render(GuiRender render, double delta) {
         if (drawBackground) background.render(render);
+        if (font == null) return;
         render.drawString(text, font, textRenderPositionX, textRenderPositionY, angle, fontSize, italicDegrees, boldStrength, textColor.red(), textColor.green(), textColor.blue(), textColor.alpha());
     }
 
@@ -142,7 +148,7 @@ public class TextLabel extends GuiNode<TextLabel> implements HasDrawBackground<T
     }
 
     public TextLabel(String text, ScaleOffset position, ScaleOffset size) {
-        this(text, Font.getDefaultFont(), position, size);
+        this(text, null, position, size);
     }
     public TextLabel(String text, Font font, ScaleOffset position, ScaleOffset size) {
         super(position, size);

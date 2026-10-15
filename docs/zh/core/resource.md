@@ -6,7 +6,7 @@
 
 所有资源的加载都应该通过ResourceManager.加载资源的调用应该在渲染线程使用,并且必须在Window.from调用之后
 
-你可以通过`ResourceManager.getResourceManagerFromThreadLocal()`静态方法获取ResourceManager实例.
+你可以通过`NodeRoot`的`getResourceManager`方法获取ResourceManager实例.
 
 ResourceManager定义了这些方法:
 

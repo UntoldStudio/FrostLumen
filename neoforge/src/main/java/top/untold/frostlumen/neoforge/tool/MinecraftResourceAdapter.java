@@ -27,13 +27,14 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import top.untold.frostlumen.core.data.NiceSliceType;
 import top.untold.frostlumen.core.exception.ResourceException;
+import top.untold.frostlumen.core.render.GuiRender;
 import top.untold.frostlumen.core.render.ResourceManager;
 import top.untold.frostlumen.core.texture.Texture;
 
 import java.util.Optional;
 
 public class MinecraftResourceAdapter {
-    public static Texture loadItemTexture(Item item) {
+    public static Texture loadItemTexture(GuiRender render, Item item) {
         Identifier itemId = BuiltInRegistries.ITEM.getKey(item);
 
         Identifier itemSprite = Identifier.fromNamespaceAndPath(itemId.getNamespace(), "item/" + itemId.getPath());
@@ -48,9 +49,9 @@ public class MinecraftResourceAdapter {
             throw new ResourceException("Cannot load texture from resource item:" + item);
         }
 
-        return ResourceManager.getResourceManagerFromThreadLocal().loadTexture(data, false);
+        return render.loadTexture(data, false);
     }
-    public static Texture loadTextureFromIdentifier(Identifier location) {
+    public static Texture loadTextureFromIdentifier(GuiRender render, Identifier location) {
         boolean isNiceSlice = false;
         int left = -1;
         int right = -1;
@@ -85,9 +86,9 @@ public class MinecraftResourceAdapter {
         }
 
         if (isNiceSlice) {
-            return ResourceManager.getResourceManagerFromThreadLocal().loadNiceSliceTexture(data, NiceSliceType.FIXED_BORDER, stretchInner, false, left, right, top, bottom);
+            return render.loadNiceSliceTexture(data, NiceSliceType.FIXED_BORDER, stretchInner, false, left, right, top, bottom);
         } else {
-            return ResourceManager.getResourceManagerFromThreadLocal().loadTexture(data, false);
+            return render.loadTexture(data, false);
         }
     }
 }

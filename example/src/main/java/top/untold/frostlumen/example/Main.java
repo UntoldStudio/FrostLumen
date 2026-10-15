@@ -22,6 +22,7 @@ import top.untold.frostlumen.core.data.ScaleOffset;
 import top.untold.frostlumen.core.gui.NodeRoot;
 import top.untold.frostlumen.core.gui.Window;
 import top.untold.frostlumen.core.gui.node.Frame;
+import top.untold.frostlumen.core.gui.node.HorizontalBox;
 import top.untold.frostlumen.core.gui.node.ImageButton;
 import top.untold.frostlumen.core.render.ResourceManager;
 import top.untold.frostlumen.core.render.RenderProviderType;
@@ -47,25 +48,20 @@ public class Main {
 
         Window window = Window.from(windowHandle, RenderProviderType.OPENGL);
 
-        ResourceManager resourceManager = ResourceManager.getResourceManagerFromThreadLocal();
-        ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-blue.jpg"), ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(1.0, 1.0))
+        NodeRoot root = window.getNodeRoot();
+        ResourceManager resourceManager = root.getResourceManager();
+
+        ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-blue.jpg"), ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
                 .normal().setImageAlignment(ImageAlignment.FILL).getNode()
                 .onHover().setTexture(resourceManager.loadTexture("/oiiaioiiai-red.jpg")).getNode()
                 .onClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
                 .setAnchor(0.5, 0.5)
+                .setAngle(20)
                 .setDrawBackground(true)
                 .background()
                 .setCornerRadius(10)
                 .getNode();
-        Frame frame1 = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
-                .setAnchor(0.5, 0.5)
-                .setClipChildren(true)
-                .setAngle(20f)
-                .background()
-                .setColor(new RGBA(210, 230, 255, 90))
-                .setCornerRadius(10)
-                .getNode();
-        Frame frame2 = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.3, 0.3))
+        Frame blurBox = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.3, 0.3))
                 .setAnchor(0.5, 0.5)
                 .setAngle(100)
                 .background()
@@ -95,15 +91,20 @@ public class Main {
         scaleOffsetTween.onComplete(scaleOffsetTween1::play);
         scaleOffsetTween1.onComplete(scaleOffsetTween::play);
 
-        frame1.addChild(button);
-
-        NodeRoot root = window.getNodeRoot();
-        root.addChildren(frame1, frame2);
+        HorizontalBox box = new HorizontalBox(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+                .setAnchor(0.5, 0.5)
+                .background()
+                .setColor(RGBA.BLUE)
+                .getNode();
+        Frame frame = new Frame(ScaleOffset.fromScale(0, 0), ScaleOffset.fromScale(0.5, 0.5));
+        Frame frame3 = new Frame(ScaleOffset.fromScale(0, 0), ScaleOffset.fromScale(0.5, 0.5)).background().setColor(RGBA.GREEN).getNode();
+        box.addChildren(frame, frame3);
+        root.addChildren(box, button, blurBox);
         TweenScheduler tweenScheduler = root.getTweenScheduler();
         tweenScheduler.registerTween(scaleOffsetTween);
         tweenScheduler.registerTween(scaleOffsetTween1);
-        scaleOffsetTween.bindSetter(frame1::setPosition);
-        scaleOffsetTween1.bindSetter(frame1::setPosition);
+        scaleOffsetTween.bindSetter(button::setPosition);
+        scaleOffsetTween1.bindSetter(button::setPosition);
         scaleOffsetTween.play();
 
         long previousTime = System.nanoTime();

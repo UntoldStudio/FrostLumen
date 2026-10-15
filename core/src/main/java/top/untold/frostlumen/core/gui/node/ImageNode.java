@@ -23,7 +23,7 @@ import top.untold.frostlumen.core.gui.ParentNode;
 import top.untold.frostlumen.core.render.GuiRender;
 import top.untold.frostlumen.core.render.ResourceManager;
 import top.untold.frostlumen.core.texture.Texture;
-import top.untold.frostlumen.core.tool.MathTool;
+import top.untold.frostlumen.core.tool.Maths;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -59,8 +59,7 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
         }
 
         /**
-         * {@link ResourceManager :getResourceManagerFromThreadLocal()}
-         * 如果你正在使用MC绑定你可以看看top.untoldstudio.frostlumen.neoforge.tool.MinecraftResourceAdapter
+         * {@link ResourceManager:getResourceManagerFromThreadLocal()}
          */
         public ImageRenderDescription setTexture(Texture texture) {
             this.texture = texture;
@@ -107,8 +106,8 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
                     double scaleY = (double) realSizeY / height;
                     double scale = Math.min(scaleX, scaleY);
 
-                    int newWidth = MathTool.round(width * scale);
-                    int newHeight = MathTool.round(height * scale);
+                    int newWidth = Maths.round(width * scale);
+                    int newHeight = Maths.round(height * scale);
 
                     imagePositionX = realPositionX + (realSizeX - newWidth) / 2;
                     imagePositionY = realPositionY + (realSizeY - newHeight) / 2;
@@ -123,8 +122,8 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
                     double scaleY = (double) realSizeY / height;
                     double scale = Math.max(scaleX, scaleY);
 
-                    int newWidth = MathTool.round(width * scale);
-                    int newHeight = MathTool.round(height * scale);
+                    int newWidth = Maths.round(width * scale);
+                    int newHeight = Maths.round(height * scale);
 
                     imagePositionX = realPositionX + (realSizeX - newWidth) / 2;
                     imagePositionY = realPositionY + (realSizeY - newHeight) / 2;

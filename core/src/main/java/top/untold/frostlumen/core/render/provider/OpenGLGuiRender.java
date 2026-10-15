@@ -32,7 +32,7 @@ import top.untold.frostlumen.core.gui.Window;
 import top.untold.frostlumen.core.render.GuiRender;
 import top.untold.frostlumen.core.render.RenderProviderType;
 import top.untold.frostlumen.core.tool.DirectByteBuffer;
-import top.untold.frostlumen.core.tool.MathTool;
+import top.untold.frostlumen.core.tool.Maths;
 import top.untold.frostlumen.core.tool.ResourceReader;
 
 import java.io.IOException;
@@ -563,6 +563,26 @@ public class OpenGLGuiRender extends GuiRender {
         buffer.writeInt(aBorderThickness, bBorderThickness, cBorderThickness, dBorderThickness);
         buffer.writeInt(positionOrder);
 
+        buffer.writeInt(exMinX, exMinY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
+        buffer.writeFloat(-exHalfWidth, -exHalfHeight, halfWidth, halfHeight);
+        buffer.writeBytesFromIntsWithForcedConversion(aRed, aGreen, aBlue, aAlpha);
+        buffer.writeBytesFromIntsWithForcedConversion(borderRed, borderGreen, borderBlue, borderAlpha);
+        buffer.writeInt(aCornerRadii, bCornerRadii, cCornerRadii, dCornerRadii);
+        buffer.writeInt(aBorderThickness, bBorderThickness, cBorderThickness, dBorderThickness);
+        buffer.writeInt(positionOrder);
+
+        buffer.writeInt(exMaxX, exMaxY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
+        buffer.writeFloat(exHalfWidth, exHalfHeight, halfWidth, halfHeight);
+        buffer.writeBytesFromIntsWithForcedConversion(dRed, dGreen, dBlue, dAlpha);
+        buffer.writeBytesFromIntsWithForcedConversion(borderRed, borderGreen, borderBlue, borderAlpha);
+        buffer.writeInt(aCornerRadii, bCornerRadii, cCornerRadii, dCornerRadii);
+        buffer.writeInt(aBorderThickness, bBorderThickness, cBorderThickness, dBorderThickness);
+        buffer.writeInt(positionOrder);
+
         if (shouldPush) {
             commands.push(batch);
         }
@@ -608,6 +628,18 @@ public class OpenGLGuiRender extends GuiRender {
         buffer.writeFloat(u0, v1);
         buffer.writeBytesFromIntsWithForcedConversion(cRed, cGreen, cBlue, cAlpha);
 
+        buffer.writeInt(minX, minY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
+        buffer.writeFloat(u0, v0);
+        buffer.writeBytesFromIntsWithForcedConversion(aRed, aGreen, aBlue, aAlpha);
+
+        buffer.writeInt(maxX, maxY);
+        buffer.writeInt(centerX, centerY);
+        buffer.writeFloat(angle);
+        buffer.writeFloat(u1, v1);
+        buffer.writeBytesFromIntsWithForcedConversion(dRed, dGreen, dBlue, dAlpha);
+
         if (shouldPush) {
             commands.push(batch);
         }
@@ -618,7 +650,7 @@ public class OpenGLGuiRender extends GuiRender {
                            int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
                            int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha
     ) {
-        Double2ObjectMap<GlyphInfo> map = glyphCache.computeIfAbsent(((long) font.id() << 41) | ((long) fontSize << 28) | ((long) glyphIndex << 10) | boldStrength, key -> new Double2ObjectOpenHashMap<>());
+        Double2ObjectMap<GlyphInfo> map = glyphCache.computeIfAbsent(((long) font.id() << 41) | ((long) fontSize << 28) | ((long) glyphIndex << 10) | boldStrength, _ -> new Double2ObjectOpenHashMap<>());
         GlyphInfo info = map.get(italicDegrees);
         if (info == null) {
             FT_Face face = font.face();
@@ -668,8 +700,8 @@ public class OpenGLGuiRender extends GuiRender {
             map.put(italicDegrees, info);
         }
 
-        int glyphX = MathTool.round(x + info.bitmapLeft);
-        int glyphY = MathTool.round(y - info.bitmapTop);
+        int glyphX = Maths.round(x + info.bitmapLeft);
+        int glyphY = Maths.round(y - info.bitmapTop);
         int x1 = glyphX + info.bitmapWidth;
         int y1 = glyphY + info.bitmapHeight;
 
@@ -1183,19 +1215,19 @@ public class OpenGLGuiRender extends GuiRender {
         @Override
         public abstract void destroy();
 
-        protected int executeBatch(int program, int vao, int vbo, int mode, int stride, int capacity) {
-            return OpenGLGuiRender.executeBatch(buffer, program, vao, vbo, mode, stride, capacity);
+        protected int executeBatch(int program, int vao, int vbo, int stride, int capacity) {
+            return OpenGLGuiRender.executeBatch(buffer, program, vao, vbo, stride, capacity);
         }
     }
 
-    private static int executeBatch(DirectByteBuffer buffer, int program, int vao, int vbo, int mode, int stride, int capacity) {
+    private static int executeBatch(DirectByteBuffer buffer, int program, int vao, int vbo, int stride, int capacity) {
         glUseProgram(program);
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         int writtenBytes = buffer.getWrittenBytes();
         capacity = ensureCapacity(writtenBytes, capacity);
         glBufferSubData(GL_ARRAY_BUFFER, 0, buffer.getNioDirectByteBuffer());
-        glDrawArrays(mode, 0, writtenBytes / stride);
+        glDrawArrays(GL_TRIANGLES, 0, writtenBytes / stride);
         return capacity;
     }
     private static int ensureCapacity(int limit, int capacity) {
@@ -1210,7 +1242,7 @@ public class OpenGLGuiRender extends GuiRender {
     private class TriangleBatch extends RenderBatch {
         @Override
         public void execute() {
-            triangleVboCapacity = executeBatch(triangleShaderProgram, triangleVao, triangleVbo, GL_TRIANGLES, triangleStride, triangleVboCapacity);
+            triangleVboCapacity = executeBatch(triangleShaderProgram, triangleVao, triangleVbo, triangleStride, triangleVboCapacity);
         }
 
         @Override
@@ -1225,7 +1257,7 @@ public class OpenGLGuiRender extends GuiRender {
     private class ShapeBatch extends RenderBatch {
         @Override
         public void execute() {
-            shapeVboCapacity = executeBatch(shapeShaderProgram, shapeVao, shapeVbo, GL_TRIANGLE_FAN, shapeStride, shapeVboCapacity);
+            shapeVboCapacity = executeBatch(shapeShaderProgram, shapeVao, shapeVbo, shapeStride, shapeVboCapacity);
         }
 
         @Override
@@ -1246,7 +1278,7 @@ public class OpenGLGuiRender extends GuiRender {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, textureId);
             glUniform1i(textureSamplerLocation, 0);
-            textureVboCapacity = executeBatch(textureShaderProgram, textureVao, textureVbo, GL_TRIANGLE_FAN, textureStride, textureVboCapacity);
+            textureVboCapacity = executeBatch(textureShaderProgram, textureVao, textureVbo, textureStride, textureVboCapacity);
         }
 
         @Override
@@ -1267,7 +1299,7 @@ public class OpenGLGuiRender extends GuiRender {
             glActiveTexture(GL_TEXTURE0);
             glBindTexture(GL_TEXTURE_2D, fontAtlasTextureId);
             glUniform1i(stringSamplerLocation, 0);
-            stringVboCapacity = executeBatch(stringShaderProgram, stringVao, stringVbo, GL_TRIANGLES, stringStride, stringVboCapacity);
+            stringVboCapacity = executeBatch(stringShaderProgram, stringVao, stringVbo, stringStride, stringVboCapacity);
         }
 
         @Override

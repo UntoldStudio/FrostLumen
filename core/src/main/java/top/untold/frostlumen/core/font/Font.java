@@ -20,7 +20,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.freetype.FT_Face;
 import org.lwjgl.util.freetype.FT_Size;
 import org.lwjgl.util.freetype.FT_Vector;
-import top.untold.frostlumen.core.render.ResourceManager;
+import top.untold.frostlumen.core.render.GuiRender;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
@@ -75,11 +75,8 @@ public record Font(FT_Face face, String path, ByteBuffer data, int id) {
         return Math.round((ascender - descender) / 64.0f);
     }
 
-    public static Font loadFontFromCurrentResourceManager(String path) {
-        return ResourceManager.getResourceManagerFromThreadLocal().loadFont(path);
-    }
-    public static Font getDefaultFont() {
-        return loadFontFromCurrentResourceManager(DEFAULT_FONT_PATH);
+    public static Font loadDefaultFont(GuiRender render) {
+        return render.loadFont(DEFAULT_FONT_PATH);
     }
 
     public Font(FT_Face face, String path, ByteBuffer data) {

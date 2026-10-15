@@ -18,7 +18,7 @@ package top.untold.frostlumen.core.gui;
 import top.untold.frostlumen.core.data.*;
 import top.untold.frostlumen.core.event.*;
 import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
-import top.untold.frostlumen.core.tool.MathTool;
+import top.untold.frostlumen.core.tool.Maths;
 import top.untold.frostlumen.core.render.GuiRender;
 
 import java.util.HashSet;
@@ -32,12 +32,14 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     protected NodeRoot root;
     protected ParentNode<?> parent;
     protected int zIndex = 0;
+    protected int layoutOrder = 0;
     protected boolean clipChildren = false;
     protected double xAnchor = 0;
     protected double yAnchor = 0;
     protected float angle = 0;
     protected Set<MouseButton> currentMouseClickButtons = new HashSet<>();
     protected boolean mouseInNode;
+    protected boolean init = false;
 
     public Background background() {
         return background;
@@ -62,7 +64,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
 
     protected void operationPosition(){
         if (getParent() != null && getParent() instanceof ParentNode<?> node){
-            operationPosition(node, node.realPositionX, node.realPositionY);
+            operationPosition(node, node.getRealPositionX(), node.getRealPositionY());
         } else {
             operationPosition(null, 0, 0);
         }
@@ -88,14 +90,14 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
             int windowWidth = window.getFrameBufferWidth();
             int windowHeight = window.getFrameBufferHeight();
 
-            realSizeX = MathTool.round(windowWidth * size.xScale()) + size.xOffset();
-            realSizeY = MathTool.round(windowHeight * size.yScale()) + size.yOffset();
+            realSizeX = Maths.round(windowWidth * size.xScale()) + size.xOffset();
+            realSizeY = Maths.round(windowHeight * size.yScale()) + size.yOffset();
 
-            realPositionX = MathTool.round(windowWidth * position.xScale())
+            realPositionX = Maths.round(windowWidth * position.xScale())
                     + position.xOffset()
                     - (int) Math.round(realSizeX * xAnchor);
 
-            realPositionY = MathTool.round(windowHeight * position.yScale())
+            realPositionY = Maths.round(windowHeight * position.yScale())
                     + position.yOffset()
                     - (int) Math.round(realSizeY * yAnchor);
         }
@@ -223,6 +225,13 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         onWindowMoveEvent(event);
         super.dispatchWindowMoveEvent(event);
     }
+    protected void dispatchInit(GuiRender render) {
+        if (!init) {
+            init = true;
+            init(render);
+        }
+        forwardFor(node -> node.dispatchInit(render), null);
+    }
 
     protected abstract void render(GuiRender render, double delta);
     protected void onKeyEvent(KeyEvent event) {}
@@ -240,6 +249,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     protected void onWindowMinimizeEvent(WindowMinimizeEvent event) {}
     protected void onWindowMaximizeEvent(WindowMaximizeEvent event) {}
     protected void onWindowMoveEvent(WindowMoveEvent event) {}
+    protected void init(GuiRender render) {}
 
     @Override
     public T addChild(GuiNode<?> child) {
@@ -250,11 +260,18 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
 
     private void setChildRootToThisRoot(GuiNode<?> child) {
         child.root = this.root;
+        if (root != null) {
+            child.dispatchInit(root.getRender());
+        }
         for (GuiNode<?> node : child.children) {
             setChildRootToThisRoot(node);
         }
     }
 
+    public T setLayoutOrder(int layoutOrder) {
+        this.layoutOrder = layoutOrder;
+        return self;
+    }
     public T setParent(ParentNode<?> parent) {
         parent.addChild(this);
         return self;
@@ -308,6 +325,9 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
 
     public boolean isClipChildren() {
         return clipChildren;
+    }
+    public int getLayoutOrder() {
+        return layoutOrder;
     }
     public int getZIndex() {
         return zIndex;

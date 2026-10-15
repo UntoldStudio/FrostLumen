@@ -15,7 +15,7 @@
  */
 package top.untold.frostlumen.core.tween;
 
-import top.untold.frostlumen.core.tool.MathTool;
+import top.untold.frostlumen.core.tool.Maths;
 
 import java.util.function.IntConsumer;
 
@@ -39,7 +39,7 @@ public class IntTween extends NumberTween {
 
     @Override
     protected void applyEased(double eased) {
-        currentValue = MathTool.round(startValue + (endValue - startValue) * eased);
+        currentValue = Maths.round(startValue + (endValue - startValue) * eased);
         triggerOnUpdateCallback();
     }
 

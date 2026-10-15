@@ -20,6 +20,7 @@ import top.untold.frostlumen.core.data.ScaleOffset;
 import top.untold.frostlumen.core.event.FrameBufferSizeChangeEvent;
 import top.untold.frostlumen.core.event.MouseMoveEvent;
 import top.untold.frostlumen.core.render.GuiRender;
+import top.untold.frostlumen.core.render.ResourceManager;
 import top.untold.frostlumen.core.tween.TweenScheduler;
 
 import java.util.Deque;
@@ -93,6 +94,7 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
 
     private void setChildRootToThis(GuiNode<?> child) {
         child.root = this;
+        child.dispatchInit(render);
         for (GuiNode<?> node : child.children) {
             setChildRootToThis(node);
         }
@@ -103,6 +105,9 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
     }
 
     public GuiRender getRender() {
+        return render;
+    }
+    public ResourceManager getResourceManager() {
         return render;
     }
 
