@@ -21,6 +21,7 @@ import top.untold.frostlumen.core.data.InputModifiers;
 import top.untold.frostlumen.core.data.Key;
 import top.untold.frostlumen.core.data.MouseButton;
 import top.untold.frostlumen.core.event.*;
+import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
 import top.untold.frostlumen.core.render.GuiRender;
 import top.untold.frostlumen.core.render.RenderProviderType;
 import top.untold.frostlumen.core.render.provider.OpenGLGuiRender;
@@ -28,6 +29,7 @@ import top.untold.frostlumen.core.render.provider.OpenGLGuiRender;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -36,6 +38,7 @@ import static org.lwjgl.glfw.GLFW.*;
  */
 public class Window {
     private static final Map<Long, Window> WINDOW_MAP = new ConcurrentHashMap<>();
+    private final OneArgListenerRegistry<ParentNode<?>> focusNodeChangeListenerRegistry = new OneArgListenerRegistry<>();
     private final GLFWKeyCallback keyCallback;
     private final GLFWMouseButtonCallback mouseButtonCallback;
     private final GLFWCursorPosCallback mouseMoveCallback;
@@ -82,6 +85,13 @@ public class Window {
 
     private final NodeRoot root;
     private final long windowHandle;
+
+    public void registerFocusChangeListener(Consumer<ParentNode<?>> consumer) {
+        focusNodeChangeListenerRegistry.register(consumer);
+    }
+    public void unregisterFocusChangeListener(Consumer<ParentNode<?>> consumer) {
+        focusNodeChangeListenerRegistry.unregister(consumer);
+    }
 
     public static Window get(long windowHandle) {
         return WINDOW_MAP.get(windowHandle);
@@ -180,7 +190,7 @@ public class Window {
             }
         }));
         mouseButtonCallback = GLFWMouseButtonCallback.create(((currentWindow, button, action, modifiers) -> {
-            MouseButtonEvent event = new MouseButtonEvent(MouseButton.fromGLFWValue(button), InputAction.fromGLFWValue(action), InputModifiers.fromGLFWValue(modifiers));
+            MouseButtonEvent event = new MouseButtonEvent(MouseButton.fromGLFWValue(button), InputAction.fromGLFWValue(action), InputModifiers.fromGLFWValue(modifiers), mouseX, mouseY);
             mouseClick = event.getAction() != InputAction.RELEASE;
             root.dispatchMouseButtonEvent(event);
             if (oldMouseButtonCallback != null && !event.isCancel()) {
@@ -322,6 +332,10 @@ public class Window {
         init();
     }
 
+    public String getClipboard(){
+        return glfwGetClipboardString(windowHandle);
+    }
+
     public boolean isMouseInRange(int minX, int minY, int maxX, int maxY) {
         int oldMinX = minX;
         int oldMinY = minY;
@@ -336,7 +350,8 @@ public class Window {
     }
 
     public void setFocusNode(ParentNode<?> focus) {
-        this.focusNode = focus;
+        this.focusNode = focus == null ? root : focus;
+        focusNodeChangeListenerRegistry.trigger(focusNode);
     }
     public ParentNode<?> getFocusNode() {
         return focusNode;

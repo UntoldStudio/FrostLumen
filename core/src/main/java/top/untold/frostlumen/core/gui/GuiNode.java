@@ -109,10 +109,25 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
 
         letChildrenOperationPosition();
     }
+
     protected void letChildrenOperationPosition(){
         for (GuiNode<?> guiNode : children){
             guiNode.operationPosition();
         }
+    }
+
+    public T setFocused(boolean focused) {
+        if (root == null) return self;
+        if (focused) {
+            root.getWindow().setFocusNode(this);
+        } else {
+            root.getWindow().setFocusNode(null);
+        }
+        return self;
+    }
+    public boolean isFocused() {
+        if (root == null) return false;
+        return root.getWindow().getFocusNode() == this;
     }
 
     @Override
@@ -128,6 +143,11 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         }
     }
     @Override
+    public void dispatchTickEvent() {
+        tick();
+        super.dispatchTickEvent();
+    }
+    @Override
     public void dispatchKeyEvent(KeyEvent event) {
         super.dispatchKeyEvent(event);
         if (event.isCancel()) return;
@@ -136,6 +156,9 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     public void dispatchMouseButtonEvent(MouseButtonEvent event) {
         if (event.getAction() == InputAction.PRESS && mouseInNode) {
             currentMouseClickButtons.add(event.getButton());
+            if (event.getButton() == MouseButton.LEFT) {
+                root.getWindow().setFocusNode(this);
+            }
         } else if (event.getAction() == InputAction.RELEASE) {
             currentMouseClickButtons.remove(event.getButton());
         }
@@ -250,6 +273,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     protected void onWindowMaximizeEvent(WindowMaximizeEvent event) {}
     protected void onWindowMoveEvent(WindowMoveEvent event) {}
     protected void init(GuiRender render) {}
+    protected void tick() {}
 
     @Override
     public T addChild(GuiNode<?> child) {

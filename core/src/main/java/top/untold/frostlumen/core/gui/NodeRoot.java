@@ -27,17 +27,22 @@ import java.util.Deque;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 public final class NodeRoot extends ParentNode<NodeRoot> {
+    private static final long TICK_NANOS_INTERVAL = 1_000_000_000L / 60;
     private final Window window;
     private final GuiRender render;
     private final Deque<Runnable> tasks = new ConcurrentLinkedDeque<>();
     private final TweenScheduler tweenScheduler = new TweenScheduler();
     private long externalSettingCursor = -1;
     private boolean isLastMouseMoveEventCanceled = false;
+    private long tickCount = 0;
+    private long startTickTime;
     private long lastRenderTime;
 
     public void init() {
         render.initRender();
-        lastRenderTime = System.nanoTime();
+        long now = System.nanoTime();
+        lastRenderTime = now;
+        startTickTime = now;
     }
 
     @Override
@@ -58,6 +63,7 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
 
     public void render() {
         render.beginFrame();
+
         while (!tasks.isEmpty()) {
             tasks.poll().run();
         }
@@ -69,7 +75,14 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
         }
 
         long now = System.nanoTime();
+        long currentTickTime = startTickTime + tickCount * TICK_NANOS_INTERVAL;
+        long shouldTickCount = (now - currentTickTime) / TICK_NANOS_INTERVAL;
         double delta = (now - lastRenderTime) / (double) 1_000_000;
+
+        for (long i = 0; i < shouldTickCount; i++) {
+            dispatchTickEvent();
+            tickCount++;
+        }
 
         tweenScheduler.step(delta);
 

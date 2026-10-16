@@ -23,11 +23,15 @@ public class MouseButtonEvent extends CancelableEvent {
     private final MouseButton button;
     private final InputAction action;
     private final InputModifiers modifiers;
+    private final double x;
+    private final double y;
 
-    public MouseButtonEvent(MouseButton button, InputAction action, InputModifiers modifiers) {
+    public MouseButtonEvent(MouseButton button, InputAction action, InputModifiers modifiers, double x, double y) {
         this.button = button;
         this.action = action;
         this.modifiers = modifiers;
+        this.x = x;
+        this.y = y;
     }
 
     public MouseButton getButton() {
@@ -38,5 +42,11 @@ public class MouseButtonEvent extends CancelableEvent {
     }
     public InputModifiers getModifiers() {
         return modifiers;
+    }
+    public double getX() {
+        return x;
+    }
+    public double getY() {
+        return y;
     }
 }

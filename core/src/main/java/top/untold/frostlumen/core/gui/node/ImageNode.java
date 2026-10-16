@@ -40,13 +40,13 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
     }
 
     public class ImageRenderDescription {
-        private Texture texture;
-        private RGBA color = RGBA.WHITE;
-        private ImageAlignment imageAlignment = ImageAlignment.STRETCH;
-        private int imagePositionX;
-        private int imagePositionY;
-        private int imagePositionMaxX;
-        private int imagePositionMaxY;
+        protected Texture texture;
+        protected RGBA color = RGBA.WHITE;
+        protected ImageAlignment imageAlignment = ImageAlignment.STRETCH;
+        protected int imagePositionX;
+        protected int imagePositionY;
+        protected int imagePositionMaxX;
+        protected int imagePositionMaxY;
 
         public boolean canRender() {
             return texture != null;
@@ -133,7 +133,7 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
             }
         }
 
-        public ImageRenderDescription() {
+        protected ImageRenderDescription() {
             selfRenderDescriptions.add(this);
         }
     }

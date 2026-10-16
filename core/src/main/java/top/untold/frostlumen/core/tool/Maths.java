@@ -22,8 +22,4 @@ public class Maths {
     public static int round(float value){
         return Math.round(value);
     }
-
-    public static int floor(double value){
-        return round(Math.floor(value));
-    }
 }

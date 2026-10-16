@@ -673,6 +673,12 @@ public class OpenGLGuiRender extends GuiRender {
             FT_Vector advance = slot.advance();
             float advanceX = advance.x() / 64.0f;
 
+            if (bitmap.width() == 0 || bitmap.rows() == 0) {
+                info = new GlyphInfo(0f, 0f, 0f, 0f, 0, 0, 0, 0, advanceX);
+                map.put(italicDegrees, info);
+                return x + advanceX;
+            }
+
             if (atlasCursorX + bitmap.width() > atlasWidth) {
                 atlasCursorX = 0;
                 atlasCursorY += atlasRowHeight;
