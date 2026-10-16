@@ -36,6 +36,29 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
     private long cursorSwitchVisibleTime = 30;
     private long displayCursorTimer = 30;
 
+    public TextBox setCursorWidth(int cursorWidth) {
+        this.cursorWidth = cursorWidth;
+        return this;
+    }
+    public TextBox setCursorColor(RGBA cursorColor) {
+        this.cursorColor = cursorColor;
+        return this;
+    }
+    public TextBox setCursorSwitchVisibleTime(long cursorSwitchVisibleTime) {
+        this.cursorSwitchVisibleTime = cursorSwitchVisibleTime;
+        return this;
+    }
+
+    public int getCursorWidth() {
+        return cursorWidth;
+    }
+    public RGBA getCursorColor() {
+        return cursorColor;
+    }
+    public long getCursorSwitchVisibleTime() {
+        return cursorSwitchVisibleTime;
+    }
+
     @Override
     public TextBox setDrawBackground(boolean drawBackground) {
         this.drawBackground = drawBackground;
