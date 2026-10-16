@@ -64,6 +64,12 @@ loadScripts(document, 'script');</script>
 </li>
 <li><a href="#method-detail" tabindex="0">Method Details</a>
 <ol class="toc-list">
+<li><a href="#setCursorWidth(int)" tabindex="0">setCursorWidth(int)</a></li>
+<li><a href="#setCursorColor(top.untold.frostlumen.core.data.RGBA)" tabindex="0">setCursorColor(RGBA)</a></li>
+<li><a href="#setCursorSwitchVisibleTime(long)" tabindex="0">setCursorSwitchVisibleTime(long)</a></li>
+<li><a href="#getCursorWidth()" tabindex="0">getCursorWidth()</a></li>
+<li><a href="#getCursorColor()" tabindex="0">getCursorColor()</a></li>
+<li><a href="#getCursorSwitchVisibleTime()" tabindex="0">getCursorSwitchVisibleTime()</a></li>
 <li><a href="#setDrawBackground(boolean)" tabindex="0">setDrawBackground(boolean)</a></li>
 <li><a href="#isDrawBackground()" tabindex="0">isDrawBackground()</a></li>
 <li><a href="#init(top.untold.frostlumen.core.render.GuiRender)" tabindex="0">init(GuiRender)</a></li>
@@ -155,30 +161,48 @@ implements <a href="HasDrawBackground.html" title="interface in top.untold.frost
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#init(top.untold.frostlumen.core.render.GuiRender)" class="member-name-link">init</a><wbr>(<a href="../../render/GuiRender.html" title="class in top.untold.frostlumen.core.render">GuiRender</a>&nbsp;render)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../../data/RGBA.html" title="class in top.untold.frostlumen.core.data">RGBA</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCursorColor()" class="member-name-link">getCursorColor</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDrawBackground()" class="member-name-link">isDrawBackground</a>()</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>long</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCursorSwitchVisibleTime()" class="member-name-link">getCursorSwitchVisibleTime</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TextNode.html" title="class in top.untold.frostlumen.core.gui.node">TextNode</a>&lt;<a href="TextBox.html" title="class in top.untold.frostlumen.core.gui.node">TextBox</a>&gt;.<a href="TextNode.TextRenderDescription.html" title="class in top.untold.frostlumen.core.gui.node">TextRenderDescription</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#noInput()" class="member-name-link">noInput</a>()</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>int</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCursorWidth()" class="member-name-link">getCursorWidth</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#init(top.untold.frostlumen.core.render.GuiRender)" class="member-name-link">init</a><wbr>(<a href="../../render/GuiRender.html" title="class in top.untold.frostlumen.core.render">GuiRender</a>&nbsp;render)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>boolean</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#isDrawBackground()" class="member-name-link">isDrawBackground</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TextNode.html" title="class in top.untold.frostlumen.core.gui.node">TextNode</a>&lt;<a href="TextBox.html" title="class in top.untold.frostlumen.core.gui.node">TextBox</a>&gt;.<a href="TextNode.TextRenderDescription.html" title="class in top.untold.frostlumen.core.gui.node">TextRenderDescription</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#normal()" class="member-name-link">normal</a>()</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#noInput()" class="member-name-link">noInput</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onKeyEvent(top.untold.frostlumen.core.event.KeyEvent)" class="member-name-link">onKeyEvent</a><wbr>(<a href="../../event/KeyEvent.html" title="class in top.untold.frostlumen.core.event">KeyEvent</a>&nbsp;event)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TextNode.html" title="class in top.untold.frostlumen.core.gui.node">TextNode</a>&lt;<a href="TextBox.html" title="class in top.untold.frostlumen.core.gui.node">TextBox</a>&gt;.<a href="TextNode.TextRenderDescription.html" title="class in top.untold.frostlumen.core.gui.node">TextRenderDescription</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#normal()" class="member-name-link">normal</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onMouseButtonEvent(top.untold.frostlumen.core.event.MouseButtonEvent)" class="member-name-link">onMouseButtonEvent</a><wbr>(<a href="../../event/MouseButtonEvent.html" title="class in top.untold.frostlumen.core.event">MouseButtonEvent</a>&nbsp;event)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onKeyEvent(top.untold.frostlumen.core.event.KeyEvent)" class="member-name-link">onKeyEvent</a><wbr>(<a href="../../event/KeyEvent.html" title="class in top.untold.frostlumen.core.event">KeyEvent</a>&nbsp;event)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onUserInputTextEvent(top.untold.frostlumen.core.event.UserInputTextEvent)" class="member-name-link">onUserInputTextEvent</a><wbr>(<a href="../../event/UserInputTextEvent.html" title="class in top.untold.frostlumen.core.event">UserInputTextEvent</a>&nbsp;event)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onMouseButtonEvent(top.untold.frostlumen.core.event.MouseButtonEvent)" class="member-name-link">onMouseButtonEvent</a><wbr>(<a href="../../event/MouseButtonEvent.html" title="class in top.untold.frostlumen.core.event">MouseButtonEvent</a>&nbsp;event)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#render(top.untold.frostlumen.core.render.GuiRender,double)" class="member-name-link">render</a><wbr>(<a href="../../render/GuiRender.html" title="class in top.untold.frostlumen.core.render">GuiRender</a>&nbsp;render,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#onUserInputTextEvent(top.untold.frostlumen.core.event.UserInputTextEvent)" class="member-name-link">onUserInputTextEvent</a><wbr>(<a href="../../event/UserInputTextEvent.html" title="class in top.untold.frostlumen.core.event">UserInputTextEvent</a>&nbsp;event)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>protected void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#render(top.untold.frostlumen.core.render.GuiRender,double)" class="member-name-link">render</a><wbr>(<a href="../../render/GuiRender.html" title="class in top.untold.frostlumen.core.render">GuiRender</a>&nbsp;render,
  double&nbsp;delta)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TextBox.html" title="class in top.untold.frostlumen.core.gui.node">TextBox</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCursorColor(top.untold.frostlumen.core.data.RGBA)" class="member-name-link">setCursorColor</a><wbr>(<a href="../../data/RGBA.html" title="class in top.untold.frostlumen.core.data">RGBA</a>&nbsp;cursorColor)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TextBox.html" title="class in top.untold.frostlumen.core.gui.node">TextBox</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCursorSwitchVisibleTime(long)" class="member-name-link">setCursorSwitchVisibleTime</a><wbr>(long&nbsp;cursorSwitchVisibleTime)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TextBox.html" title="class in top.untold.frostlumen.core.gui.node">TextBox</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setCursorWidth(int)" class="member-name-link">setCursorWidth</a><wbr>(int&nbsp;cursorWidth)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="TextBox.html" title="class in top.untold.frostlumen.core.gui.node">TextBox</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDrawBackground(boolean)" class="member-name-link">setDrawBackground</a><wbr>(boolean&nbsp;drawBackground)</code></div>
@@ -229,6 +253,54 @@ implements <a href="HasDrawBackground.html" title="interface in top.untold.frost
 <section class="method-details" id="method-detail">
 <h2>Method Details</h2>
 <ul class="member-list">
+<li>
+<section class="detail" id="setCursorWidth(int)">
+<h3>setCursorWidth</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="TextBox.html" title="class in top.untold.frostlumen.core.gui.node">TextBox</a></span>&nbsp;<span class="element-name">setCursorWidth</span><wbr><span class="parameters">(int&nbsp;cursorWidth)</span></div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setCursorColor(top.untold.frostlumen.core.data.RGBA)">
+<h3>setCursorColor</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="TextBox.html" title="class in top.untold.frostlumen.core.gui.node">TextBox</a></span>&nbsp;<span class="element-name">setCursorColor</span><wbr><span class="parameters">(<a href="../../data/RGBA.html" title="class in top.untold.frostlumen.core.data">RGBA</a>&nbsp;cursorColor)</span></div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="setCursorSwitchVisibleTime(long)">
+<h3>setCursorSwitchVisibleTime</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="TextBox.html" title="class in top.untold.frostlumen.core.gui.node">TextBox</a></span>&nbsp;<span class="element-name">setCursorSwitchVisibleTime</span><wbr><span class="parameters">(long&nbsp;cursorSwitchVisibleTime)</span></div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getCursorWidth()">
+<h3>getCursorWidth</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">int</span>&nbsp;<span class="element-name">getCursorWidth</span>()</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getCursorColor()">
+<h3>getCursorColor</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../../data/RGBA.html" title="class in top.untold.frostlumen.core.data">RGBA</a></span>&nbsp;<span class="element-name">getCursorColor</span>()</div>
+</div>
+</section>
+</li>
+<li>
+<section class="detail" id="getCursorSwitchVisibleTime()">
+<h3>getCursorSwitchVisibleTime</h3>
+<div class="horizontal-scroll">
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">long</span>&nbsp;<span class="element-name">getCursorSwitchVisibleTime</span>()</div>
+</div>
+</section>
+</li>
 <li>
 <section class="detail" id="setDrawBackground(boolean)">
 <h3>setDrawBackground</h3>
