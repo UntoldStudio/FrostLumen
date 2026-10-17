@@ -22,13 +22,26 @@ Each time the scheduler's `step()` method is called, it calls `step(delta)` on e
 
 A Tween object is a data-carrying entity whose value grows over time. Currently, the library has three primitive-type Tween objects: `DoubleTween`, `FloatTween`, and `IntTween`, and two composite-type Tween objects: `ScaleOffsetTween` and `RGBATween`.
 
-A Tween object should have a method that returns its own value, such as the `getCurrentValue` method of the five objects listed above, and a method for binding a setter.
+A Tween object should have a method that returns its own value, such as the `getCurrentValue` method of the five objects listed above.
+
+The Tween base class has methods such as `pause()`, `resume()`, `reset()`, and `play()`.
+
+`pause`: Pause the Tween
+
+`resume`: Resume the Tween
+
+`reset`: Reset the Tween's playback progress
+
+`play`: Calls `reset()` and `resume()`
+
+You can call `setAlwaysRepeat` to set whether it repeats forever, and `setRemainingRepeatCount` to set how many times the Tween repeats (excluding the first time).
 
 !!! warning
 
     The time unit of a Tween object is milliseconds.
+    A Tween does not automatically call `play()` when created; you need to call it manually.
 
-Example: DoubleTween's `getCurrentValue` method and setter-binding method (`bindSetter`)
+Example: DoubleTween's setter-binding method (`bindSetter`)
 
 ```java
 --8<-- "core/src/main/java/top/untold/frostlumen/core/tween/DoubleTween.java:getCurrentValue"
@@ -41,17 +54,19 @@ The last parameter of all Tween object constructors generally determines whether
 Example: Create a `ScaleOffsetTween` that smoothly moves from Scale coordinate `(0, 0)` to `(1, 1)` over 5 seconds, applies it to some node's position, and is automatically removed by the scheduler after playback finishes.
 
 ```java
-ScaleOffsetTween scaleOffsetTween = new ScaleOffsetTween(ScaleOffset.ZERO, ScaleOffset.fromScale(1, 1), TweenFunctions.LINEAR, 5000L, true);
+ScaleOffsetTween scaleOffsetTween = new ScaleOffsetTween(ScaleOffset.ZERO, ScaleOffset.fromScale(1, 1), 5000L, TweenFunctions.LINEAR, true);
 
-scaleOffsetTween.registerAutoCallOnSetter(node::setPosition);
+scaleOffsetTween.bindSetter(node::setPosition);
 // If it has not been registered with the scheduler yet
 nodeRoot.getTweenScheduler().registerTween(scaleOffsetTween);
+
+scaleOffsetTween.play();
 ```
 
 Example: Play a tween repeatedly forever
 
 ```java
-tween.registerOnCompleteCallback(tween::play);
+tween.setAlwaysRepeat(true);
 ```
 
 ## TweenFunction
@@ -208,9 +223,9 @@ Example: IntTween class
 --8<-- "core/src/main/java/top/untold/frostlumen/core/tween/IntTween.java:classDefinition"
 ```
 
-### ParentTween
+### CompositeTween
 
-ParentTween is an abstract class. Composite-type Tween classes generally directly inherit from it. It helps you manage children, update callbacks, etc. Subclasses generally only need to register their child Tween objects with the parent class (using the parent class's `addChildren` or `addChild` methods), and provide the `getCurrentValue` method and the `bindSetter` method.
+CompositeTween is an abstract class. Composite-type Tween classes generally directly inherit from it. It helps you manage children, update callbacks, and manage bound setters, etc. Subclasses generally only need to register their child Tween objects with the parent class (using the parent class's `addChildren` or `addChild` methods), provide the `getCurrentValue` method, and fill the parent class's generic parameter with the type of the Tween's value.
 
 Example: ScaleOffsetTween class
 

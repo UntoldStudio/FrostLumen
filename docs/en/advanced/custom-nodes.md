@@ -1,6 +1,6 @@
 # Custom Nodes
 
-Custom nodes are suitable for drawing that built-in nodes cannot express. If you can compose it using existing nodes, do not customize it.
+Custom nodes are suitable for drawing that built-in nodes cannot express. If you can compose it using existing nodes, do not create a custom one.
 
 This chapter will introduce how to inherit from GuiNode, how to call GuiRender's methods, and how to respond to events. Which scenarios are worth customizing depends on your project. If a requirement is common enough, the library will provide a built-in node.
 
@@ -23,7 +23,7 @@ Example: The simplest Frame class that only calls the `render` method of the par
 ```java
 public class Frame extends GuiNode<Frame> {
     @Override
-    protected void render(GuiRender render, long delta) {
+    protected void render(GuiRender render, double delta) {
         background.render(render);
     }
 
@@ -179,6 +179,8 @@ public void drawTexture(Texture texture, int minX, int minY, int maxX, int maxY,
 )
 // Draw a string, with support for specifying the font, etc.
 public void drawString(String text, Font font, int startDrawX, int startDrawY, float angle, int fontSize, double italicDegrees, int boldStrength, int red, int green, int blue, int alpha)
+// Draw a string with support for specifying the rotation center point
+public void drawString(String text, Font font, int startDrawX, int startDrawY, int centerX, int centerY, float angle, int fontSize, double italicDegrees, int boldStrength, int red, int green, int blue, int alpha)
 // Draw a string with support for independent four-corner colors (gradient)
 public void drawString(String text, Font font, int startDrawX, int startDrawY, float angle,
                        int fontSize, double italicDegrees, int boldStrength,
@@ -186,6 +188,12 @@ public void drawString(String text, Font font, int startDrawX, int startDrawY, f
                        int bRed, int bGreen, int bBlue, int bAlpha,
                        int cRed, int cGreen, int cBlue, int cAlpha,
                        int dRed, int dGreen, int dBlue, int dAlpha
+)
+// Draw a string with support for independent four-corner colors (gradient) and rotation center point
+public void drawString(String text, Font font, int startDrawX, int startDrawY, int centerX, int centerY, float angle,
+                       int fontSize, double italicDegrees, int boldStrength,
+                       int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
+                       int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha
 )
     
 // Operation methods
@@ -231,7 +239,7 @@ Example: A rectangle node that does not draw the default background and has diff
 ```java
 public class DemoNode extends GuiNode<DemoNode> {
     @Override
-    protected void render(GuiRender render, long delta) {
+    protected void render(GuiRender render, double delta) {
         render.drawRectangle(realPositionX, realPositionY,
                              realPositionMaxX, realPositionMaxY, realAngle,
                              255, 0, 0, 255,
@@ -245,36 +253,4 @@ public class DemoNode extends GuiNode<DemoNode> {
         super(position, size);
     }
 }
-```
-
-## ImageNode
-
-ImageNode is the abstract base class for images. It inherits from GuiNode. Internally, it defines `public class ImageRenderDescription` (non-static). This type has all the data needed to render an image. All methods return itself, and the `getNode` method returns the outer class.
-
-If the node you want to create has an image, you can inherit from ImageNode.
-
-If you want to render an ImageRenderDescription, call `render(GuiRender render)`.
-
-If your node has multiple images to manage, you can design your API like ImageButton's three methods: normal, onHover, onClick, returning the ImageRenderDescription corresponding to that state.
-
-```java
-public ImageRenderDescription normal() {
-    return normal;
-}
-public ImageRenderDescription onHover() {
-    return onHover;
-}
-public ImageRenderDescription onClick() {
-    return onClick;
-}
-```
-
-!!! info
-
-    Because ImageRenderDescription's `getNode()` method directly returns the outer class, you only need to provide methods that return ImageRenderDescription.
-
-Example: The ImageLabel class that uses ImageRenderDescription and inherits from ImageNode
-
-```java
---8<-- "core/src/main/java/top/untold/frostlumen/core/gui/node/ImageLabel.java:classDefinition"
 ```

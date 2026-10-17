@@ -28,6 +28,10 @@ Font loadFont(String path);
 
 Font实例可以传给各种需要Font的节点,如TextLabel
 
+```java
+textLabel.description().setFont(font);
+```
+
 Font是个不可变记录,定义为:
 
 ```java
@@ -36,7 +40,7 @@ public record Font(FT_Face face, String path, ByteBuffer data, int id) {}
 
 它拥有`public int getStringWidth(String text, int fontSize)`方法与`public int getStringHeight(int fontSize)`方法让你获取占用的像素
 
-静态方法`getDefaultFont`返回默认字体(当前版本为inter)
+静态方法`loadDefaultFont(GuiRender render)`返回默认字体(当前版本为inter)
 
 ### 加载贴图
 
@@ -79,7 +83,7 @@ public record Texture(boolean isNiceSlice, NiceSliceType sliceType, boolean stre
 示例:构造一个Button,占满全屏,在屏幕正中心,normal状态下贴图是oiiaioiiai-blue.jpg,且图片对齐为FILL,鼠标悬停状态下是oiiaioiiai-red.jpg,点击状态下是oiiaioiiai-green.jpg,会绘制Frame的默认背景,圆角半径为10像素
 
 ```java
-ResourceManager resourceManager = ResourceManager.getResourceManagerFromThreadLocal();
+ResourceManager resourceManager = root.getResourceManager();
 
 ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-blue.jpg"), ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(1.0, 1.0))
                 .normal().setImageAlignment(ImageAlignment.FILL).getNode()
@@ -87,5 +91,7 @@ ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-bl
                 .onClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
                 .setAnchor(0.5, 0.5)
                 .setDrawBackground(true)
-                .setBackgroundCornerRadius(10);
+                .background()
+                .setCornerRadius(10)
+                .getNode();
 ```

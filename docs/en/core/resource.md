@@ -6,7 +6,7 @@ This chapter will explain how to use ResourceManager to load resources, and how 
 
 All resource loading should be done through ResourceManager. Calls to load resources should be made on the rendering thread and must be after `Window.from` is called.
 
-You can get the ResourceManager instance via the static method `ResourceManager.getResourceManagerFromThreadLocal()`.
+You can get the ResourceManager instance via `NodeRoot`'s `getResourceManager` method.
 
 ResourceManager defines these methods:
 
@@ -28,6 +28,10 @@ To load a font, you only need to call `loadFont(String path)` to get a Font inst
 
 A Font instance can be passed to various nodes that need a Font, such as TextLabel.
 
+```java
+textLabel.description().setFont(font);
+```
+
 Font is an immutable record, defined as:
 
 ```java
@@ -36,7 +40,7 @@ public record Font(FT_Face face, String path, ByteBuffer data, int id) {}
 
 It has the `public int getStringWidth(String text, int fontSize)` method and the `public int getStringHeight(int fontSize)` method, allowing you to get the pixel dimensions it occupies.
 
-The static method `getDefaultFont` returns the default font (currently Inter in this version).
+The static method `loadDefaultFont(GuiRender render)` returns the default font (currently Inter in this version).
 
 ### Loading Textures
 
@@ -79,13 +83,15 @@ If loaded from `byte[]`, `filePath` is `null`.
 Example: Construct a Button that fills the entire screen, centered on the screen. In the normal state, the texture is `oiiaioiiai-blue.jpg` with image alignment `FILL`. In the hover state, it is `oiiaioiiai-red.jpg`. In the click state, it is `oiiaioiiai-green.jpg`. It will draw Frame's default background, with a corner radius of 10 pixels.
 
 ```java
-ResourceManager resourceManager = ResourceManager.getResourceManagerFromThreadLocal();
+ResourceManager resourceManager = root.getResourceManager();
 
 ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-blue.jpg"), ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(1.0, 1.0))
-                .normal().setImageAlignment(ImageAlignment.FILL).getNode()
-                .onHover().setTexture(resourceManager.loadTexture("/oiiaioiiai-red.jpg")).getNode()
-                .onClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
-                .setAnchor(0.5, 0.5)
-                .setDrawBackground(true)
-                .setBackgroundCornerRadius(10);
+        .normal().setImageAlignment(ImageAlignment.FILL).getNode()
+        .onHover().setTexture(resourceManager.loadTexture("/oiiaioiiai-red.jpg")).getNode()
+        .onClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
+        .setAnchor(0.5, 0.5)
+        .setDrawBackground(true)
+        .background()
+        .setCornerRadius(10)
+        .getNode();
 ```

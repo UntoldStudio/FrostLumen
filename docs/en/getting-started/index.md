@@ -1,10 +1,10 @@
 # First Use
 
-This chapter will demonstrate initializing the library, embedding it into the render loop, and displaying a full-screen white rectangle.
+This chapter will demonstrate initializing the library, embedding it into the render loop, and displaying a full-screen white rectangle on the screen.
 
 This UI library does not have its own render loop; it is usually embedded directly into the host program.
 
-When you have created a window and hold its window handle, you can do this to initialize the library:
+When you have created a window and hold the window handle, you can do this to initialize the library:
 
 ```java
 Window window = Window.from(windowHandle, RenderProviderType.OPENGL); // Currently we only have an OpenGL backend
@@ -23,7 +23,7 @@ Initialize the rendering backend
 
     You should call `Window.from()` on the rendering thread.
 
-    And do not register any GLFW callbacks after `Window.from()`.
+    And do not register any GLFW callbacks after `Window.from()`; your callbacks should be registered before `Window.from()`.
 
 After initializing the Window, you can get the GUI node root:
 
@@ -50,7 +50,7 @@ Frame frame = new Frame(position, size); // Create a new Frame object
 root.addChild(frame); // Attach the Frame to the node root
 ```
 
-The detailed usage of ScaleOffset can be found in the Core Concepts chapter.
+For detailed usage of ScaleOffset, see the Core Concepts chapter.
 
 !!! warning
 

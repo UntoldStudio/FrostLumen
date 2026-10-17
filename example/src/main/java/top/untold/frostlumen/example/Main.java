@@ -16,15 +16,10 @@
 package top.untold.frostlumen.example;
 
 import org.lwjgl.opengl.GL;
-import top.untold.frostlumen.core.data.ImageAlignment;
-import top.untold.frostlumen.core.data.RGBA;
-import top.untold.frostlumen.core.data.ScaleOffset;
+import top.untold.frostlumen.core.data.*;
 import top.untold.frostlumen.core.gui.NodeRoot;
 import top.untold.frostlumen.core.gui.Window;
-import top.untold.frostlumen.core.gui.node.Frame;
-import top.untold.frostlumen.core.gui.node.HorizontalBox;
-import top.untold.frostlumen.core.gui.node.ImageButton;
-import top.untold.frostlumen.core.gui.node.TextBox;
+import top.untold.frostlumen.core.gui.node.*;
 import top.untold.frostlumen.core.render.ResourceManager;
 import top.untold.frostlumen.core.render.RenderProviderType;
 import top.untold.frostlumen.core.tween.CustomTweenFunction;
@@ -99,9 +94,26 @@ public class Main {
                 .getNode();
         Frame frame = new Frame(ScaleOffset.fromScale(0, 0), ScaleOffset.fromScale(0.5, 0.5));
         Frame frame3 = new Frame(ScaleOffset.fromScale(0, 0), ScaleOffset.fromScale(0.5, 0.5)).background().setColor(RGBA.GREEN).getNode();
-        TextBox textBox = new TextBox(ScaleOffset.fromScale(0.5, 0), ScaleOffset.fromScale(0.5, 0.5)).setZIndex(100).setDrawBackground(false);
+        TextBox textBox = new TextBox(ScaleOffset.fromScale(0.5, 0), ScaleOffset.fromScale(0.5, 0.5))
+                .setZIndex(100)
+                .setDrawBackground(true)
+                .background()
+                .setColor(RGBA.GRAY)
+                .getNode();
+        TextLabel label = new TextLabel("11451411 111111111111111111111111111111233\n333333333333\n111111111111111111111111111111111111111111111", ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+                .setZIndex(100)
+                .setDrawBackground(true)
+                .description()
+                .setWrap(true)
+                .setFontSize(30)
+                .setHorizontalAlignment(HorizontalAlignment.LEFT)
+                .setVerticalAlignment(VerticalAlignment.TOP)
+                .getNode()
+                .background()
+                .setColor(RGBA.GRAY)
+                .getNode();
         box.addChildren(frame, frame3);
-        root.addChildren(box, button, blurBox, textBox);
+        root.addChildren(box, button, blurBox, textBox, label);
         TweenScheduler tweenScheduler = root.getTweenScheduler();
         tweenScheduler.registerTween(scaleOffsetTween);
         tweenScheduler.registerTween(scaleOffsetTween1);

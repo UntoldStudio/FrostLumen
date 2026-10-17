@@ -15,10 +15,17 @@ ParentNode(sealed)
     -NodeRoot(final)
     -GuiNode(non-sealed)
         -Frame
-        -TextLabel
+        -ScrollFrame
+        -TextNode
+            -TextLabel
+            -TextBox
         -ImageNode
             -ImageLabel
+            -ImageButton
             ...
+        -LayoutBox
+            -VerticalBox
+            -HorizontalBox
         ...
 ```
 

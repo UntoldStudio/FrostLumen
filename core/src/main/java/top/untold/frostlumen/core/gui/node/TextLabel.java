@@ -21,7 +21,7 @@ import top.untold.frostlumen.core.gui.ParentNode;
 import top.untold.frostlumen.core.render.GuiRender;
 
 public class TextLabel extends TextNode<TextLabel> implements HasDrawBackground<TextLabel> {
-    private final TextRenderDescription renderDescription = new TextRenderDescription();
+    private final CanWrappedTextRenderDescription renderDescription = new CanWrappedTextRenderDescription();
     private boolean drawBackground = false;
 
     @Override
@@ -29,7 +29,7 @@ public class TextLabel extends TextNode<TextLabel> implements HasDrawBackground<
         renderDescription.init(render);
     }
 
-    public TextRenderDescription description() {
+    public CanWrappedTextRenderDescription description() {
         return renderDescription;
     }
 

@@ -10,4 +10,4 @@ FrostLumen is licensed under the [Apache License 2.0](https://github.com/UntoldS
 
 !!! warning
 
-    The English documentation in this repository is AI-translated. If necessary, you can switch to Chinese to view the Chinese documentation written by the author.
+    The English documentation in this repository is AI-translated. For the most accurate information, please switch to Chinese to view the original documentation written by the author.

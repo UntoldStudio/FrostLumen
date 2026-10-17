@@ -23,7 +23,7 @@
 ```java
 public class Frame extends GuiNode<Frame> {
     @Override
-    protected void render(GuiRender render, long delta) {
+    protected void render(GuiRender render, double delta) {
         background.render(render);
     }
 
@@ -179,6 +179,8 @@ public void drawTexture(Texture texture, int minX, int minY, int maxX, int maxY,
 )
 //画字符串,支持指定字体等
 public void drawString(String text, Font font, int startDrawX, int startDrawY, float angle, int fontSize, double italicDegrees, int boldStrength, int red, int green, int blue, int alpha)
+//画字符串,支持指定旋转中心点
+public void drawString(String text, Font font, int startDrawX, int startDrawY, int centerX, int centerY, float angle, int fontSize, double italicDegrees, int boldStrength, int red, int green, int blue, int alpha)
 //画字符串,支持四个角独立颜色(渐变)
 public void drawString(String text, Font font, int startDrawX, int startDrawY, float angle,
                        int fontSize, double italicDegrees, int boldStrength,
@@ -186,6 +188,12 @@ public void drawString(String text, Font font, int startDrawX, int startDrawY, f
                        int bRed, int bGreen, int bBlue, int bAlpha,
                        int cRed, int cGreen, int cBlue, int cAlpha,
                        int dRed, int dGreen, int dBlue, int dAlpha
+)
+//画字符串,支持四个角独立颜色(渐变)和旋转中心点
+public void drawString(String text, Font font, int startDrawX, int startDrawY, int centerX, int centerY, float angle,
+                       int fontSize, double italicDegrees, int boldStrength,
+                       int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
+                       int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha
 )
     
 //操作类
@@ -231,7 +239,7 @@ public Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean str
 ```java
 public class DemoNode extends GuiNode<DemoNode> {
     @Override
-    protected void render(GuiRender render, long delta) {
+    protected void render(GuiRender render, double delta) {
         render.drawRectangle(realPositionX, realPositionY,
                              realPositionMaxX, realPositionMaxY, realAngle,
                              255, 0, 0, 255,
@@ -245,36 +253,4 @@ public class DemoNode extends GuiNode<DemoNode> {
         super(position, size);
     }
 }
-```
-
-## ImageNode
-
-ImageNode是图像的抽象基类,继承GuiNode,它内部定义了`public class ImageRenderDescription`(非static),这个类型拥有渲染一个图片所需的所有数据,所有方法返回它本身,以及getNode方法返回外部类
-
-如果你要做的节点有图片,可以继承ImageNode
-
-如果你要渲染ImageRenderDescription,调用render(GuiRender render)
-
-如果你的节点有多个图片要管理,你可以像ImageButton的这三个方法设计你的API,normal,onHover,onClick,返回该状态对应的ImageRenderDescription
-
-```java
-public ImageRenderDescription normal() {
-    return normal;
-}
-public ImageRenderDescription onHover() {
-    return onHover;
-}
-public ImageRenderDescription onClick() {
-    return onClick;
-}
-```
-
-!!! info
-
-    因为ImageRenderDescription的getNode()方法直接返回外部类,因此你只需要提供返回ImageRenderDescription的方法
-
-示例:使用ImageRenderDescription并继承ImageNode的ImageLabel类
-
-```java
---8<-- "core/src/main/java/top/untold/frostlumen/core/gui/node/ImageLabel.java:classDefinition"
 ```

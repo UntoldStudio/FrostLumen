@@ -48,7 +48,6 @@ public record Font(FT_Face face, String path, ByteBuffer data, int id) {
                     int codepoint = text.codePointAt(offset);
                     offset += Character.charCount(codepoint);
                     int gi = FT_Get_Char_Index(face, codepoint);
-                    if (gi == 0) continue;
                     if (hasPrev) {
                         FT_Get_Kerning(face, prevIdx, gi, FT_KERNING_DEFAULT, k);
                         width += k.x() / 64.0f;
@@ -65,6 +64,7 @@ public record Font(FT_Face face, String path, ByteBuffer data, int id) {
         }
         return Maths.round(width);
     }
+
     public int[] getStringWidths(String text, int fontSize) {
         FT_Face face = face();
         FT_Set_Pixel_Sizes(face, 0, fontSize);
@@ -81,17 +81,15 @@ public record Font(FT_Face face, String path, ByteBuffer data, int id) {
                     int gi = FT_Get_Char_Index(face, codepoint);
 
                     float width = 0;
-                    if (gi != 0) {
-                        if (hasPrev) {
-                            FT_Get_Kerning(face, prevIdx, gi, FT_KERNING_DEFAULT, k);
-                            width += k.x() / 64.0f;
-                        }
-                        advanceBuf.clear();
-                        FT_Get_Advance(face, gi, FT_LOAD_DEFAULT, advanceBuf);
-                        width += (int) advanceBuf.get(0) / 65536.0f;
-                        prevIdx = gi;
-                        hasPrev = true;
+                    if (hasPrev) {
+                        FT_Get_Kerning(face, prevIdx, gi, FT_KERNING_DEFAULT, k);
+                        width += k.x() / 64.0f;
                     }
+                    advanceBuf.clear();
+                    FT_Get_Advance(face, gi, FT_LOAD_DEFAULT, advanceBuf);
+                    width += (int) advanceBuf.get(0) / 65536.0f;
+                    prevIdx = gi;
+                    hasPrev = true;
 
                     widths[offset + charCount - 1] = Maths.round(width);
                     offset += charCount;

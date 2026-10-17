@@ -1,6 +1,6 @@
 # Node Appearance
 
-This chapter will explain the common properties that every GuiNode has.
+This chapter will explain the shared properties that every GuiNode has.
 
 ## ClipChildren
 
@@ -42,10 +42,10 @@ Example: Configuring the background
 
 ```java
 Frame frame = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
-                .background()
-                .setColor(new RGBA(210, 230, 255, 90))
-                .setCornerRadius(10)
-                .getNode();
+        .background()
+        .setColor(new RGBA(210, 230, 255, 90))
+        .setCornerRadius(10)
+        .getNode();
 ```
 
 ### BackgroundBlurStrength

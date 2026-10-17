@@ -662,16 +662,14 @@ public abstract class GuiRender implements ResourceManager {
     public void drawString(String text, Font font, int startDrawX, int startDrawY, float angle, int fontSize, double italicDegrees, int boldStrength, int red, int green, int blue, int alpha) {
         drawString(text, font, startDrawX, startDrawY, angle, fontSize, italicDegrees, boldStrength, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha);
     }
-    public void drawString(String text, Font font, int startDrawX, int startDrawY, float angle,
+    public void drawString(String text, Font font, int startDrawX, int startDrawY, int centerX, int centerY, float angle, int fontSize, double italicDegrees, int boldStrength, int red, int green, int blue, int alpha) {
+        drawString(text, font, startDrawX, startDrawY, centerX, centerY, angle, fontSize, italicDegrees, boldStrength, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha);
+    }
+    public void drawString(String text, Font font, int startDrawX, int startDrawY, int centerX, int centerY, float angle,
                            int fontSize, double italicDegrees, int boldStrength,
-                           int aRed, int aGreen, int aBlue, int aAlpha,
-                           int bRed, int bGreen, int bBlue, int bAlpha,
-                           int cRed, int cGreen, int cBlue, int cAlpha,
-                           int dRed, int dGreen, int dBlue, int dAlpha
+                           int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
+                           int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha
     ) {
-        int centerX = (font.getStringWidth(text, fontSize) + startDrawX + startDrawX) / 2;
-        int centerY = (font.getStringHeight(fontSize) + startDrawY + startDrawY) / 2;
-
         FT_Face face = font.face();
         int error = FT_Set_Pixel_Sizes(face, 0, fontSize);
         if (error != 0) {
@@ -710,7 +708,6 @@ public abstract class GuiRender implements ResourceManager {
                 int codepoint = text.codePointAt(offset);
                 offset += Character.charCount(codepoint);
                 int gi = FT_Get_Char_Index(face, codepoint);
-                if (gi == 0) continue;
 
                 float kern = 0.0f;
                 if (hasPrev) {
@@ -778,6 +775,21 @@ public abstract class GuiRender implements ResourceManager {
                 widthCursor += advance;
             }
         }
+    }
+    public void drawString(String text, Font font, int startDrawX, int startDrawY, float angle,
+                           int fontSize, double italicDegrees, int boldStrength,
+                           int aRed, int aGreen, int aBlue, int aAlpha,
+                           int bRed, int bGreen, int bBlue, int bAlpha,
+                           int cRed, int cGreen, int cBlue, int cAlpha,
+                           int dRed, int dGreen, int dBlue, int dAlpha
+    ) {
+        int centerX = (font.getStringWidth(text, fontSize) + startDrawX + startDrawX) / 2;
+        int centerY = (font.getStringHeight(fontSize) + startDrawY + startDrawY) / 2;
+
+        drawString(text, font, startDrawX, startDrawY, centerX, centerY, angle, fontSize, italicDegrees, boldStrength,
+                aRed, aGreen, aBlue, aAlpha, bRed, bGreen, bBlue, bAlpha,
+                cRed, cGreen, cBlue, cAlpha, dRed, dGreen, dBlue, dAlpha
+        );
     }
 
     public abstract float drawGlyph(Font font, int glyphIndex, int fontSize, double italicDegrees, int boldStrength, FT_Matrix italicMatrix, float x, float y, int centerX, int centerY, float angle,
