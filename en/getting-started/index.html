@@ -551,9 +551,9 @@
 
 
 <h1 id="first-use">First Use<a class="headerlink" href="#first-use" title="Permanent link">&para;</a></h1>
-<p>This chapter will demonstrate initializing the library, embedding it into the render loop, and displaying a full-screen white rectangle.</p>
+<p>This chapter will demonstrate initializing the library, embedding it into the render loop, and displaying a full-screen white rectangle on the screen.</p>
 <p>This UI library does not have its own render loop; it is usually embedded directly into the host program.</p>
-<p>When you have created a window and hold its window handle, you can do this to initialize the library:</p>
+<p>When you have created a window and hold the window handle, you can do this to initialize the library:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">Window</span><span class="w"> </span><span class="n">window</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Window</span><span class="p">.</span><span class="na">from</span><span class="p">(</span><span class="n">windowHandle</span><span class="p">,</span><span class="w"> </span><span class="n">RenderProviderType</span><span class="p">.</span><span class="na">OPENGL</span><span class="p">);</span><span class="w"> </span><span class="c1">// Currently we only have an OpenGL backend</span>
 </span></code></pre></div>
 <div class="admonition warning">
@@ -566,7 +566,7 @@ Initialize the rendering backend</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>You should call <code>Window.from()</code> on the rendering thread.</p>
-<p>And do not register any GLFW callbacks after <code>Window.from()</code>.</p>
+<p>And do not register any GLFW callbacks after <code>Window.from()</code>; your callbacks should be registered before <code>Window.from()</code>.</p>
 </div>
 <p>After initializing the Window, you can get the GUI node root:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">NodeRoot</span><span class="w"> </span><span class="n">root</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">window</span><span class="p">.</span><span class="na">getNodeRoot</span><span class="p">();</span>
@@ -583,7 +583,7 @@ Initialize the rendering backend</p>
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">Frame</span><span class="w"> </span><span class="n">frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Frame</span><span class="p">(</span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">);</span><span class="w"> </span><span class="c1">// Create a new Frame object</span>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">root</span><span class="p">.</span><span class="na">addChild</span><span class="p">(</span><span class="n">frame</span><span class="p">);</span><span class="w"> </span><span class="c1">// Attach the Frame to the node root</span>
 </span></code></pre></div>
-<p>The detailed usage of ScaleOffset can be found in the Core Concepts chapter.</p>
+<p>For detailed usage of ScaleOffset, see the Core Concepts chapter.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Do not recreate the above code every time in the render loop, because we are a retained-mode UI library. This will cause a new Frame to be attached to the node tree every frame, severely degrading performance.</p>

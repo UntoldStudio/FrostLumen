@@ -710,10 +710,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#parenttween" class="md-nav__link">
+  <a href="#compositetween" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ParentTween
+        CompositeTween
       
     </span>
   </a>
@@ -943,10 +943,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#parenttween" class="md-nav__link">
+  <a href="#compositetween" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ParentTween
+        CompositeTween
       
     </span>
   </a>
@@ -1005,12 +1005,19 @@
 </div>
 <h2 id="tween-object">Tween Object<a class="headerlink" href="#tween-object" title="Permanent link">&para;</a></h2>
 <p>A Tween object is a data-carrying entity whose value grows over time. Currently, the library has three primitive-type Tween objects: <code>DoubleTween</code>, <code>FloatTween</code>, and <code>IntTween</code>, and two composite-type Tween objects: <code>ScaleOffsetTween</code> and <code>RGBATween</code>.</p>
-<p>A Tween object should have a method that returns its own value, such as the <code>getCurrentValue</code> method of the five objects listed above, and a method for binding a setter.</p>
+<p>A Tween object should have a method that returns its own value, such as the <code>getCurrentValue</code> method of the five objects listed above.</p>
+<p>The Tween base class has methods such as <code>pause()</code>, <code>resume()</code>, <code>reset()</code>, and <code>play()</code>.</p>
+<p><code>pause</code>: Pause the Tween</p>
+<p><code>resume</code>: Resume the Tween</p>
+<p><code>reset</code>: Reset the Tween's playback progress</p>
+<p><code>play</code>: Calls <code>reset()</code> and <code>resume()</code></p>
+<p>You can call <code>setAlwaysRepeat</code> to set whether it repeats forever, and <code>setRemainingRepeatCount</code> to set how many times the Tween repeats (excluding the first time).</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The time unit of a Tween object is milliseconds.</p>
+<p>The time unit of a Tween object is milliseconds.
+A Tween does not automatically call <code>play()</code> when created; you need to call it manually.</p>
 </div>
-<p>Example: DoubleTween's <code>getCurrentValue</code> method and setter-binding method (<code>bindSetter</code>)</p>
+<p>Example: DoubleTween's setter-binding method (<code>bindSetter</code>)</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="w">    </span><span class="kd">public</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">getCurrentValue</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="n">currentValue</span><span class="p">;</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="p">}</span>
@@ -1021,14 +1028,16 @@
 </span></code></pre></div>
 <p>The last parameter of all Tween object constructors generally determines whether it is automatically removed by the Tween scheduler after it finishes playing.</p>
 <p>Example: Create a <code>ScaleOffsetTween</code> that smoothly moves from Scale coordinate <code>(0, 0)</code> to <code>(1, 1)</code> over 5 seconds, applies it to some node's position, and is automatically removed by the scheduler after playback finishes.</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">ScaleOffsetTween</span><span class="w"> </span><span class="n">scaleOffsetTween</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ScaleOffsetTween</span><span class="p">(</span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">ZERO</span><span class="p">,</span><span class="w"> </span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">TweenFunctions</span><span class="p">.</span><span class="na">LINEAR</span><span class="p">,</span><span class="w"> </span><span class="mi">5000L</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">ScaleOffsetTween</span><span class="w"> </span><span class="n">scaleOffsetTween</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">ScaleOffsetTween</span><span class="p">(</span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">ZERO</span><span class="p">,</span><span class="w"> </span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="mi">5000L</span><span class="p">,</span><span class="w"> </span><span class="n">TweenFunctions</span><span class="p">.</span><span class="na">LINEAR</span><span class="p">,</span><span class="w"> </span><span class="kc">true</span><span class="p">);</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">scaleOffsetTween</span><span class="p">.</span><span class="na">registerAutoCallOnSetter</span><span class="p">(</span><span class="n">node</span><span class="p">::</span><span class="n">setPosition</span><span class="p">);</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">scaleOffsetTween</span><span class="p">.</span><span class="na">bindSetter</span><span class="p">(</span><span class="n">node</span><span class="p">::</span><span class="n">setPosition</span><span class="p">);</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">// If it has not been registered with the scheduler yet</span>
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">nodeRoot</span><span class="p">.</span><span class="na">getTweenScheduler</span><span class="p">().</span><span class="na">registerTween</span><span class="p">(</span><span class="n">scaleOffsetTween</span><span class="p">);</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="n">scaleOffsetTween</span><span class="p">.</span><span class="na">play</span><span class="p">();</span>
 </span></code></pre></div>
 <p>Example: Play a tween repeatedly forever</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">tween</span><span class="p">.</span><span class="na">registerOnCompleteCallback</span><span class="p">(</span><span class="n">tween</span><span class="p">::</span><span class="n">play</span><span class="p">);</span>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">tween</span><span class="p">.</span><span class="na">setAlwaysRepeat</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
 </span></code></pre></div>
 <h2 id="tweenfunction">TweenFunction<a class="headerlink" href="#tweenfunction" title="Permanent link">&para;</a></h2>
 <p>TweenFunction is the easing function. It determines the output value (ratio) at a given progress (range 0-1).</p>
@@ -1335,8 +1344,8 @@
 </span><span id="__span-9-30"><a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a><span class="w">    </span><span class="p">}</span>
 </span><span id="__span-9-31"><a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a><span class="p">}</span>
 </span></code></pre></div>
-<h3 id="parenttween">ParentTween<a class="headerlink" href="#parenttween" title="Permanent link">&para;</a></h3>
-<p>ParentTween is an abstract class. Composite-type Tween classes generally directly inherit from it. It helps you manage children, update callbacks, etc. Subclasses generally only need to register their child Tween objects with the parent class (using the parent class's <code>addChildren</code> or <code>addChild</code> methods), and provide the <code>getCurrentValue</code> method and the <code>bindSetter</code> method.</p>
+<h3 id="compositetween">CompositeTween<a class="headerlink" href="#compositetween" title="Permanent link">&para;</a></h3>
+<p>CompositeTween is an abstract class. Composite-type Tween classes generally directly inherit from it. It helps you manage children, update callbacks, and manage bound setters, etc. Subclasses generally only need to register their child Tween objects with the parent class (using the parent class's <code>addChildren</code> or <code>addChild</code> methods), provide the <code>getCurrentValue</code> method, and fill the parent class's generic parameter with the type of the Tween's value.</p>
 <p>Example: ScaleOffsetTween class</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ScaleOffsetTween</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">CompositeTween</span><span class="o">&lt;</span><span class="n">ScaleOffset</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">DoubleTween</span><span class="w"> </span><span class="n">xScaleTween</span><span class="p">;</span>
