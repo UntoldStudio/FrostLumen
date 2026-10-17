@@ -28,7 +28,6 @@ import net.minecraft.world.item.Item;
 import top.untold.frostlumen.core.data.NiceSliceType;
 import top.untold.frostlumen.core.exception.ResourceException;
 import top.untold.frostlumen.core.render.GuiRender;
-import top.untold.frostlumen.core.render.ResourceManager;
 import top.untold.frostlumen.core.texture.Texture;
 
 import java.util.Optional;
@@ -67,7 +66,7 @@ public class MinecraftResourceAdapter {
             Optional<GuiMetadataSection> guiMetadataSection = contents.getAdditionalMetadata(GuiMetadataSection.TYPE);
             if (guiMetadataSection.isEmpty()) break notNiceSlice;
             GuiSpriteScaling scaling = guiMetadataSection.get().scaling();
-            if (!(scaling instanceof GuiSpriteScaling.NineSlice(int width, int height, GuiSpriteScaling.NineSlice.Border border, boolean inner))) {
+            if (!(scaling instanceof GuiSpriteScaling.NineSlice(_, _, GuiSpriteScaling.NineSlice.Border border, boolean inner))) {
                 break notNiceSlice;
             }
 

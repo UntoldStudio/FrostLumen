@@ -36,9 +36,6 @@ neoForge {
             sourceSet(project(":core").extensions
                 .getByType<JavaPluginExtension>()
                 .sourceSets["main"])
-            sourceSet(project(":minecraft").extensions
-                .getByType<JavaPluginExtension>()
-                .sourceSets["main"])
         }
     }
 }
@@ -49,12 +46,10 @@ sourceSets.main {
 
 dependencies {
     compileOnly(project(":core"))
-    compileOnly(project(":minecraft"))
 }
 
 tasks.named<Jar>("jar") {
     from(project(":core").sourceSets.main.get().output)
-    from(project(":minecraft").sourceSets.main.get().output)
 }
 
 val minecraftVersion = project.property("minecraft_version") as String

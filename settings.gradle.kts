@@ -15,4 +15,4 @@ pluginManagement {
     }
 }
 
-include("core", "example", "minecraft", "neoforge", "fabric")
+include("core", "example", "neoforge")
