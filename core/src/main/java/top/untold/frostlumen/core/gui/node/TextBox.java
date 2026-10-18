@@ -144,6 +144,8 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
                 setCursorPosition(position);
             }
             displayCursorNow();
+
+            event.cancel();
         }
     }
 
@@ -182,6 +184,8 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
             } else if (key == Key.ENTER) {
                 setFocused(false);
             }
+
+            event.cancel();
         }
     }
 
@@ -197,6 +201,8 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
         preeditEnd = event.getPreeditText().length();
 
         root.getWindow().setPreeditRegion(cursorWithoutPreeditPixelPosition, normal.textRenderPositionY, cursorWidth, textHeight);
+
+        event.cancel();
     }
 
     private void deleteCursorChars(int count) {

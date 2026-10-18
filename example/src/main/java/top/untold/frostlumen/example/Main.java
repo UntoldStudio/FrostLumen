@@ -61,6 +61,7 @@ public class Main {
                 .setAnchor(0.5, 0.5)
                 .setAngle(100)
                 .background()
+                .setCornerRadius(10)
                 .setColor(new RGBA(210, 230, 255, 0))
                 .setBlurStrength(0.7)
                 .getNode();
@@ -113,7 +114,7 @@ public class Main {
                 .setColor(RGBA.GRAY)
                 .getNode();
         box.addChildren(frame, frame3);
-        root.addChildren(box, button/*, blurBox*/, textBox, label);
+        root.addChildren(box, button, blurBox, textBox, label);
         TweenScheduler tweenScheduler = root.getTweenScheduler();
         tweenScheduler.registerTween(scaleOffsetTween);
         tweenScheduler.registerTween(scaleOffsetTween1);

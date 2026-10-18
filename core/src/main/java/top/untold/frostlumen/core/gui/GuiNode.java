@@ -17,7 +17,6 @@ package top.untold.frostlumen.core.gui;
 
 import top.untold.frostlumen.core.data.*;
 import top.untold.frostlumen.core.event.*;
-import top.untold.frostlumen.core.gui.node.TextBox;
 import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
 import top.untold.frostlumen.core.tool.Maths;
 import top.untold.frostlumen.core.render.GuiRender;
@@ -109,6 +108,8 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         realAngle = (parentFrame == null ? 0 : parentFrame.realAngle) + angle;
 
         letChildrenOperationPosition();
+
+        mouseInNode = computeIsMouseInNode(root);
     }
 
     protected void letChildrenOperationPosition(){
@@ -169,7 +170,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     }
     @Override
     public void dispatchMouseMoveEvent(MouseMoveEvent event) {
-        boolean current = isMouseInNode(root);
+        boolean current = computeIsMouseInNode(root);
 
         if (current != mouseInNode) {
             if (current) {
@@ -381,7 +382,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         return currentMouseClickButtons;
     }
 
-    private boolean isMouseInNode(NodeRoot root) {
+    private boolean computeIsMouseInNode(NodeRoot root) {
         if (root == null) return false;
 
         double mouseX = root.getWindow().getMouseX();
