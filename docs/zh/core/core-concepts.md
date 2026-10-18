@@ -19,6 +19,7 @@ ParentNode(sealed)
         -TextNode
             -TextLabel
             -TextBox
+            ...
         -ImageNode
             -ImageLabel
             -ImageButton
@@ -26,6 +27,7 @@ ParentNode(sealed)
         -LayoutBox
             -VerticalBox
             -HorizontalBox
+            ...
         ...
 ```
 

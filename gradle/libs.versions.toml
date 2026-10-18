@@ -13,6 +13,7 @@ joml = { module = "org.joml:joml", version.ref = "joml" }
 lwjgl-bom = { module = "org.lwjgl:lwjgl-bom", version.ref = "lwjgl" }
 lwjgl = { module = "org.lwjgl:lwjgl" }
 lwjgl-opengl = { module = "org.lwjgl:lwjgl-opengl" }
+lwjgl-vulkan = { module = "org.lwjgl:lwjgl-vulkan" }
 lwjgl-glfw = { module = "org.lwjgl:lwjgl-glfw" }
 lwjgl-stb = { module = "org.lwjgl:lwjgl-stb" }
 lwjgl-freetype = { module = "org.lwjgl:lwjgl-freetype" }

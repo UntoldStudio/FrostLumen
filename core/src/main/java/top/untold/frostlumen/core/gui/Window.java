@@ -16,6 +16,7 @@
 package top.untold.frostlumen.core.gui;
 
 import org.lwjgl.glfw.*;
+import org.lwjgl.system.MemoryUtil;
 import top.untold.frostlumen.core.data.InputAction;
 import top.untold.frostlumen.core.data.InputModifiers;
 import top.untold.frostlumen.core.data.Key;
@@ -53,6 +54,7 @@ public class Window {
     private final GLFWWindowIconifyCallback minimizeCallback;
     private final GLFWWindowMaximizeCallback maximizeCallback;
     private final GLFWWindowPosCallback windowMoveCallback;
+    private final GLFWPreeditCallback preeditCallback;
     private GLFWKeyCallback oldKeyCallback;
     private GLFWMouseButtonCallback oldMouseButtonCallback;
     private GLFWCursorPosCallback oldMouseMoveCallback;
@@ -67,6 +69,7 @@ public class Window {
     private GLFWWindowIconifyCallback oldMinimizeCallback;
     private GLFWWindowMaximizeCallback oldMaximizeCallback;
     private GLFWWindowPosCallback oldWindowMoveCallback;
+    private GLFWPreeditCallback oldPreeditCallback;
 
     private int windowWidth;
     private int windowHeight;
@@ -122,6 +125,7 @@ public class Window {
         glfwDestroyWindow(windowHandle);
         clear(true);
     }
+
     public void clear() {
         clear(false);
     }
@@ -160,8 +164,17 @@ public class Window {
         minimizeCallback.free();
         maximizeCallback.free();
         windowMoveCallback.free();
+        preeditCallback.free();
 
         WINDOW_MAP.remove(windowHandle);
+    }
+
+    public String getClipboard(){
+        return glfwGetClipboardString(windowHandle);
+    }
+
+    public void setPreeditRegion(int x, int y, int width, int height) {
+        glfwSetPreeditCursorRectangle(windowHandle, x, y, width, height);
     }
 
     private Window(long windowHandle, GuiRender render) {
@@ -313,6 +326,40 @@ public class Window {
                 oldWindowMoveCallback.invoke(currentWindow, windowX, windowY);
             }
         });
+        preeditCallback = GLFWPreeditCallback.create((window, preeditCount, preeditString, blockCount, blockSizes, focusedBlock, caret) -> {
+            String out;
+
+            if (preeditCount <= 0) {
+                out = "";
+            } else {
+                int[] codepoints = new int[preeditCount];
+                MemoryUtil.memIntBuffer(preeditString, preeditCount).get(codepoints);
+                out = new String(codepoints, 0, preeditCount);
+            }
+            //GLFW的blockSizes基本永远是NULL,这里几乎是死代码,因此注释掉
+            /* else {
+                int[] codepoints = new int[preeditCount];
+                MemoryUtil.memIntBuffer(preeditString, preeditCount).get(codepoints);
+
+                int[] sizes = new int[blockCount];
+                MemoryUtil.memIntBuffer(blockSizes, blockCount).get(sizes);
+
+                out = new String[blockCount];
+                int offset = 0;
+                for (int i = 0; i < blockCount; i++) {
+                    int remaining = preeditCount - offset;
+                    int len = Math.clamp(sizes[i], 0, Math.max(0, remaining));
+                    out[i] = new String(codepoints, offset, len);
+                    offset += len;
+                }
+            }*/
+
+            PreeditEvent event = new PreeditEvent(out);
+            root.dispatchPreeditEvent(event);
+            if (!event.isCancel() && oldPreeditCallback != null) {
+                oldPreeditCallback.invoke(window, preeditCount, preeditString, blockCount, blockSizes, focusedBlock, caret);
+            }
+        });
         oldKeyCallback = glfwSetKeyCallback(windowHandle, keyCallback);
         oldMouseButtonCallback = glfwSetMouseButtonCallback(windowHandle, mouseButtonCallback);
         oldMouseMoveCallback = glfwSetCursorPosCallback(windowHandle, mouseMoveCallback);
@@ -327,13 +374,10 @@ public class Window {
         oldMinimizeCallback = glfwSetWindowIconifyCallback(windowHandle, minimizeCallback);
         oldMaximizeCallback = glfwSetWindowMaximizeCallback(windowHandle, maximizeCallback);
         oldWindowMoveCallback = glfwSetWindowPosCallback(windowHandle, windowMoveCallback);
+        oldPreeditCallback = glfwSetPreeditCallback(windowHandle, preeditCallback);
 
         WINDOW_MAP.put(windowHandle, this);
         init();
-    }
-
-    public String getClipboard(){
-        return glfwGetClipboardString(windowHandle);
     }
 
     public boolean isMouseInRange(int minX, int minY, int maxX, int maxY) {

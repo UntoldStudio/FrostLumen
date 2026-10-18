@@ -24,7 +24,7 @@ public class ResourceReader {
     public static String readString(String path) throws IOException {
         try (InputStream stream = ResourceReader.class.getResourceAsStream(path)) {
             if (stream == null) {
-                throw new FileNotFoundException("Resource not file:" + path);
+                throw new FileNotFoundException("Resource not found:" + path);
             }
             return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
         }

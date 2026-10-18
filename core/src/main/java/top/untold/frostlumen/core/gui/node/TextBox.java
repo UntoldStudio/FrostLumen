@@ -18,18 +18,23 @@ package top.untold.frostlumen.core.gui.node;
 import top.untold.frostlumen.core.data.*;
 import top.untold.frostlumen.core.event.KeyEvent;
 import top.untold.frostlumen.core.event.MouseButtonEvent;
+import top.untold.frostlumen.core.event.PreeditEvent;
 import top.untold.frostlumen.core.event.UserInputTextEvent;
 import top.untold.frostlumen.core.font.Font;
 import top.untold.frostlumen.core.render.GuiRender;
+
+import java.util.Arrays;
 
 public class TextBox extends TextNode<TextBox> implements HasDrawBackground<TextBox> {
     private final TextRenderDescription noInput = new TextRenderDescription();
     private final BoxNormalRenderDescription normal = new BoxNormalRenderDescription();
     private boolean drawBackground = true;
     private int[] textSizes = new int[0];
+    private int preeditEnd = 0;
     private int textHeight;
     private int cursorPosition = 0;
     private int cursorPixelPosition;
+    private int cursorWithoutPreeditPixelPosition;
     private int cursorWidth = 1;
     private RGBA cursorColor = RGBA.WHITE;
     private boolean shouldDisplayCursor = false;
@@ -105,6 +110,8 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
     @Override
     protected void onUserInputTextEvent(UserInputTextEvent event) {
         if (isFocused()) {
+            deleteCursorChars(preeditEnd);
+            preeditEnd = 0;
             event.cancel();
             insertString(event.getText());
         }
@@ -112,6 +119,8 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
 
     @Override
     protected void onMouseButtonEvent(MouseButtonEvent event) {
+        if (!isFocused()) return;
+
         if (event.getButton() == MouseButton.LEFT && event.getAction() == InputAction.PRESS) {
             int textMin = normal.textRenderPositionX;
             int textMax = normal.textRenderPositionX;
@@ -142,12 +151,14 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
         String string = normal.getText();
         normal.setText(new StringBuffer(string).insert(cursorPosition, text).toString());
         normal.operationCursorPosition();
-        cursorPosition++;
+        cursorPosition += text.length();
         normal.operationCursorPosition();
     }
 
     @Override
     protected void onKeyEvent(KeyEvent event) {
+        if (!isFocused()) return;
+
         if (event.getInputAction() != InputAction.RELEASE) {
             Key key = event.getKey();
             if (key == Key.LEFT && cursorPosition > 0) {
@@ -161,11 +172,7 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
                 displayCursorTimer = cursorSwitchVisibleTime;
                 shouldDisplayCursor = true;
             } else if (key == Key.BACKSPACE && textSizes.length > 0) {
-                String result = new StringBuilder(normal.getText()).deleteCharAt(cursorPosition - 1).toString();
-                if (cursorPosition > 0) {
-                    cursorPosition--;
-                }
-                normal.setText(result);
+                deleteCursorChars(1);
             } else if (key == Key.V && event.getInputModifiers().isControlPressed()) {
                 boolean isAtEnd = cursorPosition == textSizes.length;
                 insertString(root.getWindow().getClipboard());
@@ -176,6 +183,33 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
                 setFocused(false);
             }
         }
+    }
+
+    @Override
+    protected void onPreeditEvent(PreeditEvent event) {
+        if (!isFocused()) return;
+
+        deleteCursorChars(preeditEnd);
+
+        preeditEnd = 0;
+
+        insertString(event.getPreeditText());
+        preeditEnd = event.getPreeditText().length();
+
+        root.getWindow().setPreeditRegion(cursorWithoutPreeditPixelPosition, normal.textRenderPositionY, cursorWidth, textHeight);
+    }
+
+    private void deleteCursorChars(int count) {
+        StringBuilder builder = new StringBuilder(normal.getText());
+        for (int i = 0; i < count; i++) {
+            builder.deleteCharAt(cursorPosition - 1);
+            cursorPosition--;
+        }
+        normal.setText(builder.toString());
+    }
+
+    private boolean isPreediting() {
+        return preeditEnd != cursorPosition;
     }
 
     private void displayCursorNow() {
@@ -234,7 +268,14 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
                 cursorPosition = textSizes.length - 1;
             }
 
-            for (int i = 0; i < cursorPosition; i++) {
+            for (int i = 0; i < preeditEnd; i++) {
+                int size = textSizes[i];
+                value += size;
+            }
+
+            cursorWithoutPreeditPixelPosition = value;
+
+            for (int i = preeditEnd; i < cursorPosition; i++) {
                 int size = textSizes[i];
                 value += size;
             }

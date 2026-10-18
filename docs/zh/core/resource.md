@@ -40,7 +40,7 @@ public record Font(FT_Face face, String path, ByteBuffer data, int id) {}
 
 它拥有`public int getStringWidth(String text, int fontSize)`方法与`public int getStringHeight(int fontSize)`方法让你获取占用的像素
 
-静态方法`loadDefaultFont(GuiRender render)`返回默认字体(当前版本为inter)
+静态方法`loadDefaultFont(GuiRender render)`返回默认字体(当前版本为MiSans Regular)
 
 ### 加载贴图
 

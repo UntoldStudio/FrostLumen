@@ -17,6 +17,7 @@ package top.untold.frostlumen.core.gui;
 
 import top.untold.frostlumen.core.data.*;
 import top.untold.frostlumen.core.event.*;
+import top.untold.frostlumen.core.gui.node.TextBox;
 import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
 import top.untold.frostlumen.core.tool.Maths;
 import top.untold.frostlumen.core.render.GuiRender;
@@ -156,7 +157,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     public void dispatchMouseButtonEvent(MouseButtonEvent event) {
         if (event.getAction() == InputAction.PRESS && mouseInNode) {
             currentMouseClickButtons.add(event.getButton());
-            if (event.getButton() == MouseButton.LEFT) {
+            if (event.getButton() == MouseButton.LEFT && root.getWindow().getFocusNode() == root) {
                 root.getWindow().setFocusNode(this);
             }
         } else if (event.getAction() == InputAction.RELEASE) {
@@ -169,6 +170,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     @Override
     public void dispatchMouseMoveEvent(MouseMoveEvent event) {
         boolean current = isMouseInNode(root);
+
         if (current != mouseInNode) {
             if (current) {
                 mouseEnterListenerRegistry.trigger(event);
@@ -199,6 +201,12 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         super.dispatchUserDropFilesEvent(event);
         if (event.isCancel()) return;
         onUserDropFilesEvent(event);
+    }
+    @Override
+    public void dispatchPreeditEvent(PreeditEvent event) {
+        super.dispatchPreeditEvent(event);
+        if (event.isCancel()) return;
+        onPreeditEvent(event);
     }
 
     @Override
@@ -269,6 +277,7 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     protected void onWindowCloseEvent(WindowCloseEvent event) {}
     protected void onWindowFocusChangeEvent(WindowFocusChangeEvent event) {}
     protected void onUserDropFilesEvent(UserDropFilesEvent event) {}
+    protected void onPreeditEvent(PreeditEvent event) {}
     protected void onWindowMinimizeEvent(WindowMinimizeEvent event) {}
     protected void onWindowMaximizeEvent(WindowMaximizeEvent event) {}
     protected void onWindowMoveEvent(WindowMoveEvent event) {}

@@ -15,6 +15,10 @@
  */
 package top.untold.frostlumen.core.font;
 
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import org.lwjgl.CLongBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.freetype.FT_Face;
@@ -24,91 +28,108 @@ import top.untold.frostlumen.core.render.GuiRender;
 import top.untold.frostlumen.core.tool.Maths;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.lwjgl.util.freetype.FreeType.*;
 
 public record Font(FT_Face face, String path, ByteBuffer data, int id) {
-    public static final String DEFAULT_FONT_PATH = "/inter.ttf";
+    public static final String DEFAULT_FONT_PATH = "/misans-regular.ttf";
 
     private final static AtomicInteger fontSeq = new AtomicInteger(0);
 
+    private static final Int2ObjectMap<Map<String, Int2IntMap>> widthCache = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<Map<String, Int2ObjectMap<int[]>>> widthsCache = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<Int2IntMap> heightCache = new Int2ObjectOpenHashMap<>();
+
     public int getStringWidth(String text, int fontSize) {
-        FT_Face face = face();
-        FT_Set_Pixel_Sizes(face, 0, fontSize);
-        int prevIdx = 0;
-        boolean hasPrev = false;
-        float width = 0;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            CLongBuffer advanceBuf = stack.mallocCLong(1);
-            FT_Vector k = FT_Vector.malloc();
-            try {
-                for (int offset = 0; offset < text.length(); ) {
-                    int codepoint = text.codePointAt(offset);
-                    offset += Character.charCount(codepoint);
-                    int gi = FT_Get_Char_Index(face, codepoint);
-                    if (hasPrev) {
-                        FT_Get_Kerning(face, prevIdx, gi, FT_KERNING_DEFAULT, k);
-                        width += k.x() / 64.0f;
+        Map<String, Int2IntMap> map = widthCache.computeIfAbsent(id, _ -> new HashMap<>());
+        Int2IntMap fontSizeMap = map.computeIfAbsent(text, _ -> new Int2IntOpenHashMap());
+        return fontSizeMap.computeIfAbsent(fontSize, _ -> {
+            FT_Face face = face();
+            FT_Set_Pixel_Sizes(face, 0, fontSize);
+            int prevIdx = 0;
+            boolean hasPrev = false;
+            float width = 0;
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                CLongBuffer advanceBuf = stack.mallocCLong(1);
+                FT_Vector k = FT_Vector.malloc();
+                try {
+                    for (int offset = 0; offset < text.length(); ) {
+                        int codepoint = text.codePointAt(offset);
+                        offset += Character.charCount(codepoint);
+                        int gi = FT_Get_Char_Index(face, codepoint);
+                        if (hasPrev) {
+                            FT_Get_Kerning(face, prevIdx, gi, FT_KERNING_DEFAULT, k);
+                            width += k.x() / 64.0f;
+                        }
+                        advanceBuf.clear();
+                        FT_Get_Advance(face, gi, FT_LOAD_DEFAULT, advanceBuf);
+                        width += (int) advanceBuf.get(0) / 65536.0f;
+                        prevIdx = gi;
+                        hasPrev = true;
                     }
-                    advanceBuf.clear();
-                    FT_Get_Advance(face, gi, FT_LOAD_DEFAULT, advanceBuf);
-                    width += (int) advanceBuf.get(0) / 65536.0f;
-                    prevIdx = gi;
-                    hasPrev = true;
+                } finally {
+                    k.free();
                 }
-            } finally {
-                k.free();
             }
-        }
-        return Maths.round(width);
+            return Maths.round(width);
+        });
     }
 
     public int[] getStringWidths(String text, int fontSize) {
-        FT_Face face = face();
-        FT_Set_Pixel_Sizes(face, 0, fontSize);
-        int[] widths = new int[text.length()];
-        int prevIdx = 0;
-        boolean hasPrev = false;
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            CLongBuffer advanceBuf = stack.mallocCLong(1);
-            FT_Vector k = FT_Vector.malloc();
-            try {
-                for (int offset = 0; offset < text.length(); ) {
-                    int codepoint = text.codePointAt(offset);
-                    int charCount = Character.charCount(codepoint);
-                    int gi = FT_Get_Char_Index(face, codepoint);
+        Map<String, Int2ObjectMap<int[]>> map = widthsCache.computeIfAbsent(id, _ -> new HashMap<>());
+        Int2ObjectMap<int[]> fontSizeMap = map.computeIfAbsent(text, _ -> new Int2ObjectOpenHashMap<>());
+        return fontSizeMap.computeIfAbsent(fontSize, _ -> {
+            FT_Face face = face();
+            FT_Set_Pixel_Sizes(face, 0, fontSize);
+            int[] widths = new int[text.length()];
+            int prevIdx = 0;
+            boolean hasPrev = false;
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                CLongBuffer advanceBuf = stack.mallocCLong(1);
+                FT_Vector k = FT_Vector.malloc();
+                try {
+                    for (int offset = 0; offset < text.length(); ) {
+                        int codepoint = text.codePointAt(offset);
+                        int charCount = Character.charCount(codepoint);
+                        int gi = FT_Get_Char_Index(face, codepoint);
 
-                    float width = 0;
-                    if (hasPrev) {
-                        FT_Get_Kerning(face, prevIdx, gi, FT_KERNING_DEFAULT, k);
-                        width += k.x() / 64.0f;
+                        float width = 0;
+                        if (hasPrev) {
+                            FT_Get_Kerning(face, prevIdx, gi, FT_KERNING_DEFAULT, k);
+                            width += k.x() / 64.0f;
+                        }
+                        advanceBuf.clear();
+                        FT_Get_Advance(face, gi, FT_LOAD_DEFAULT, advanceBuf);
+                        width += (int) advanceBuf.get(0) / 65536.0f;
+                        prevIdx = gi;
+                        hasPrev = true;
+
+                        widths[offset + charCount - 1] = Maths.round(width);
+                        offset += charCount;
                     }
-                    advanceBuf.clear();
-                    FT_Get_Advance(face, gi, FT_LOAD_DEFAULT, advanceBuf);
-                    width += (int) advanceBuf.get(0) / 65536.0f;
-                    prevIdx = gi;
-                    hasPrev = true;
-
-                    widths[offset + charCount - 1] = Maths.round(width);
-                    offset += charCount;
+                } finally {
+                    k.free();
                 }
-            } finally {
-                k.free();
             }
-        }
-        return widths;
+            return widths;
+        });
     }
 
     public int getStringHeight(int fontSize) {
-        FT_Face face = face();
-        FT_Set_Pixel_Sizes(face, 0, fontSize);
-        FT_Size size = face.size();
-        Objects.requireNonNull(size);
-        long ascender = size.metrics().ascender();
-        long descender = size.metrics().descender();
-        return Maths.round((ascender - descender) / 64.0f);
+        Int2IntMap map = heightCache.computeIfAbsent(id, _ -> new Int2IntOpenHashMap());
+        return map.computeIfAbsent(fontSize, _ -> {
+            FT_Face face = face();
+            FT_Set_Pixel_Sizes(face, 0, fontSize);
+            FT_Size size = face.size();
+            Objects.requireNonNull(size);
+            long ascender = size.metrics().ascender();
+            long descender = size.metrics().descender();
+            return Maths.round((ascender - descender) / 64.0f);
+        });
     }
 
     public static Font loadDefaultFont(GuiRender render) {
@@ -117,5 +138,15 @@ public record Font(FT_Face face, String path, ByteBuffer data, int id) {
 
     public Font(FT_Face face, String path, ByteBuffer data) {
         this(face, path, data, fontSeq.getAndIncrement());
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Font font)) return false;
+        return id == font.id;
     }
 }

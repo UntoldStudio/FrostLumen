@@ -31,8 +31,8 @@ public abstract class WindowMixin {
     private long handle;
 
     @Inject(method = "selectCursor", at = @At("HEAD"))
-    private void beforeSelectCursor(CursorType type, CallbackInfo callbackInfo) {
-        long handle = ((CursorTypeAccessor) type).getHandle();
+    private void beforeSelectCursor(CursorType cursor, CallbackInfo callbackInfo) {
+        long handle = ((CursorTypeAccessor) cursor).getHandle();
         if (top.untold.frostlumen.core.gui.Window.get(this.handle) != null) {
             top.untold.frostlumen.core.gui.Window.get(this.handle).getNodeRoot().setExternalSettingCursor(handle);
         }

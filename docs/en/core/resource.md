@@ -40,7 +40,7 @@ public record Font(FT_Face face, String path, ByteBuffer data, int id) {}
 
 It has the `public int getStringWidth(String text, int fontSize)` method and the `public int getStringHeight(int fontSize)` method, allowing you to get the pixel dimensions it occupies.
 
-The static method `loadDefaultFont(GuiRender render)` returns the default font (currently Inter in this version).
+The static method `loadDefaultFont(GuiRender render)` returns the default font (currently MiSans Regular in this version).
 
 ### Loading Textures
 

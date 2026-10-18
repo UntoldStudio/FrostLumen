@@ -94,7 +94,7 @@ public class Main {
                 .getNode();
         Frame frame = new Frame(ScaleOffset.fromScale(0, 0), ScaleOffset.fromScale(0.5, 0.5));
         Frame frame3 = new Frame(ScaleOffset.fromScale(0, 0), ScaleOffset.fromScale(0.5, 0.5)).background().setColor(RGBA.GREEN).getNode();
-        TextBox textBox = new TextBox(ScaleOffset.fromScale(0.5, 0), ScaleOffset.fromScale(0.5, 0.5))
+        TextBox textBox = new TextBox(ScaleOffset.fromScale(0, 0), ScaleOffset.fromScale(0.5, 0.5))
                 .setZIndex(100)
                 .setDrawBackground(true)
                 .background()
@@ -113,7 +113,7 @@ public class Main {
                 .setColor(RGBA.GRAY)
                 .getNode();
         box.addChildren(frame, frame3);
-        root.addChildren(box, button, blurBox, textBox, label);
+        root.addChildren(box, button/*, blurBox*/, textBox, label);
         TweenScheduler tweenScheduler = root.getTweenScheduler();
         tweenScheduler.registerTween(scaleOffsetTween);
         tweenScheduler.registerTween(scaleOffsetTween1);
@@ -128,8 +128,10 @@ public class Main {
 
         while (!glfwWindowShouldClose(windowHandle)) {
             glfwPollEvents();
+
             glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
             glClear(GL_COLOR_BUFFER_BIT);
+
             root.render();
 
             glfwSwapBuffers(windowHandle);
@@ -137,6 +139,7 @@ public class Main {
             frameCount++;
             long currentTime = System.nanoTime();
             long elapsed = currentTime - previousTime;
+
             if (elapsed >= 1_000_000_000L) {
                 double seconds = elapsed / 1_000_000_000.0;
                 System.out.printf("FPS: %.2f%n", frameCount / seconds);

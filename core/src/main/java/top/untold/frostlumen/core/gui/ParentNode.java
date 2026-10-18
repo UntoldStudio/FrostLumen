@@ -102,6 +102,9 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
     public void dispatchUserDropFilesEvent(UserDropFilesEvent event) {
         reverseFor(node -> node.dispatchUserDropFilesEvent(event), event);
     }
+    public void dispatchPreeditEvent(PreeditEvent event) {
+        reverseFor(node -> node.dispatchPreeditEvent(event), event);
+    }
 
     public void dispatchTickEvent() {
         forwardFor(ParentNode::dispatchTickEvent, null);
