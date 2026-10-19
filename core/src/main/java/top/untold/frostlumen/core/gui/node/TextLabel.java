@@ -45,8 +45,8 @@ public class TextLabel extends TextNode<TextLabel> implements HasDrawBackground<
     }
 
     @Override
-    public void operationPosition(ParentNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
-        super.operationPosition(parentFrame, parentRealPositionX, parentRealPositionY);
+    public void onRelayout() {
+        super.onRelayout();
         renderDescription.operationTextRenderPosition();
     }
 

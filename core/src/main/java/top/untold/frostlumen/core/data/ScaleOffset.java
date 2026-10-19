@@ -16,15 +16,16 @@
 package top.untold.frostlumen.core.data;
 
 import top.untold.frostlumen.core.gui.ParentNode;
+import top.untold.frostlumen.core.tool.Maths;
 
 public record ScaleOffset(double xScale, int xOffset, double yScale, int yOffset) {
     public static final ScaleOffset ZERO = new ScaleOffset(0, 0, 0, 0);
 
     public int getXPixelFromParentRealSize(ParentNode<?> node){
-        return (int) (xScale * node.getRealSizeX()) + xOffset;
+        return Maths.round(xScale * node.getRealSizeX()) + xOffset;
     }
     public int getYPixelFromParentRealSize(ParentNode<?> node){
-        return (int) (yScale * node.getRealSizeY()) + yOffset;
+        return Maths.round(yScale * node.getRealSizeY()) + yOffset;
     }
 
     public ScaleOffset withScale(double xScale, double yScale){

@@ -33,8 +33,7 @@ public abstract class TextNode<T extends TextNode<T>> extends GuiNode<T> {
     private final Set<AbstractTextRenderDescription<?>> selfRenderDescriptions = new HashSet<>();
 
     @Override
-    protected void operationPosition(ParentNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
-        super.operationPosition(parentFrame, parentRealPositionX, parentRealPositionY);
+    protected void onRelayout() {
         for (AbstractTextRenderDescription<?> renderDescription : selfRenderDescriptions) {
             renderDescription.operationTextRenderPosition();
         }

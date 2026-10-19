@@ -38,7 +38,7 @@ Example: A DemoFrame class with optional background drawing
 ```java
 public class DemoFrame extends GuiNode<DemoFrame> implements HasDrawBackground<DemoFrame> {
     private boolean drawBackground = false;
-    
+
     @Override
     public DemoFrame setDrawBackground(boolean drawBackground) {
         this.drawBackground = drawBackground;
@@ -48,7 +48,7 @@ public class DemoFrame extends GuiNode<DemoFrame> implements HasDrawBackground<D
     public boolean isDrawBackground() {
         return drawBackground;
     }
-    
+
     @Override
     protected void render(GuiRender render, double delta) {
         if (drawBackground) {
@@ -76,12 +76,12 @@ Example: A Button's `onMouseButtonEvent` method
 
 ```java
 @Override
-    protected void onMouseButtonEvent(MouseButtonEvent event) {
-        if (!Collections.disjoint(canTriggerMouseButtons, currentMouseClickButtons)) { // canTriggerMouseButtons is a field of this node
-            event.cancel();
-            mouseButtonEventListenerRegistry.trigger(event);
-        }
+protected void onMouseButtonEvent(MouseButtonEvent event) {
+    if (!Collections.disjoint(canTriggerMouseButtons, currentMouseClickButtons)) { // canTriggerMouseButtons is a field of this node
+        event.cancel();
+        mouseButtonEventListenerRegistry.trigger(event);
     }
+}
 ```
 
 Currently, there are these methods that can be overridden. After overriding, simply write any follow-up processing you want in the method body.
@@ -105,7 +105,14 @@ protected void onWindowMoveEvent(WindowMoveEvent event) {}
 protected void onWindowCloseEvent(WindowCloseEvent event) {}
 protected void onWindowFocusChangeEvent(WindowFocusChangeEvent event) {}
 protected void onFrameBufferSizeChangeEvent(FrameBufferSizeChangeEvent event) {}
+protected void onRelayout() {} // Called when the layout needs to be recalculated
+protected void onWindowFocusNodeChangeEvent(ParentNode<?> oldFocusNode, ParentNode<?> newFocusNode) {}
+protected void tick() {} // Fixed at 60 times per second; if the frame rate is below 60, it will be made up at the beginning of each render
 ```
+
+!!! warning
+
+    Some parent nodes, such as TextNode and ImageNode, override `onRelayout` themselves, so please call `super.onRelayout()` once.
 
 ## GuiRender
 
@@ -195,7 +202,7 @@ public void drawString(String text, Font font, int startDrawX, int startDrawY, i
                        int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
                        int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha
 )
-    
+
 // Operation methods
 
 // Enable scissor. There is an internal scissor stack. You can pass in corner radius information, etc. Generally, directly use the parent class's leftTopCornerRadii, etc.
@@ -241,11 +248,11 @@ public class DemoNode extends GuiNode<DemoNode> {
     @Override
     protected void render(GuiRender render, double delta) {
         render.drawRectangle(realPositionX, realPositionY,
-                             realPositionMaxX, realPositionMaxY, realAngle,
-                             255, 0, 0, 255,
-                             0, 255, 0, 255,
-                             0, 0, 255, 255,
-                             255, 255, 0, 255
+                realPositionMaxX, realPositionMaxY, realAngle,
+                255, 0, 0, 255,
+                0, 255, 0, 255,
+                0, 0, 255, 255,
+                255, 255, 0, 255
         );
     }
 

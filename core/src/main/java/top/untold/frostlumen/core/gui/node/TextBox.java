@@ -16,16 +16,17 @@
 package top.untold.frostlumen.core.gui.node;
 
 import top.untold.frostlumen.core.data.*;
-import top.untold.frostlumen.core.event.KeyEvent;
-import top.untold.frostlumen.core.event.MouseButtonEvent;
-import top.untold.frostlumen.core.event.PreeditEvent;
-import top.untold.frostlumen.core.event.UserInputTextEvent;
+import top.untold.frostlumen.core.event.*;
 import top.untold.frostlumen.core.font.Font;
+import top.untold.frostlumen.core.gui.ParentNode;
+import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
 import top.untold.frostlumen.core.render.GuiRender;
 
-import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class TextBox extends TextNode<TextBox> implements HasDrawBackground<TextBox> {
+    private static final RGBA DEFAULT_SELECTED_COLOR = new RGBA(33, 66, 131, 255);
+    private final OneArgListenerRegistry<String> onUserInputEndListenerRegistry = new OneArgListenerRegistry<>();
     private final TextRenderDescription noInput = new TextRenderDescription();
     private final BoxNormalRenderDescription normal = new BoxNormalRenderDescription();
     private boolean drawBackground = true;
@@ -36,10 +37,26 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
     private int cursorPixelPosition;
     private int cursorWithoutPreeditPixelPosition;
     private int cursorWidth = 1;
+    private double mouseXOnPress;
+    private int selectedStart;
+    private int selectedEnd;
+    private int selectedPixelStart;
+    private int selectedPixelEnd;
+    private boolean selected;
+    private RGBA selectedColor = DEFAULT_SELECTED_COLOR;
     private RGBA cursorColor = RGBA.WHITE;
     private boolean shouldDisplayCursor = false;
     private long cursorSwitchVisibleTime = 30;
     private long displayCursorTimer = 30;
+
+    public TextBox registerOnUserInputEndListener(Consumer<String> consumer) {
+        onUserInputEndListenerRegistry.register(consumer);
+        return this;
+    }
+    public TextBox unregisterOnUserInputEndListener(Consumer<String> consumer) {
+        onUserInputEndListenerRegistry.unregister(consumer);
+        return this;
+    }
 
     public TextBox setCursorWidth(int cursorWidth) {
         this.cursorWidth = cursorWidth;
@@ -47,6 +64,10 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
     }
     public TextBox setCursorColor(RGBA cursorColor) {
         this.cursorColor = cursorColor;
+        return this;
+    }
+    public TextBox setSelectedColor(RGBA selectedColor) {
+        this.selectedColor = selectedColor;
         return this;
     }
     public TextBox setCursorSwitchVisibleTime(long cursorSwitchVisibleTime) {
@@ -59,6 +80,9 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
     }
     public RGBA getCursorColor() {
         return cursorColor;
+    }
+    public RGBA getSelectedColor() {
+        return selectedColor;
     }
     public long getCursorSwitchVisibleTime() {
         return cursorSwitchVisibleTime;
@@ -83,6 +107,12 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
 
     @Override
     protected void tick() {
+        if (isFocused() && currentMouseClickButtons.contains(MouseButton.LEFT)) {
+            displayCursorTimer = cursorSwitchVisibleTime;
+            shouldDisplayCursor = true;
+            return;
+        }
+
         if (displayCursorTimer > 0) {
             displayCursorTimer--;
         } else {
@@ -94,6 +124,9 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
     @Override
     protected void render(GuiRender render, double delta) {
         if (drawBackground) background.render(render);
+        if (isSelected()) {
+            render.drawRectangle(selectedPixelStart, normal.textRenderPositionY, selectedPixelEnd, normal.textRenderPositionY + textHeight, realAngle, selectedColor.red(), selectedColor.green(), selectedColor.blue(), selectedColor.alpha());
+        }
         if (normal.getText() != null) {
             normal.render(render);
         } else {
@@ -108,8 +141,20 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
     }
 
     @Override
+    protected void onWindowFocusNodeChangeEvent(ParentNode<?> oldNode, ParentNode<?> newNode) {
+        if (oldNode == this && newNode != this) {
+            onUserInputEndListenerRegistry.trigger(normal.getText());
+        }
+
+        if (newNode != this && isSelected()) {
+            selected = false;
+        }
+    }
+
+    @Override
     protected void onUserInputTextEvent(UserInputTextEvent event) {
         if (isFocused()) {
+            deleteSelected();
             deleteCursorChars(preeditEnd);
             preeditEnd = 0;
             event.cancel();
@@ -121,32 +166,75 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
     protected void onMouseButtonEvent(MouseButtonEvent event) {
         if (!isFocused()) return;
 
-        if (event.getButton() == MouseButton.LEFT && event.getAction() == InputAction.PRESS) {
-            int textMin = normal.textRenderPositionX;
-            int textMax = normal.textRenderPositionX;
+        if (event.getButton() == MouseButton.LEFT) {
+            if (event.getAction() == InputAction.PRESS) {
+                int textMin = normal.textRenderPositionX;
+                int textMax = normal.textRenderPositionX;
 
-            for (int size : textSizes) {
-                textMax += size;
-            }
-            double target = event.getX();
-            if (target < textMin) {
-                setCursorPosition(0);
-            } else if (target > textMax) {
-                setCursorPosition(textSizes.length);
-            } else {
-                int current = textMin;
-                int position = 0;
                 for (int size : textSizes) {
-                    if (current >= target) break;
-                    current += size;
-                    position++;
+                    textMax += size;
                 }
-                setCursorPosition(position);
-            }
-            displayCursorNow();
+                double target = event.getX();
+                if (target < textMin) {
+                    setCursorPosition(0);
+                } else if (target > textMax) {
+                    setCursorPosition(textSizes.length);
+                } else {
+                    setCursorPosition(getCharIndexAt(target));
+                }
 
-            event.cancel();
+                displayCursorNow();
+
+                if (selected) {
+                    selected = false;
+                }
+
+                mouseXOnPress = event.getX();
+
+                event.cancel();
+            }
         }
+    }
+
+    private int getCharIndexAt(double position) {
+        int current = normal.textRenderPositionX;
+        int index = 0;
+        for (int size : textSizes) {
+            if (current + size / 2.0 > position) {
+                break;
+            }
+            current += size;
+            index++;
+        }
+        return index;
+    }
+
+    private int getPixelPositionAt(int index) {
+        int start = normal.textRenderPositionX;
+
+        for (int i = 0; i < index; i++) {
+            start += textSizes[i];
+        }
+
+        return start;
+    }
+
+    @Override
+    protected void onMouseMoveEvent(MouseMoveEvent event) {
+        if (!isFocused() || !currentMouseClickButtons.contains(MouseButton.LEFT)) return;
+
+        int startChar = getCharIndexAt(mouseXOnPress);
+
+        int endChar = getCharIndexAt(event.getX());
+
+        int realStart = Math.min(startChar, endChar);
+        int realEnd = Math.max(endChar, startChar);
+
+        setCursorPosition(endChar);
+
+        setSelectRange(realStart, realEnd);
+
+        selected = true;
     }
 
     private void insertString(String text) {
@@ -164,23 +252,31 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
         if (event.getInputAction() != InputAction.RELEASE) {
             Key key = event.getKey();
             if (key == Key.LEFT && cursorPosition > 0) {
+                if (isSelected()) return;
                 cursorPosition--;
                 normal.operationCursorPosition();
                 displayCursorTimer = cursorSwitchVisibleTime;
                 shouldDisplayCursor = true;
             } else if (key == Key.RIGHT && cursorPosition < textSizes.length) {
+                if (isSelected()) return;
                 cursorPosition++;
                 normal.operationCursorPosition();
                 displayCursorTimer = cursorSwitchVisibleTime;
                 shouldDisplayCursor = true;
             } else if (key == Key.BACKSPACE && textSizes.length > 0) {
-                deleteCursorChars(1);
+                if (!deleteSelected()) {
+                    deleteCursorChars(1);
+                }
             } else if (key == Key.V && event.getInputModifiers().isControlPressed()) {
                 boolean isAtEnd = cursorPosition == textSizes.length;
+                deleteSelected();
                 insertString(root.getWindow().getClipboard());
                 if (isAtEnd) {
                     setCursorPosition(textSizes.length);
                 }
+            } else if (key == Key.C && event.getInputModifiers().isControlPressed()) {
+                if (!isSelected()) return;
+                root.getWindow().setClipboard(normal.getText().substring(selectedStart, selectedEnd));
             } else if (key == Key.ENTER) {
                 setFocused(false);
             }
@@ -189,9 +285,26 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
         }
     }
 
+    private void setSelectRange(int start, int end) {
+        this.selectedStart = start;
+        this.selectedEnd = end;
+        this.selectedPixelStart = getPixelPositionAt(start);
+        this.selectedPixelEnd = getPixelPositionAt(end);
+    }
+
+    @Override
+    protected void onRelayout() {
+        super.onRelayout();
+
+        this.selectedPixelStart = getPixelPositionAt(selectedStart);
+        this.selectedPixelEnd = getPixelPositionAt(selectedEnd);
+    }
+
     @Override
     protected void onPreeditEvent(PreeditEvent event) {
         if (!isFocused()) return;
+
+        deleteSelected();
 
         deleteCursorChars(preeditEnd);
 
@@ -199,6 +312,8 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
 
         insertString(event.getPreeditText());
         preeditEnd = event.getPreeditText().length();
+
+        normal.operationCursorPosition();
 
         root.getWindow().setPreeditRegion(cursorWithoutPreeditPixelPosition, normal.textRenderPositionY, cursorWidth, textHeight);
 
@@ -236,6 +351,18 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
         return normal;
     }
 
+    private boolean isSelected() {
+        return selected && selectedStart - selectedEnd != 0;
+    }
+
+    private boolean deleteSelected() {
+        if (!isSelected()) return false;
+        cursorPosition = selectedEnd;
+        deleteCursorChars(selectedEnd - selectedStart);
+        selected = false;
+        return true;
+    }
+
     private class BoxNormalRenderDescription extends TextRenderDescription {
         @Override
         protected void init(GuiRender render) {
@@ -268,23 +395,15 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
         }
 
         private void operationCursorPosition() {
-            int value = textRenderPositionX;
+            int value = getPixelPositionAt(cursorPosition - preeditEnd);
 
             if (textSizes.length < cursorPosition) {
                 cursorPosition = textSizes.length - 1;
             }
 
-            for (int i = 0; i < preeditEnd; i++) {
-                int size = textSizes[i];
-                value += size;
-            }
-
             cursorWithoutPreeditPixelPosition = value;
 
-            for (int i = preeditEnd; i < cursorPosition; i++) {
-                int size = textSizes[i];
-                value += size;
-            }
+            value = getPixelPositionAt(cursorPosition - preeditEnd);
 
             cursorPixelPosition = value;
         }

@@ -44,24 +44,31 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
     public ScaleOffset getPosition() {
         return position;
     }
+
     public ScaleOffset getSize() {
         return size;
     }
+
     public int getRealPositionX() {
         return realPositionX;
     }
+
     public int getRealPositionY() {
         return realPositionY;
     }
+
     public int getRealPositionMaxX() {
         return realPositionMaxX;
     }
+
     public int getRealPositionMaxY() {
         return realPositionMaxY;
     }
+
     public int getRealSizeX() {
         return realSizeX;
     }
+
     public int getRealSizeY() {
         return realSizeY;
     }
@@ -69,12 +76,15 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
     public void registerBeforeRenderListener(GuiRenderAndDoubleConsumer consumer) {
         beforeRenderListenerRegistry.register(consumer);
     }
+
     public void unregisterBeforeRenderListener(GuiRenderAndDoubleConsumer consumer) {
         beforeRenderListenerRegistry.unregister(consumer);
     }
+
     public void registerAfterRenderListener(GuiRenderAndDoubleConsumer consumer) {
         afterRenderListenerRegistry.register(consumer);
     }
+
     public void unregisterAfterRenderListener(GuiRenderAndDoubleConsumer consumer) {
         afterRenderListenerRegistry.unregister(consumer);
     }
@@ -84,24 +94,31 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
         forwardFor(node -> node.dispatchRender(render, delta), null);
         afterRenderListenerRegistry.trigger(render, delta);
     }
+
     public void dispatchKeyEvent(KeyEvent event) {
         reverseFor(node -> node.dispatchKeyEvent(event), event);
     }
+
     public void dispatchMouseButtonEvent(MouseButtonEvent event) {
         reverseFor(node -> node.dispatchMouseButtonEvent(event), event);
     }
+
     public void dispatchMouseMoveEvent(MouseMoveEvent event) {
         reverseFor(node -> node.dispatchMouseMoveEvent(event), event);
     }
+
     public void dispatchMouseScrollEvent(MouseScrollEvent event) {
         reverseFor(node -> node.dispatchMouseScrollEvent(event), event);
     }
+
     public void dispatchUserInputTextEvent(UserInputTextEvent event) {
         reverseFor(node -> node.dispatchUserInputTextEvent(event), event);
     }
+
     public void dispatchUserDropFilesEvent(UserDropFilesEvent event) {
         reverseFor(node -> node.dispatchUserDropFilesEvent(event), event);
     }
+
     public void dispatchPreeditEvent(PreeditEvent event) {
         reverseFor(node -> node.dispatchPreeditEvent(event), event);
     }
@@ -109,32 +126,45 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
     public void dispatchTickEvent() {
         forwardFor(ParentNode::dispatchTickEvent, null);
     }
+
     public void dispatchMouseEnterWindowEvent(MouseEnterWindowEvent event) {
         forwardFor(node -> node.dispatchMouseEnterWindowEvent(event), null);
     }
+
     public void dispatchMouseLeaveWindowEvent(MouseLeaveWindowEvent event) {
         forwardFor(node -> node.dispatchMouseLeaveWindowEvent(event), null);
     }
+
     public void dispatchFrameBufferSizeChangeEvent(FrameBufferSizeChangeEvent event) {
         forwardFor(node -> node.dispatchFrameBufferSizeChangeEvent(event), null);
     }
+
     public void dispatchUserRequestWindowCloseEvent(UserRequestWindowCloseEvent event) {
         forwardFor(node -> node.dispatchUserRequestWindowCloseEvent(event), event);
     }
+
     public void dispatchWindowCloseEvent(WindowCloseEvent event) {
         forwardFor(node -> node.dispatchWindowCloseEvent(event), null);
     }
+
     public void dispatchWindowFocusChangeEvent(WindowFocusChangeEvent event) {
         forwardFor(node -> node.dispatchWindowFocusChangeEvent(event), null);
     }
+
     public void dispatchWindowMinimizeEvent(WindowMinimizeEvent event) {
         forwardFor(node -> node.dispatchWindowMinimizeEvent(event), null);
     }
+
     public void dispatchWindowMaximizeEvent(WindowMaximizeEvent event) {
         forwardFor(node -> node.dispatchWindowMaximizeEvent(event), null);
     }
+
     public void dispatchWindowMoveEvent(WindowMoveEvent event) {
         forwardFor(node -> node.dispatchWindowMoveEvent(event), null);
+    }
+
+    public void dispatchWindowFocusNodeChangeEvent(ParentNode<?> oldFocusNode, ParentNode<?> newFocusNode) {
+        forwardFor(node -> node.dispatchWindowFocusNodeChangeEvent(oldFocusNode, newFocusNode), null);
     }
 
     public T addChild(GuiNode<?> child) {
@@ -147,12 +177,14 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
         child.operationPosition();
         return self;
     }
+
     public T addChildren(GuiNode<?>... children) {
         for (GuiNode<?> child : children) {
             addChild(child);
         }
         return self;
     }
+
     public T removeChild(GuiNode<?> child) {
         if (children.remove(child)) {
             child.parent = null;
@@ -160,12 +192,14 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
         }
         return self;
     }
+
     public T removeChildren(GuiNode<?>... children) {
         for (GuiNode<?> child : children) {
             removeChild(child);
         }
         return self;
     }
+
     private static void setChildRootToNull(GuiNode<?> node) {
         node.root = null;
         for (GuiNode<?> child : node.children) {
@@ -173,6 +207,7 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
             setChildRootToNull(child);
         }
     }
+
     public List<GuiNode<?>> getChildren() {
         return Collections.unmodifiableList(children);
     }
@@ -183,12 +218,14 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
             if (event != null && event.isCancel()) break;
         }
     }
+
     protected void reverseFor(Consumer<GuiNode<?>> consumer, CancelableEvent event) {
         for (int i = children.size() - 1; i >= 0; i--) {
             consumer.accept(children.get(i));
             if (event != null && event.isCancel()) break;
         }
     }
+
     protected void sortChildren() {
         children.sort(Comparator.comparingInt(GuiNode::getZIndex));
     }

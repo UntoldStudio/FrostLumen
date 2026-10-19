@@ -46,8 +46,7 @@ public class ImageLabel extends ImageNode<ImageLabel> implements HasDrawBackgrou
     }
 
     @Override
-    public void operationPosition(ParentNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
-        super.operationPosition(parentFrame, parentRealPositionX, parentRealPositionY);
+    public void onRelayout() {
         operationImageAlignment();
     }
 

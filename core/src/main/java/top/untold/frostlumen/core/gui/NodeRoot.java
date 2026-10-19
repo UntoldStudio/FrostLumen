@@ -37,6 +37,7 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
     private long tickCount = 0;
     private long startTickTime;
     private long lastRenderTime;
+    private ParentNode<?> lastFocusNode;
 
     public void init() {
         render.initRender();
@@ -82,6 +83,12 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
         for (long i = 0; i < shouldTickCount; i++) {
             dispatchTickEvent();
             tickCount++;
+        }
+
+        ParentNode<?> currentFocusNode = window.getFocusNode();
+        if (lastFocusNode != currentFocusNode) {
+            dispatchWindowFocusNodeChangeEvent(lastFocusNode, currentFocusNode);
+            lastFocusNode = currentFocusNode;
         }
 
         tweenScheduler.step(delta);

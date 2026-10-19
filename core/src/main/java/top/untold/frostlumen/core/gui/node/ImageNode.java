@@ -32,8 +32,7 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
     private final Set<ImageRenderDescription> selfRenderDescriptions = new HashSet<>();
 
     @Override
-    protected void operationPosition(ParentNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
-        super.operationPosition(parentFrame, parentRealPositionX, parentRealPositionY);
+    protected void onRelayout() {
         for (ImageRenderDescription renderDescription : selfRenderDescriptions) {
             renderDescription.operationImageAlignment();
         }

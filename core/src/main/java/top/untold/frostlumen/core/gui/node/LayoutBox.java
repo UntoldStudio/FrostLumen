@@ -53,8 +53,7 @@ public abstract class LayoutBox<T extends LayoutBox<T>> extends GuiNode<T> {
     }
 
     @Override
-    protected void operationPosition(ParentNode<?> parentFrame, int parentRealPositionX, int parentRealPositionY) {
-        super.operationPosition(parentFrame, parentRealPositionX, parentRealPositionY);
+    protected void onRelayout() {
         sortNodes();
     }
 

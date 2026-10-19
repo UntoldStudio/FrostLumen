@@ -34,9 +34,6 @@ import java.util.function.Consumer;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-/**
- * WARN:本库暂时不支持多窗口
- */
 public class Window {
     private static final Map<Long, Window> WINDOW_MAP = new ConcurrentHashMap<>();
     private final OneArgListenerRegistry<ParentNode<?>> focusNodeChangeListenerRegistry = new OneArgListenerRegistry<>();
@@ -169,8 +166,11 @@ public class Window {
         WINDOW_MAP.remove(windowHandle);
     }
 
-    public String getClipboard(){
+    public String getClipboard() {
         return glfwGetClipboardString(windowHandle);
+    }
+    public void setClipboard(String clipboard) {
+        glfwSetClipboardString(windowHandle, clipboard);
     }
 
     public void setPreeditRegion(int x, int y, int width, int height) {
@@ -396,6 +396,11 @@ public class Window {
     public void setFocusNode(ParentNode<?> focus) {
         this.focusNode = focus == null ? root : focus;
         focusNodeChangeListenerRegistry.trigger(focusNode);
+    }
+    public void cancelFocused(ParentNode<?> node) {
+        if (this.focusNode == node) {
+            setFocusNode(null);
+        }
     }
     public ParentNode<?> getFocusNode() {
         return focusNode;

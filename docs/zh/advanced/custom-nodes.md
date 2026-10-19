@@ -105,7 +105,14 @@ protected void onWindowMoveEvent(WindowMoveEvent event) {}
 protected void onWindowCloseEvent(WindowCloseEvent event) {}
 protected void onWindowFocusChangeEvent(WindowFocusChangeEvent event) {}
 protected void onFrameBufferSizeChangeEvent(FrameBufferSizeChangeEvent event) {}
+protected void onRelayout() {} //需要重算布局时会调用该方法
+protected void onWindowFocusNodeChangeEvent(ParentNode<?> oldFocusNode, ParentNode<?> newFocusNode) {}
+protected void tick() {} //每秒固定60次,帧数不足60会每次渲染开头补回来
 ```
+
+!!! warning
+
+    某些父节点如TextNode与ImageNode自己就重写了onRelayout,因此请你调用一次`super.onRelayout()`
 
 ## GuiRender
 
