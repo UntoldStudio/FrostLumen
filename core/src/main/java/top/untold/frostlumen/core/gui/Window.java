@@ -106,6 +106,8 @@ public class Window {
     }
 
     public static Window from(long windowHandle, GuiRender render) {
+        Window window = WINDOW_MAP.get(windowHandle);
+        if (window != null) return window;
         return new Window(windowHandle, render);
     }
 
@@ -119,8 +121,8 @@ public class Window {
     }
 
     public void close() {
-        glfwDestroyWindow(windowHandle);
         clear(true);
+        glfwDestroyWindow(windowHandle);
     }
 
     public void clear() {
@@ -146,6 +148,7 @@ public class Window {
         glfwSetWindowIconifyCallback(windowHandle, oldMinimizeCallback);
         glfwSetWindowMaximizeCallback(windowHandle, oldMaximizeCallback);
         glfwSetWindowPosCallback(windowHandle, oldWindowMoveCallback);
+        glfwSetPreeditCallback(windowHandle, oldPreeditCallback);
 
         keyCallback.free();
         mouseButtonCallback.free();
@@ -233,7 +236,6 @@ public class Window {
         }));
         userInputTextCallback = GLFWCharCallback.create((currentWindow, codepoint) -> {
             String string = new String(Character.toChars(codepoint));
-            System.out.println(string);
             UserInputTextEvent event = new UserInputTextEvent(string);
             root.dispatchUserInputTextEvent(event);
             if (oldUserInputTextCallback != null && !event.isCancel()) {

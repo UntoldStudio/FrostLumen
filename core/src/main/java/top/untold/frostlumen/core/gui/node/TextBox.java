@@ -324,16 +324,13 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
     }
 
     private void deleteCursorChars(int count) {
+        if (cursorPosition == 0) return;
         StringBuilder builder = new StringBuilder(normal.getText());
         for (int i = 0; i < count; i++) {
             builder.deleteCharAt(cursorPosition - 1);
             cursorPosition--;
         }
         normal.setText(builder.toString());
-    }
-
-    private boolean isPreediting() {
-        return preeditEnd != cursorPosition;
     }
 
     private void displayCursorNow() {

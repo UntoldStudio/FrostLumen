@@ -17,7 +17,6 @@ package top.untold.frostlumen.core.gui.node;
 
 import top.untold.frostlumen.core.data.ScaleOffset;
 import top.untold.frostlumen.core.font.Font;
-import top.untold.frostlumen.core.gui.ParentNode;
 import top.untold.frostlumen.core.render.GuiRender;
 
 public class TextLabel extends TextNode<TextLabel> implements HasDrawBackground<TextLabel> {
@@ -42,12 +41,6 @@ public class TextLabel extends TextNode<TextLabel> implements HasDrawBackground<
     public TextLabel setDrawBackground(boolean drawBackground) {
         this.drawBackground = drawBackground;
         return this;
-    }
-
-    @Override
-    public void onRelayout() {
-        super.onRelayout();
-        renderDescription.operationTextRenderPosition();
     }
 
     @Override
