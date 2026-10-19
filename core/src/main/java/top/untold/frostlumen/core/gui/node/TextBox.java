@@ -270,7 +270,10 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
             } else if (key == Key.V && event.getInputModifiers().isControlPressed()) {
                 boolean isAtEnd = cursorPosition == textSizes.length;
                 deleteSelected();
-                insertString(root.getWindow().getClipboard());
+                String clipboard = root.getWindow().getClipboard();
+                if (clipboard != null) {
+                    insertString(root.getWindow().getClipboard());
+                }
                 if (isAtEnd) {
                     setCursorPosition(textSizes.length);
                 }

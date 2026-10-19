@@ -232,7 +232,9 @@ public class Window {
             }
         }));
         userInputTextCallback = GLFWCharCallback.create((currentWindow, codepoint) -> {
-            UserInputTextEvent event = new UserInputTextEvent(new String(Character.toChars(codepoint)));
+            String string = new String(Character.toChars(codepoint));
+            System.out.println(string);
+            UserInputTextEvent event = new UserInputTextEvent(string);
             root.dispatchUserInputTextEvent(event);
             if (oldUserInputTextCallback != null && !event.isCancel()) {
                 oldUserInputTextCallback.invoke(currentWindow, codepoint);
