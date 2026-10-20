@@ -394,6 +394,8 @@
       
         
       
+        
+      
     
     
     
@@ -581,6 +583,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#zindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ZIndex
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#background" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -693,6 +706,34 @@
     
   
     Tween
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiple Windows
   
 
     
@@ -842,6 +883,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#zindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ZIndex
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#background" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -936,73 +988,80 @@
 
 
 <h1 id="node-appearance">Node Appearance<a class="headerlink" href="#node-appearance" title="Permanent link">&para;</a></h1>
-<p>This chapter will explain the shared properties that every GuiNode has.</p>
+<p>This chapter explains the common properties that every GuiNode has.</p>
 <h2 id="clipchildren">ClipChildren<a class="headerlink" href="#clipchildren" title="Permanent link">&para;</a></h2>
 <p>Type: boolean</p>
-<p>Default value: false</p>
-<p>When enabled, all children will be restricted to rendering only within the parent's border. ClipChildren takes the node's corner radius into account, and the clipping region rotates with the node's angle.</p>
-<p>When enabled, hit testing will also take this factor along the parent chain into account. In other words, as long as the player's mouse is not actually over a visible part of the node, hit testing will return false.</p>
+<p>Default: false</p>
+<p>When enabled, all children will be restricted to render only within the parent's border. ClipChildren takes the node's corner radius into account and will rotate the clipping region along with the node's angle.</p>
+<p>When enabled, hit testing will also consider this factor along the parent chain. In other words, if the player's mouse is not actually over a visible part of the node, hit testing will return false.</p>
 <p>Example:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">node</span><span class="p">.</span><span class="na">setClipChildren</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
 </span></code></pre></div>
 <h2 id="drawbackground">DrawBackground<a class="headerlink" href="#drawbackground" title="Permanent link">&para;</a></h2>
 <p>Type: boolean</p>
-<p>Default value: varies; true for some nodes, false for others.</p>
-<p>Most nodes have this property. If a node has this property, then it must have a corresponding setter.</p>
-<p>Nodes that have this property generally implement the <code>HasDrawBackground</code> interface.</p>
+<p>Default: varies; some nodes are true, some are false</p>
+<p>Most nodes have this property. If a node has this property, it must have a corresponding setter.</p>
+<p>Generally, nodes that have this property implement the HasDrawBackground interface.</p>
 <p>If this value is false, the entire background will not be rendered.</p>
-<p>If you do not see a background, and the node has the drawBackground property, first consider setting it to true.</p>
+<p>If you do not see a background and the node has a drawBackground property, first consider setting it to true.</p>
+<h2 id="zindex">ZIndex<a class="headerlink" href="#zindex" title="Permanent link">&para;</a></h2>
+<p>Type: int</p>
+<p>Default: 0</p>
+<p>As the name suggests, it determines the order in which a node is rendered and receives event dispatch under the same parent. The larger the number, the higher it renders and the earlier it receives events.</p>
+<p>Example: Set node's ZIndex to 100</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">node</span><span class="p">.</span><span class="na">setZIndex</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+</span></code></pre></div>
 <h2 id="background">Background<a class="headerlink" href="#background" title="Permanent link">&para;</a></h2>
-<p><code>background</code> is a field that every node has, but if a subclass does not expose the ability to draw the background, setting it will have no effect.</p>
-<p>Background configuration items are accessed through the <code>background()</code> method of the GuiNode base class. You can return to the node via the background configuration item's <code>getNode()</code> method.</p>
-<p>Example: Configuring the background</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">Frame</span><span class="w"> </span><span class="n">frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Frame</span><span class="p">(</span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">),</span><span class="w"> </span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">))</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">        </span><span class="p">.</span><span class="na">background</span><span class="p">()</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">        </span><span class="p">.</span><span class="na">setColor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">RGBA</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span><span class="w"> </span><span class="mi">230</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">,</span><span class="w"> </span><span class="mi">90</span><span class="p">))</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">        </span><span class="p">.</span><span class="na">setCornerRadius</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">        </span><span class="p">.</span><span class="na">getNode</span><span class="p">();</span>
+<p>background is a field that every node has, but if the subclass does not expose the ability to draw a background, setting it has no effect.
+Background configuration items are accessed through the <code>background()</code> method of the GuiNode base class. You can return to the node via the background configuration's <code>getNode()</code> method.</p>
+<p>Example: Configure the background</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">Frame</span><span class="w"> </span><span class="n">frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Frame</span><span class="p">(</span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">),</span><span class="w"> </span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">))</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">                </span><span class="p">.</span><span class="na">background</span><span class="p">()</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">                </span><span class="p">.</span><span class="na">setColor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">RGBA</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span><span class="w"> </span><span class="mi">230</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">,</span><span class="w"> </span><span class="mi">90</span><span class="p">))</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">                </span><span class="p">.</span><span class="na">setCornerRadius</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">                </span><span class="p">.</span><span class="na">getNode</span><span class="p">();</span>
 </span></code></pre></div>
 <h3 id="backgroundblurstrength">BackgroundBlurStrength<a class="headerlink" href="#backgroundblurstrength" title="Permanent link">&para;</a></h3>
 <p>Type: double</p>
-<p>Default value: 0</p>
-<p>Range: 0.1-1 recommended; the actual value will be clamped to 0-2 on the renderer side.</p>
-<p>When enabled, Gaussian blur will be applied to all pixels in the background, and the blur region rotates with the node's angle.</p>
-<p>If Alpha=255, it will have no effect no matter what value is set, because an opaque node already directly covers the pixels behind it, so blurring the pixels behind it is meaningless.</p>
+<p>Default: 0</p>
+<p>Range: 0.1-1 recommended; the actual value will be clamped to 0-2 on the renderer side</p>
+<p>When enabled, Gaussian blur will be applied to all pixels of the background, and the region will rotate along with the node's angle.</p>
+<p>If Alpha=255, no matter what value is set, it will have no effect, because an opaque node already directly covers the area, and blurring the pixels behind it is meaningless.</p>
 <p>Example:</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setBlurStrength</span><span class="p">(</span><span class="mf">0.7</span><span class="p">);</span>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setBlurStrength</span><span class="p">(</span><span class="mf">0.7</span><span class="p">);</span>
 </span></code></pre></div>
 <h3 id="backgroundcolor">BackgroundColor<a class="headerlink" href="#backgroundcolor" title="Permanent link">&para;</a></h3>
 <p>Type: RGBA</p>
-<p>Default value: RGBA.WHITE</p>
+<p>Default: RGBA.WHITE</p>
 <p>The background color.</p>
 <p>Example:</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setColor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">RGBA</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span><span class="w"> </span><span class="mi">230</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">,</span><span class="w"> </span><span class="mi">90</span><span class="p">));</span>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setColor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">RGBA</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span><span class="w"> </span><span class="mi">230</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">,</span><span class="w"> </span><span class="mi">90</span><span class="p">));</span>
 </span></code></pre></div>
 <h3 id="backgroundborder">BackgroundBorder<a class="headerlink" href="#backgroundborder" title="Permanent link">&para;</a></h3>
-<p>The BackgroundBorder property is actually composed of 6 independent components of different types.</p>
-<p>The four of type int:
+<p>The BackgroundBorder property actually consists of 6 independent components of different types.</p>
+<p>Of type int:
 <code>leftBorderThickness</code>
 <code>rightBorderThickness</code>
 <code>topBorderThickness</code>
 <code>bottomBorderThickness</code></p>
-<p>(The four values above must be &gt;= 0; otherwise, unexpected behavior may occur. Their default values are all 0, and the unit is pixels.)</p>
+<p>(The four values above must be &gt;=0; otherwise, unexpected behavior may occur. The default values are all 0, and the unit is pixels.)</p>
 <p>(If you do not want to call the setters for these four one by one, you can use <code>setBorderThickness(int thickness)</code> to set all four at once.)</p>
-<p>The one of type RGBA:</p>
+<p>Of type RGBA:</p>
 <p><code>borderColor</code></p>
-<p>(Default value is RGBA.BLACK)</p>
-<p>The one of type ThicknessPosition:</p>
+<p>(Default: RGBA.BLACK)</p>
+<p>Of type ThicknessPosition:</p>
 <p><code>borderThicknessPosition</code></p>
-<p>(Default value is OUTSIDE)</p>
-<p>The four int values correspond to the border thickness of the four sides of the background, the RGBA value determines the border color, and the ThicknessPosition determines where the border is.</p>
+<p>(Default: OUTSIDE)</p>
+<p>The four int values correspond to the border thickness of the four sides of the background, the RGBA value determines the border color, and the ThicknessPosition determines where the border is drawn.</p>
 <p>ThicknessPosition has three values:</p>
 <p>OUTSIDE (rendered outside the background)</p>
 <p>INSIDE (rendered inside the background)</p>
-<p>CENTER (rendered at the center of the background border)</p>
-<p>The above values are all borders, so even if the node rotates, they will stay attached to the background.</p>
-<p>Example: Set a blue border with a thickness of 5 pixels, rendered inside the background, using the chained API.</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setBorderThickness</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="p">.</span><span class="na">setBorderColor</span><span class="p">(</span><span class="n">RGBA</span><span class="p">.</span><span class="na">BLUE</span><span class="p">)</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="p">.</span><span class="na">setBorderThicknessPosition</span><span class="p">(</span><span class="n">ThicknessPosition</span><span class="p">.</span><span class="na">INSIDE</span><span class="p">);</span>
+<p>CENTER (rendered at the center of the background's border)</p>
+<p>The values above are borders, so even if the node rotates, they will stay tightly attached to the background.</p>
+<p>Example: Set a blue border 5 pixels thick, rendered inside the background, using the chained API</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setBorderThickness</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="p">.</span><span class="na">setBorderColor</span><span class="p">(</span><span class="n">RGBA</span><span class="p">.</span><span class="na">BLUE</span><span class="p">)</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="p">.</span><span class="na">setBorderThicknessPosition</span><span class="p">(</span><span class="n">ThicknessPosition</span><span class="p">.</span><span class="na">INSIDE</span><span class="p">);</span>
 </span></code></pre></div>
 <h3 id="backgroundcornerradius">BackgroundCornerRadius<a class="headerlink" href="#backgroundcornerradius" title="Permanent link">&para;</a></h3>
 <p>It consists of 4 independent components of type int:</p>
@@ -1010,17 +1069,17 @@
 <code>rightTopCornerRadius</code>
 <code>leftBottomCornerRadius</code>
 <code>rightBottomCornerRadius</code></p>
-<p>(They must be &gt;= 0; otherwise, unexpected behavior may occur. Their default values are all 0, and the unit is pixels for the corner radius.)</p>
+<p>(They must be &gt;=0; otherwise, unexpected behavior may occur. The default values are all 0, and the unit is the corner radius in pixels.)</p>
 <p>(If you do not want to call the setters one by one, you can use <code>setCornerRadius(int radius)</code> to set all four at once.)</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Hit testing does not take rounded corners into account.</p>
+<p>Hit testing does not take corner radius into account.</p>
 </div>
-<p>Example: Set the top-left corner radius to 5, the bottom-right to 20, the top-right to 30, and the bottom-left to 0, using the chained API.</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setLeftTopCornerRadius</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="p">.</span><span class="na">setRightTopCornerRadius</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="p">.</span><span class="na">setLeftBottomCornerRadius</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="p">.</span><span class="na">setRightBottomCornerRadius</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span>
+<p>Example: Set the top-left corner radius to 5, bottom-right to 20, top-right to 30, bottom-left to 0, using the chained API</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setLeftTopCornerRadius</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="p">.</span><span class="na">setRightTopCornerRadius</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="p">.</span><span class="na">setLeftBottomCornerRadius</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="p">.</span><span class="na">setRightBottomCornerRadius</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span>
 </span></code></pre></div>
 
 

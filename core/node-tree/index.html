@@ -394,6 +394,8 @@
       
         
       
+        
+      
     
     
     
@@ -685,6 +687,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../multi-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多窗口
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../final/" class="md-nav__link">
         
   
@@ -887,6 +917,7 @@
 <p>GuiNode继承ParentNode,因此也有children列表.它还拥有parent字段与root字段.</p>
 <h2 id="noderoot">NodeRoot<a class="headerlink" href="#noderoot" title="Permanent link">&para;</a></h2>
 <p>NodeRoot继承ParentNode,因此它也有children列表.与GuiNode不同,它作为节点根,没有parent,root就是他自己.</p>
+<p>NodeRoot实例拥有<code>runTask(Runnable task)</code>方法,注册的任务将会在下次渲染前执行</p>
 <h2 id="children">Children<a class="headerlink" href="#children" title="Permanent link">&para;</a></h2>
 <p>当你调用了ParentNode的某个实例的addChild方法并传入了某node实例的时候,它会做这些事:</p>
 <p>1.如果node已有父项:调用父项的removeChild方法,传入node</p>
@@ -904,7 +935,11 @@
 <h2 id="_2">各种事件在节点树上触发的顺序<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
 <p>渲染和通知性事件(比如窗口最大化最小化)按正序遍历children(父节点先处理,子节点再处理,目的:子节点渲染能直接画在父节点之上,且通知性事件父节点先处理可以让父节点先更新自己再更新子项)</p>
 <p>鼠标点击,键盘输入等可取消事件按反序遍历children(子节点先处理,父节点再处理,目的:最上层节点能优先接收到鼠标事件,键盘事件等,否则用户点击鼠标是在最底层渲染的节点响应很反直觉)</p>
-<p>注意:zIndex只影响同一个父项下所有子节点的排序</p>
+<div class="admonition warn">
+<p class="admonition-title">Warn</p>
+<p>zIndex只影响同一个父项下所有子节点的排序</p>
+<p>所有GLFW事件都会使用runTask调度到渲染线程来处理</p>
+</div>
 <p>以下是一个演示用的节点树</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>root
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    -Frame1(zIndex=0)

@@ -27,7 +27,7 @@
     
     
       
-        <title>Intermediate-Layer Node Base Classes - FrostLumen Documentation</title>
+        <title>Intermediate Layer Node Parent Classes - FrostLumen Documentation</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#intermediate-layer-node-base-classes" class="md-skip">
+        <a href="#intermediate-layer-node-parent-classes" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Intermediate-Layer Node Base Classes
+              Intermediate Layer Node Parent Classes
             
           </span>
         </div>
@@ -388,6 +388,8 @@
       
         
       
+        
+      
     
     
     
@@ -573,13 +575,13 @@
   
 
 
-<h1 id="intermediate-layer-node-base-classes">Intermediate-Layer Node Base Classes<a class="headerlink" href="#intermediate-layer-node-base-classes" title="Permanent link">&para;</a></h1>
+<h1 id="intermediate-layer-node-parent-classes">Intermediate Layer Node Parent Classes<a class="headerlink" href="#intermediate-layer-node-parent-classes" title="Permanent link">&para;</a></h1>
 <p>This chapter will explain several intermediate-layer abstract classes for nodes. They provide convenient APIs/classes in certain aspects for you to use.</p>
 <h2 id="imagenode">ImageNode<a class="headerlink" href="#imagenode" title="Permanent link">&para;</a></h2>
-<p>ImageNode is the abstract base class for image nodes. It inherits from GuiNode. Internally, it defines <code>public class ImageRenderDescription</code> (non-static). This type has all the data needed to render an image. All methods return itself, and the <code>getNode</code> method returns the outer class.</p>
-<p>If the node you want to create has an image, you can inherit from ImageNode.</p>
+<p>ImageNode is the abstract base class for image nodes and inherits from GuiNode. It internally defines <code>public class ImageRenderDescription</code> (non-static). This type holds all the data needed to render an image. All its methods return the object itself, and it has a <code>getNode</code> method that returns the outer class.</p>
+<p>If the node you want to make has an image, you can inherit from ImageNode.</p>
 <p>If you want to render an ImageRenderDescription, call <code>render(GuiRender render)</code>.</p>
-<p>If your node has multiple images to manage, you can design your API like ImageButton's three methods: normal, onHover, onClick, returning the ImageRenderDescription corresponding to that state.</p>
+<p>If your node has multiple images to manage, you can design your API like these three methods of ImageButton: <code>normal</code>, <code>onHover</code>, and <code>onClick</code>, returning the ImageRenderDescription corresponding to that state.</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">public</span><span class="w"> </span><span class="n">ImageRenderDescription</span><span class="w"> </span><span class="nf">normal</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">normal</span><span class="p">;</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">}</span>
@@ -594,7 +596,7 @@
 <p class="admonition-title">Info</p>
 <p>Because ImageRenderDescription's <code>getNode()</code> method directly returns the outer class, you only need to provide methods that return ImageRenderDescription.</p>
 </div>
-<p>Example: The ImageLabel class that uses ImageRenderDescription and inherits from ImageNode</p>
+<p>Example: The ImageLabel class, which uses ImageRenderDescription and inherits from ImageNode</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kd">public</span><span class="w"> </span><span class="kd">class</span> <span class="nc">ImageLabel</span><span class="w"> </span><span class="kd">extends</span><span class="w"> </span><span class="n">ImageNode</span><span class="o">&lt;</span><span class="n">ImageLabel</span><span class="o">&gt;</span><span class="w"> </span><span class="kd">implements</span><span class="w"> </span><span class="n">HasDrawBackground</span><span class="o">&lt;</span><span class="n">ImageLabel</span><span class="o">&gt;</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kd">final</span><span class="w"> </span><span class="n">ImageRenderDescription</span><span class="w"> </span><span class="n">imageRenderDescription</span><span class="p">;</span>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="kd">private</span><span class="w"> </span><span class="kt">boolean</span><span class="w"> </span><span class="n">drawBackground</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="kc">true</span><span class="p">;</span>
@@ -635,32 +637,32 @@
 </span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a><span class="p">}</span>
 </span></code></pre></div>
 <h2 id="textnode">TextNode<a class="headerlink" href="#textnode" title="Permanent link">&para;</a></h2>
-<p>TextNode is the abstract base class for text nodes. It inherits from GuiNode. Internally, it defines</p>
+<p>TextNode is the abstract base class for text nodes and inherits from GuiNode. It internally defines:</p>
 <p><code>public abstract class AbstractTextRenderDescription</code></p>
 <p><code>public class TextRenderDescription</code></p>
 <p><code>public class CanWrappedTextRenderDescription</code></p>
-<p>AbstractTextRenderDescription is a non-static abstract base class. It holds all the data needed to render text, such as the font and the alignment used relative to the node.</p>
-<p>TextRenderDescription only inherits from AbstractTextRenderDescription, fills in TextRenderDescription for the generic parameter, and does not add any additional behavior.</p>
-<p>CanWrappedTextRenderDescription adds a <code>wrap</code> field, along with the <code>setWrap</code> and <code>isWrap</code> methods, used to control automatic line wrapping.</p>
-<p>If the node you want to create needs to render text, you can inherit from TextNode.</p>
+<p>AbstractTextRenderDescription is a non-static abstract base class that holds all the data needed for text rendering, such as the font and the alignment used relative to the node.</p>
+<p>TextRenderDescription only inherits from AbstractTextRenderDescription, fills the generic with TextRenderDescription, and adds no extra behavior.</p>
+<p>CanWrappedTextRenderDescription adds the <code>wrap</code> field and the <code>setWrap</code> and <code>isWrap</code> methods, used to control automatic line wrapping.</p>
+<p>If the node you want to make needs to render text, you can inherit from TextNode.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>CanWrappedTextRenderDescription automatically wraps lines according to <code>\n</code> and the node width and the width of each character, while TextRenderDescription does not wrap even when it encounters <code>\n</code>, and will render it as notdef.</p>
+<p>CanWrappedTextRenderDescription automatically wraps lines based on <code>\n</code> and the node width and the width of each character, while TextRenderDescription does not wrap even when it encounters <code>\n</code>, and it will be rendered as notdef.</p>
 </div>
 <p>If you want to render them, call <code>render(GuiRender render)</code>.</p>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
-<p>Because AbstractTextRenderDescription's <code>getNode()</code> method directly returns the outer class, you only need to provide methods that return a RenderDescription.</p>
+<p>Because AbstractTextRenderDescription's <code>getNode()</code> method directly returns the outer class, you only need to provide methods that return RenderDescription.</p>
 </div>
 <div class="admonition info">
 <p class="admonition-title">Info</p>
-<p>TextLabel uses CanWrappedTextRenderDescription, while the input box of TextBox uses TextRenderDescription.</p>
+<p>TextLabel uses CanWrappedTextRenderDescription, while TextBox's input field uses TextRenderDescription.</p>
 </div>
 <h2 id="others">Others<a class="headerlink" href="#others" title="Permanent link">&para;</a></h2>
-<p>You may be wondering: I cannot inherit from both TextNode and ImageNode, so how do I create a node that has both Text and Image?</p>
+<p>You may wonder: I cannot inherit from both TextNode and ImageNode at the same time, so how do I make a node that has both Text and Image?</p>
 <p>The answer is: if you really need to render both at the same time, we recommend using a composite node approach.</p>
-<p>For example, use a Frame as a container, with a TextLabel and an ImageLabel as child nodes.</p>
-<p>We strongly do not recommend inheriting from GuiNode merely for the purpose of managing child nodes.</p>
+<p>For example, use a Frame as the container, with a TextLabel and an ImageLabel as child nodes.</p>
+<p>We strongly do not recommend inheriting from GuiNode solely for the purpose of managing child nodes.</p>
 
 
 

@@ -394,6 +394,8 @@
       
         
       
+        
+      
     
     
     
@@ -685,6 +687,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../multi-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multiple Windows
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../final/" class="md-nav__link">
         
   
@@ -880,46 +910,51 @@
 
 
 <h1 id="node-tree">Node Tree<a class="headerlink" href="#node-tree" title="Permanent link">&para;</a></h1>
-<p>This chapter will explain the node tree model inside the library.</p>
+<p>This chapter explains the library's internal node tree model.</p>
 <h2 id="parentnode">ParentNode<a class="headerlink" href="#parentnode" title="Permanent link">&para;</a></h2>
-<p>All nodes, including the root node, directly or indirectly inherit from ParentNode. It holds a children list. Therefore, all nodes can have children; leaf nodes are simply nodes without children.</p>
+<p>All nodes, including the root node, directly or indirectly inherit from ParentNode. It holds a children list. Therefore, all nodes can have children; a leaf node is simply a node without children.</p>
 <h2 id="guinode">GuiNode<a class="headerlink" href="#guinode" title="Permanent link">&para;</a></h2>
-<p>GuiNode inherits from ParentNode, so it also has a children list. It also has a <code>parent</code> field and a <code>root</code> field.</p>
+<p>GuiNode inherits from ParentNode, so it also has a children list. It also has a parent field and a root field.</p>
 <h2 id="noderoot">NodeRoot<a class="headerlink" href="#noderoot" title="Permanent link">&para;</a></h2>
-<p>NodeRoot inherits from ParentNode, so it also has a children list. Unlike GuiNode, as the node root, it has no parent; its root is itself.</p>
+<p>NodeRoot inherits from ParentNode, so it also has a children list. Unlike GuiNode, as the node root, it has no parent, and its root is itself.</p>
+<p>A NodeRoot instance has a <code>runTask(Runnable task)</code> method. Registered tasks will be executed before the next render.</p>
 <h2 id="children">Children<a class="headerlink" href="#children" title="Permanent link">&para;</a></h2>
-<p>When you call the <code>addChild</code> method on an instance of ParentNode and pass in a node instance, it does the following:</p>
+<p>When you call the addChild method on an instance of ParentNode and pass in a node instance, it does the following:</p>
 <ol>
 <li>
-<p>If the node already has a parent: call the parent's <code>removeChild</code> method, passing in the node.</p>
+<p>If the node already has a parent: call the parent's removeChild method, passing in the node.</p>
 </li>
 <li>
-<p>Recursively set the node's <code>root</code> field to its own <code>root</code> field.</p>
+<p>Recursively set the node's root field to its own root field.</p>
 </li>
 <li>
-<p>Set <code>node.parent</code> to <code>this</code>.</p>
+<p>Set node.parent to this.</p>
 </li>
 <li>
 <p>Add the node to the children list.</p>
 </li>
 <li>
-<p>Sort the children list in ascending order by the children's <code>zIndex</code> (smaller <code>zIndex</code> comes first; if <code>zIndex</code> is the same, insertion order is used).</p>
+<p>Sort the children list in ascending order by the children's zIndex (smaller zIndex comes first; if zIndex is the same, insertion order is used).</p>
 </li>
 <li>
 <p>Have the node recalculate its own position.</p>
 </li>
 </ol>
-<p>If you look at the source code, you will find that ParentNode does not have the behavior in step 2, but its only two sealed subclasses both override this method to recursively set <code>root</code>.</p>
-<p>ParentNode also has a convenience overload <code>addChildren</code>, which uses varargs (<code>GuiNode...</code>), iterates over this varargs list, and calls <code>addChild</code>.</p>
-<p>When you call the <code>removeChild</code> method on an instance of ParentNode and pass in a node instance, it only does the following:</p>
-<p>If it really has this child, then remove the node from the children list, set the <code>node.parent</code> field to null, and recursively set the <code>root</code> of it and its children to null.</p>
-<p>ParentNode also has a convenience overload <code>removeChildren</code>, which also uses varargs (<code>GuiNode...</code>), iterates over this varargs list, and calls <code>removeChild</code>.</p>
-<p>Externally, you can get the child node list via <code>getChildren()</code> (an immutable view wrapped by <code>Collections.unmodifiableList</code>).</p>
+<p>If you look at the source code, you will find that ParentNode does not have the behavior of step 2, but its only two sealed subclasses both override this method to recursively set root.</p>
+<p>ParentNode also has a convenience overload, addChildren, which uses varargs (GuiNode...) and iterates over the varargs list calling addChild.</p>
+<p>When you call the removeChild method on an instance of ParentNode and pass in a node instance, it only does the following:</p>
+<p>If it really has this child, then remove the node from the children list, set the node.parent field to null, and recursively set the root of it and its children to null.</p>
+<p>ParentNode also has a convenience overload, removeChildren, which also uses varargs (GuiNode...) and iterates over the varargs list calling removeChild.</p>
+<p>Externally, the child node list can be obtained via getChildren() (an immutable view wrapped by Collections.unmodifiableList).</p>
 <h2 id="order-in-which-various-events-are-triggered-on-the-node-tree">Order in Which Various Events Are Triggered on the Node Tree<a class="headerlink" href="#order-in-which-various-events-are-triggered-on-the-node-tree" title="Permanent link">&para;</a></h2>
-<p>Rendering and notification events (such as window maximize/minimize) traverse children in forward order (the parent node handles them first, then the child nodes; purpose: child nodes can be rendered directly on top of the parent node, and for notification events, having the parent node handle them first allows the parent node to update itself before updating its children).</p>
-<p>Cancellable events such as mouse clicks and keyboard input traverse children in reverse order (child nodes handle them first, then the parent node; purpose: the topmost node can receive mouse events, keyboard events, etc. first; otherwise, it would be very counterintuitive for the user's mouse click to be responded to by the node rendered at the very bottom).</p>
-<p>Note: <code>zIndex</code> only affects the ordering of all child nodes under the same parent.</p>
-<p>The following is a node tree for demonstration:</p>
+<p>Rendering and notification events (such as window maximize/minimize) traverse children in forward order (parent nodes are processed first, then child nodes; purpose: child nodes can be drawn directly on top of parent nodes during rendering, and notification events being processed by parent nodes first allows parent nodes to update themselves before updating children).</p>
+<p>Cancelable events such as mouse clicks and keyboard input traverse children in reverse order (child nodes are processed first, then parent nodes; purpose: the topmost nodes can receive mouse events, keyboard events, etc. first; otherwise, it would be very counterintuitive for the user to click the mouse and have the bottommost rendered node respond).</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>zIndex only affects the ordering of all child nodes under the same parent.</p>
+<p>All GLFW events will be scheduled to the rendering thread using runTask for processing.</p>
+</div>
+<p>Below is a node tree for demonstration:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>root
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    -Frame1(zIndex=0)
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        -Frame11(zIndex=-10)

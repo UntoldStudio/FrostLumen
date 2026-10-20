@@ -394,6 +394,8 @@
       
         
       
+        
+      
     
     
     
@@ -581,6 +583,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#zindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ZIndex
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#background" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -693,6 +706,34 @@
     
   
     Tween
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多窗口
   
 
     
@@ -842,6 +883,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#zindex" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ZIndex
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#background" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -952,15 +1004,22 @@
 <p>一般拥有该属性的节点都会实现HasDrawBackground接口</p>
 <p>如果该值为false,整个背景将不会渲染</p>
 <p>如果你没看到背景,且节点有drawBackground属性,优先考虑将它设为true</p>
+<h2 id="zindex">ZIndex<a class="headerlink" href="#zindex" title="Permanent link">&para;</a></h2>
+<p>类型:int</p>
+<p>默认值:0</p>
+<p>顾名思义,他决定节点渲染/事件分发在同一父项下分发的顺序,数字越大,渲染越靠上,事件越先收到</p>
+<p>示例:把node的ZIndex设置为100</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">node</span><span class="p">.</span><span class="na">setZIndex</span><span class="p">(</span><span class="mi">100</span><span class="p">);</span>
+</span></code></pre></div>
 <h2 id="background">Background<a class="headerlink" href="#background" title="Permanent link">&para;</a></h2>
 <p>background是每个节点都会有的字段,但是如果子类未暴露出绘制背景的能力则设置他无效
 背景配置项通过GuiNode基类的<code>background()</code>方法访问,你可以通过背景配置项的<code>getNode()</code>方法来回到节点</p>
 <p>示例:配置背景</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">Frame</span><span class="w"> </span><span class="n">frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Frame</span><span class="p">(</span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">),</span><span class="w"> </span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">))</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">                </span><span class="p">.</span><span class="na">background</span><span class="p">()</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">                </span><span class="p">.</span><span class="na">setColor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">RGBA</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span><span class="w"> </span><span class="mi">230</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">,</span><span class="w"> </span><span class="mi">90</span><span class="p">))</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">                </span><span class="p">.</span><span class="na">setCornerRadius</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">                </span><span class="p">.</span><span class="na">getNode</span><span class="p">();</span>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">Frame</span><span class="w"> </span><span class="n">frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Frame</span><span class="p">(</span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">),</span><span class="w"> </span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">))</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">                </span><span class="p">.</span><span class="na">background</span><span class="p">()</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">                </span><span class="p">.</span><span class="na">setColor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">RGBA</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span><span class="w"> </span><span class="mi">230</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">,</span><span class="w"> </span><span class="mi">90</span><span class="p">))</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">                </span><span class="p">.</span><span class="na">setCornerRadius</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">                </span><span class="p">.</span><span class="na">getNode</span><span class="p">();</span>
 </span></code></pre></div>
 <h3 id="backgroundblurstrength">BackgroundBlurStrength<a class="headerlink" href="#backgroundblurstrength" title="Permanent link">&para;</a></h3>
 <p>类型:double</p>
@@ -969,14 +1028,14 @@
 <p>启用后将会对背景所有像素应用高斯模糊,会跟随节点的角度旋转区域</p>
 <p>如果Alpha=255,无论设置值为多少都将没有任何效果,因为不透明节点,本来也是直接覆盖,模糊后面的像素无意义</p>
 <p>示例:</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setBlurStrength</span><span class="p">(</span><span class="mf">0.7</span><span class="p">);</span>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setBlurStrength</span><span class="p">(</span><span class="mf">0.7</span><span class="p">);</span>
 </span></code></pre></div>
 <h3 id="backgroundcolor">BackgroundColor<a class="headerlink" href="#backgroundcolor" title="Permanent link">&para;</a></h3>
 <p>类型:RGBA</p>
 <p>默认值:RGBA.WHITE</p>
 <p>背景的颜色</p>
 <p>示例:</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setColor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">RGBA</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span><span class="w"> </span><span class="mi">230</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">,</span><span class="w"> </span><span class="mi">90</span><span class="p">));</span>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setColor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">RGBA</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span><span class="w"> </span><span class="mi">230</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">,</span><span class="w"> </span><span class="mi">90</span><span class="p">));</span>
 </span></code></pre></div>
 <h3 id="backgroundborder">BackgroundBorder<a class="headerlink" href="#backgroundborder" title="Permanent link">&para;</a></h3>
 <p>BackgroundBorder属性实际由6个类型不同的独立分量组成</p>
@@ -1000,9 +1059,9 @@
 <p>CENTER(渲染在背景的边框中心)</p>
 <p>以上的值都是边框因此即使节点旋转它也会紧贴背景</p>
 <p>示例:设置一个大小为5像素的蓝色边框,渲染在背景内,使用链式API</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setBorderThickness</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="p">.</span><span class="na">setBorderColor</span><span class="p">(</span><span class="n">RGBA</span><span class="p">.</span><span class="na">BLUE</span><span class="p">)</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="p">.</span><span class="na">setBorderThicknessPosition</span><span class="p">(</span><span class="n">ThicknessPosition</span><span class="p">.</span><span class="na">INSIDE</span><span class="p">);</span>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setBorderThickness</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="p">.</span><span class="na">setBorderColor</span><span class="p">(</span><span class="n">RGBA</span><span class="p">.</span><span class="na">BLUE</span><span class="p">)</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="p">.</span><span class="na">setBorderThicknessPosition</span><span class="p">(</span><span class="n">ThicknessPosition</span><span class="p">.</span><span class="na">INSIDE</span><span class="p">);</span>
 </span></code></pre></div>
 <h3 id="backgroundcornerradius">BackgroundCornerRadius<a class="headerlink" href="#backgroundcornerradius" title="Permanent link">&para;</a></h3>
 <p>它由4个类型为int的独立分量组成</p>
@@ -1017,10 +1076,10 @@
 <p>命中测试不会考虑圆角</p>
 </div>
 <p>示例:设置左上角圆角半径为5,右下角为20,右上角为30,左下角为0,使用链式API</p>
-<div class="language-java highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setLeftTopCornerRadius</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="p">.</span><span class="na">setRightTopCornerRadius</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="p">.</span><span class="na">setLeftBottomCornerRadius</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="p">.</span><span class="na">setRightBottomCornerRadius</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setLeftTopCornerRadius</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="p">.</span><span class="na">setRightTopCornerRadius</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="p">.</span><span class="na">setLeftBottomCornerRadius</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="p">.</span><span class="na">setRightBottomCornerRadius</span><span class="p">(</span><span class="mi">20</span><span class="p">);</span>
 </span></code></pre></div>
 
 

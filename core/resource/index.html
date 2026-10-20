@@ -394,6 +394,8 @@
       
         
       
+        
+      
     
     
     
@@ -620,6 +622,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        卸载资源
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -649,6 +662,34 @@
     
   
     Tween
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../multi-window/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多窗口
   
 
     
@@ -809,6 +850,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        卸载资源
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -850,7 +902,7 @@
 <h1 id="_1">资源<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h1>
 <p>本章将会讲解如何使用ResourceManager加载资源,以及资源对象如何使用.</p>
 <h2 id="resourcemanager">ResourceManager<a class="headerlink" href="#resourcemanager" title="Permanent link">&para;</a></h2>
-<p>所有资源的加载都应该通过ResourceManager.加载资源的调用应该在渲染线程使用,并且必须在Window.from调用之后</p>
+<p>所有资源的加载都应该通过ResourceManager.加载资源的调用应该在渲染线程使用(其他线程可以使用<code>root.runTask</code>调度到渲染线程),并且必须在<code>window.init</code>调用之后</p>
 <p>你可以通过<code>NodeRoot</code>的<code>getResourceManager</code>方法获取ResourceManager实例.</p>
 <p>ResourceManager定义了这些方法:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">Texture</span><span class="w"> </span><span class="nf">loadTexture</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">path</span><span class="p">);</span>
@@ -864,7 +916,8 @@
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">Font</span><span class="w"> </span><span class="nf">loadFont</span><span class="p">(</span><span class="n">String</span><span class="w"> </span><span class="n">path</span><span class="p">);</span>
 </span></code></pre></div>
 <h3 id="_2">加载字体<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h3>
-<p>加载字体仅需通过loadFont(String path)即可获取Font实例,字体有缓存</p>
+<p>注意:<strong>他们都不会缓存,每次都会重新上传,返回新的Font</strong></p>
+<p>加载字体仅需通过loadFont(String path)即可获取Font实例</p>
 <p>Font实例可以传给各种需要Font的节点,如TextLabel</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">textLabel</span><span class="p">.</span><span class="na">description</span><span class="p">().</span><span class="na">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">);</span>
 </span></code></pre></div>
@@ -908,6 +961,26 @@
 </span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">                </span><span class="p">.</span><span class="na">setCornerRadius</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 </span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">                </span><span class="p">.</span><span class="na">getNode</span><span class="p">();</span>
 </span></code></pre></div>
+<h3 id="_4">卸载资源<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>卸载资源的方法有这些:</p>
+<div class="language-java highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">unloadTexture</span><span class="p">(</span><span class="n">Texture</span><span class="w"> </span><span class="n">texture</span><span class="p">);</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">default</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">unloadTexture</span><span class="p">(</span><span class="n">Texture</span><span class="p">...</span><span class="w"> </span><span class="n">textures</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Texture</span><span class="w"> </span><span class="n">texture</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">textures</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">        </span><span class="n">unloadTexture</span><span class="p">(</span><span class="n">texture</span><span class="p">);</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="p">}</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="kt">void</span><span class="w"> </span><span class="nf">unloadFont</span><span class="p">(</span><span class="n">Font</span><span class="w"> </span><span class="n">font</span><span class="p">);</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="k">default</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">unloadFont</span><span class="p">(</span><span class="n">Font</span><span class="p">...</span><span class="w"> </span><span class="n">fonts</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">Font</span><span class="w"> </span><span class="n">font</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="n">fonts</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">        </span><span class="n">unloadFont</span><span class="p">(</span><span class="n">font</span><span class="p">);</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>它们都会释放部分内存资源,另一部分根据底层渲染器实现不同,GPU资源根据底层渲染器实现不同也不一样</p>
+<div class="admonition warn">
+<p class="admonition-title">Warn</p>
+<p>请在你加载资源的ResourceMangaer卸载资源,不要用别的窗口的ResourceMangaer卸载</p>
+</div>
 
 
 
