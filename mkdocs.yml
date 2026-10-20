@@ -45,6 +45,7 @@ nav:
       - core/final.md
   - Advanced:
       - advanced/custom-nodes.md
+      - advanced/node-parents.md
 
 
 
