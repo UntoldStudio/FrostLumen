@@ -29,6 +29,7 @@ import top.untold.frostlumen.core.tween.ScaleOffsetTween;
 import top.untold.frostlumen.core.tween.TweenFunctions;
 import top.untold.frostlumen.core.tween.TweenScheduler;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -197,13 +198,15 @@ public class Main {
         glfwTerminate();
     }
 
-    private static Window runOtherWindowInOtherThread(int width, int height, String title) {
+    private static Window runOtherWindowInOtherThread(int width, int height, String title) throws InterruptedException {
         long handle = createWindow(width, height, title, null);
         Window window = Window.from(handle);
+        CountDownLatch initLatch = new CountDownLatch(1);
         Thread thread = new Thread(() -> {
             glfwMakeContextCurrent(handle);
             GL.createCapabilities();
             window.init(RenderProviderType.OPENGL);
+            initLatch.countDown();
             NodeRoot root = window.getNodeRoot();
 
             TextLabel label = new TextLabel("Hello from other thread!", ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5));
@@ -240,6 +243,7 @@ public class Main {
             shouldClose.set(true);
         });
         thread.start();
+        initLatch.await();
         return window;
     }
 }

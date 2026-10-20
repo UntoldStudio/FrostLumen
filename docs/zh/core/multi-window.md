@@ -122,13 +122,18 @@ public class Main {
         glfwTerminate();
     }
 
-    private static Window runOtherWindowInOtherThread(int width, int height, String title) {
+    private static Window runOtherWindowInOtherThread(int width, int height, String title) throws InterruptedException {
         long handle = createWindow(width, height, title, null);
         Window window = Window.from(handle);
+        CountDownLatch initLatch = new CountDownLatch(1); //生产环境不要这么写
         Thread thread = new Thread(() -> {
-            glfwMakeContextCurrent(handle);
-            GL.createCapabilities();
-            window.init(RenderProviderType.OPENGL);
+            try {
+                glfwMakeContextCurrent(handle);
+                GL.createCapabilities();
+                window.init(RenderProviderType.OPENGL);
+            } finally {
+                initLatch.countDown();
+            }
             NodeRoot root = window.getNodeRoot();
 
             glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
@@ -147,6 +152,7 @@ public class Main {
             shouldClose.set(true);
         });
         thread.start();
+        initLatch.await();
         return window;
     }
 }

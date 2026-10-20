@@ -283,6 +283,9 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
             } else if (key == Key.C && event.getInputModifiers().isControlPressed()) {
                 if (!isSelected()) return;
                 root.getWindow().setClipboard(normal.getText().substring(selectedStart, selectedEnd));
+            } else if (key == Key.A && event.getInputModifiers().isControlPressed()) {
+                selected = true;
+                setSelectRange(0, textSizes.length);
             } else if (key == Key.ENTER) {
                 setFocused(false);
             }
