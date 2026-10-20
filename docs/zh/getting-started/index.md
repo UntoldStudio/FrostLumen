@@ -15,7 +15,7 @@ window.init(RenderProviderType.OPENGL); //将会初始化渲染后端
 
     你应该在glfwPollEvent的线程调用`Window.from`,在渲染线程调用`window.init`
 
-    并且不要在`Window.from)`之后注册任何GLFW回调, 你的回调应该在Window.from之前注册
+    并且不要在`Window.from`之后注册任何GLFW回调, 你的回调应该在Window.from之前注册
 
 初始化Window后,你可以获取GUI节点根:
 
