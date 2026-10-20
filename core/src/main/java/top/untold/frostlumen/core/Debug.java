@@ -16,7 +16,7 @@
 package top.untold.frostlumen.core;
 
 public class Debug {
-    private static boolean debugMode = false;
+    private static boolean debugMode = true;
 
     public static void setDebugMode(boolean newDebugMode) {
         debugMode = newDebugMode;

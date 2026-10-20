@@ -1,24 +1,24 @@
 # Custom Nodes
 
-Custom nodes are suitable for drawing that built-in nodes cannot express. If you can compose it using existing nodes, do not create a custom one.
+Custom nodes are suitable for drawing that cannot be expressed by built-in nodes. If you can combine existing nodes to achieve it, do not create a custom node.
 
-This chapter will introduce how to inherit from GuiNode, how to call GuiRender's methods, and how to respond to events. Which scenarios are worth customizing depends on your project. If a requirement is common enough, the library will provide a built-in node.
+This chapter will introduce how to inherit from `GuiNode`, how to call `GuiRender` methods, and how to respond to events. Which scenarios are worth customizing depends on your project. If a requirement is common enough, the library will provide a built-in node.
 
-## How to Create
+## How to Make One
 
-Your custom node should inherit from the `GuiNode<?>` abstract class, and fill in its own type for the generic parameter, such as `Frame extends GuiNode<Frame>`.
+Your custom node should inherit from the `GuiNode<?>` abstract class, and the generic parameter should be your own type, e.g. `Frame extends GuiNode<Frame>`.
 
-If you ultimately decide to create your own custom node, then you **must directly call** our rendering abstraction layer.
+If you ultimately decide to make your own custom node, then you **must directly call** our rendering abstraction layer.
 
-After your class inherits from GuiNode, you must override the `render(GuiRender render, double delta)` method, where `delta` is in milliseconds. In the current version, we do not recommend using `delta` for animations; we recommend using Tween instead. The introduction to Tween is in the previous chapter.
+After your class inherits `GuiNode`, it must override the `render(GuiRender render, double delta)` method, where `delta` is in milliseconds. In the current version, we do not recommend using `delta` for animation; we recommend using Tween instead. Tween is introduced in the previous chapter.
 
 Your constructor should at least have `ScaleOffset position, ScaleOffset size` and call `super(position, size)`.
 
-All your setter methods should return `this`. If you are creating an abstract class, then please define it as: `Example<T extends Example<T>> extends GuiNode<T>` and have all setters return `T` (using the parent class field `self`).
+All your setter methods should return `this`. If you are making an abstract class, please define it as: `Example<T extends Example<T>> extends GuiNode<T>` and have all setters return `T` (using the parent class field `self`).
 
-If you want to draw the default background, please call the `render` method of the parent class field `background`. If your background drawing is optional, please add a `drawBackground` property (field, setter, and getter) and implement the `HasDrawBackground` interface, with the generic parameter filled with your own type. The default value is freely determined by the node type.
+If you want to draw the default background, please call the `render` method of the parent class field `background`. If your background drawing is optional, please add a `drawBackground` property (field, setter, and getter) and implement the `HasDrawBackground` interface, filling the generic with your own type. The default value is freely determined by the node type.
 
-Example: The simplest Frame class that only calls the `render` method of the parent class `background` field
+Example: The simplest `Frame` class that only calls the `render` method of the parent class `background` field
 
 ```java
 public class Frame extends GuiNode<Frame> {
@@ -33,12 +33,12 @@ public class Frame extends GuiNode<Frame> {
 }
 ```
 
-Example: A DemoFrame class with optional background drawing
+Example: A `DemoFrame` class with optional background drawing
 
 ```java
 public class DemoFrame extends GuiNode<DemoFrame> implements HasDrawBackground<DemoFrame> {
     private boolean drawBackground = false;
-
+    
     @Override
     public DemoFrame setDrawBackground(boolean drawBackground) {
         this.drawBackground = drawBackground;
@@ -48,7 +48,7 @@ public class DemoFrame extends GuiNode<DemoFrame> implements HasDrawBackground<D
     public boolean isDrawBackground() {
         return drawBackground;
     }
-
+    
     @Override
     protected void render(GuiRender render, double delta) {
         if (drawBackground) {
@@ -68,26 +68,26 @@ Your node can listen to any events you want.
 
 `onXxx` are hooks for your custom node to override. `dispatchXxx` (including `dispatchRender`) is the dispatch flow and generally does not need to be overridden.
 
-If you only want to determine whether the mouse is inside the node, it is recommended to use the parent class's field `protected boolean mouseInNode`.
+If you only want to determine whether the mouse is inside the node, it is recommended to use the parent class field `protected boolean mouseInNode`.
 
-The parent class also helps you maintain which mouse buttons are currently clicking the node: `protected Set<MouseButton> currentMouseClickButtons`. If you want to cancel events, you can choose to override.
+The parent class also maintains for you which mouse buttons are currently clicking the node: `protected Set<MouseButton> currentMouseClickButtons`. If you want to cancel events, you can choose to override.
 
-Example: A Button's `onMouseButtonEvent` method
+Example: A certain Button's `onMouseButtonEvent` method
 
 ```java
 @Override
-protected void onMouseButtonEvent(MouseButtonEvent event) {
-    if (!Collections.disjoint(canTriggerMouseButtons, currentMouseClickButtons)) { // canTriggerMouseButtons is a field of this node
-        event.cancel();
-        mouseButtonEventListenerRegistry.trigger(event);
+    protected void onMouseButtonEvent(MouseButtonEvent event) {
+        if (!Collections.disjoint(canTriggerMouseButtons, currentMouseClickButtons)) { // canTriggerMouseButtons is the node's own field
+            event.cancel();
+            mouseButtonEventListenerRegistry.trigger(event);
+        }
     }
-}
 ```
 
-Currently, there are these methods that can be overridden. After overriding, simply write any follow-up processing you want in the method body.
+Currently, the following methods can be overridden. After overriding, simply write any subsequent processing you want in the method body.
 
 ```java
-// Cancellable events (event.cancel() is available; calling it will prevent further dispatch)
+// Cancelable events (event.cancel() is available; calling it prevents subsequent dispatch)
 protected void onKeyEvent(KeyEvent event) {}
 protected void onMouseButtonEvent(MouseButtonEvent event) {}
 protected void onMouseMoveEvent(MouseMoveEvent event) {}
@@ -95,28 +95,29 @@ protected void onMouseEnterWindowEvent(MouseEnterWindowEvent event) {}
 protected void onMouseLeaveWindowEvent(MouseLeaveWindowEvent event) {}
 protected void onMouseScrollEvent(MouseScrollEvent event) {}
 protected void onUserInputTextEvent(UserInputTextEvent event) {}
-protected void onUserRequestWindowCloseEvent(UserRequestWindowCloseEvent event) {} // If it is cancelled, it will not only prevent event dispatch but also keep the window from closing
+protected void onUserRequestWindowCloseEvent(UserRequestWindowCloseEvent event) {} // If canceled, it not only prevents event dispatch but also prevents the window from closing
 protected void onUserDropFilesEvent(UserDropFilesEvent event) {}
 
-// Non-cancellable events
+// Non-cancelable events
 protected void onWindowMinimizeEvent(WindowMinimizeEvent event) {}
 protected void onWindowMaximizeEvent(WindowMaximizeEvent event) {}
 protected void onWindowMoveEvent(WindowMoveEvent event) {}
 protected void onWindowCloseEvent(WindowCloseEvent event) {}
 protected void onWindowFocusChangeEvent(WindowFocusChangeEvent event) {}
 protected void onFrameBufferSizeChangeEvent(FrameBufferSizeChangeEvent event) {}
-protected void onRelayout() {} // Called when the layout needs to be recalculated
+protected void onPreeditEvent(PreeditEvent event) {} // IME preedit event
+protected void onRelayout() {} // Called when layout needs to be recalculated
 protected void onWindowFocusNodeChangeEvent(ParentNode<?> oldFocusNode, ParentNode<?> newFocusNode) {}
-protected void tick() {} // Fixed at 60 times per second; if the frame rate is below 60, it will be made up at the beginning of each render
+protected void tick() {} // Fixed 60 times per second; if the frame rate is below 60, it will catch up at the beginning of each render
 ```
 
 !!! warning
 
-    Some parent nodes, such as TextNode and ImageNode, override `onRelayout` themselves, so please call `super.onRelayout()` once.
+    Some parent nodes such as `TextNode` and `ImageNode` override `onRelayout` themselves, so please call `super.onRelayout()` once.
 
 ## GuiRender
 
-GuiRender is our rendering abstraction layer. Note: **The coordinates it accepts are all absolute coordinates relative to the window.** You can directly use the parent class's `realXxx` values; they are all absolute coordinates relative to the window. As of now, you can call these methods:
+`GuiRender` is our rendering abstraction layer. Note: **The coordinates it accepts are all absolute coordinates relative to the window.** You can directly use the parent class's `realXxx`; they are all absolute coordinates relative to the window. As of now, you can call these methods:
 
 Note: For method details, please see the Javadoc.
 
@@ -125,9 +126,9 @@ Note: For method details, please see the Javadoc.
 
 // Rendering methods
 
-// Draw a rectangle with the same color at all four corners. For all methods below, min* generally directly passes the parent class's realPosition*, and max* generally directly passes the parent class's realPositionMax*
+// Draw a rectangle with the same color at all four corners. For all min* below, generally pass the parent class's realPosition*; for max*, generally pass the parent class's realPositionMax*
 public void drawRectangle(int minX, int minY, int maxX, int maxY, float angle, int red, int green, int blue, int alpha)
-// Draw a rectangle with independently specified four-corner colors (gradient)
+// Draw a rectangle with independently specified corner colors (gradient)
 public void drawRectangle(int minX, int minY, int maxX, int maxY, float angle,
                           int aRed, int aGreen, int aBlue, int aAlpha,
                           int bRed, int bGreen, int bBlue, int bAlpha,
@@ -141,7 +142,7 @@ public void drawShape(int minX, int minY, int maxX, int maxY, float angle, int r
                       int borderRed, int borderGreen, int borderBlue, int borderAlpha,
                       ThicknessPosition thicknessPosition
 )
-// Draw an advanced rectangle supporting rounded corners, borders, etc.; all four corners can have independent rounded corners and borders
+// Draw an advanced rectangle supporting rounded corners, borders, etc., with independent rounded corners and borders at all four corners
 public abstract void drawShape(int minX, int minY, int maxX, int maxY, float angle,
                                int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
                                int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha,
@@ -162,12 +163,12 @@ public abstract void drawTriangle(int ax, int ay, int bx, int by, int cx, int cy
                                   int bRed, int bGreen, int bBlue, int bAlpha,
                                   int cRed, int cGreen, int cBlue, int cAlpha
 )
-// Draw a texture. Generally, you should call the overload that accepts a Texture instead of this one.
+// Draw a texture. Generally, you should call the overload that accepts Texture rather than this one.
 public abstract void drawTexture(int textureId, int minX, int minY, int maxX, int maxY, int centerX, int centerY, float angle, float u0, float v0, float u1, float v1,
                                  int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
                                  int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha
 )
-// Draw a nine-slice texture. Generally, you should call the overload that accepts a Texture (drawTexture) instead of this one.
+// Draw a nice-slice texture. Generally, you should call the overload that accepts Texture (drawTexture) rather than this one.
 public void drawNiceSliceTexture(NiceSliceType type, int textureId, int textureWidth, int textureHeight, int borderLeft, int borderRight, int borderTop, int borderBottom, int targetMinX, int targetMinY, int targetMaxX, int targetMaxY, float angle, float textureU0, float textureV0, float textureU3, float textureV3,
                                  int aRed, int aGreen, int aBlue, int aAlpha,
                                  int bRed, int bGreen, int bBlue, int bAlpha,
@@ -175,20 +176,20 @@ public void drawNiceSliceTexture(NiceSliceType type, int textureId, int textureW
                                  int dRed, int dGreen, int dBlue, int dAlpha,
                                  boolean stretchInner
 )
-// Draw a texture. Internally decides whether to use nine-slice or normal rendering based on the texture information.
+// Draw a texture; internally decides whether to use nice-slice or normal rendering based on texture information
 public void drawTexture(Texture texture, int minX, int minY, int maxX, int maxY, float angle, int red, int green, int blue, int alpha)
-// Same as above, with additional support for independent four-corner colors (gradient)
+// Same as above, additionally supporting independent corner colors (gradient)
 public void drawTexture(Texture texture, int minX, int minY, int maxX, int maxY, float angle, float u0, float v0, float u1, float v1,
                         int aRed, int aGreen, int aBlue, int aAlpha,
                         int bRed, int bGreen, int bBlue, int bAlpha,
                         int cRed, int cGreen, int cBlue, int cAlpha,
                         int dRed, int dGreen, int dBlue, int dAlpha
 )
-// Draw a string, with support for specifying the font, etc.
+// Draw a string, supporting specified fonts, etc.
 public void drawString(String text, Font font, int startDrawX, int startDrawY, float angle, int fontSize, double italicDegrees, int boldStrength, int red, int green, int blue, int alpha)
-// Draw a string with support for specifying the rotation center point
+// Draw a string, supporting a specified rotation center point
 public void drawString(String text, Font font, int startDrawX, int startDrawY, int centerX, int centerY, float angle, int fontSize, double italicDegrees, int boldStrength, int red, int green, int blue, int alpha)
-// Draw a string with support for independent four-corner colors (gradient)
+// Draw a string, supporting independent corner colors (gradient)
 public void drawString(String text, Font font, int startDrawX, int startDrawY, float angle,
                        int fontSize, double italicDegrees, int boldStrength,
                        int aRed, int aGreen, int aBlue, int aAlpha,
@@ -196,24 +197,24 @@ public void drawString(String text, Font font, int startDrawX, int startDrawY, f
                        int cRed, int cGreen, int cBlue, int cAlpha,
                        int dRed, int dGreen, int dBlue, int dAlpha
 )
-// Draw a string with support for independent four-corner colors (gradient) and rotation center point
+// Draw a string, supporting independent corner colors (gradient) and a rotation center point
 public void drawString(String text, Font font, int startDrawX, int startDrawY, int centerX, int centerY, float angle,
                        int fontSize, double italicDegrees, int boldStrength,
                        int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
                        int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha
 )
-
+    
 // Operation methods
 
-// Enable scissor. There is an internal scissor stack. You can pass in corner radius information, etc. Generally, directly use the parent class's leftTopCornerRadii, etc.
+// Enable clipping. There is an internal scissor stack, and you can pass in corner radius information, etc. Generally, directly use the parent class's leftTopCornerRadii, etc.
 public void enableScissor(int x, int y, int width, int height, float angle, int aCornerRadii, int bCornerRadii, int cCornerRadii, int dCornerRadii)
-// Disable scissor
+// Disable clipping
 public void disableScissor()
 // Apply blur to a certain region
 public void blurRegion(int x, int y, int width, int height, float angle, double strength)
-// Set the cursor shape
+// Set cursor shape
 public void setCursorShape(CursorShape cursorShapeInThisFrame)
-// Set the cursor mode
+// Set cursor mode
 public void setCursorMode(CursorMode cursorModeInThisFrame)
 
 // Resource methods
@@ -222,27 +223,27 @@ public void setCursorMode(CursorMode cursorModeInThisFrame)
 public Font loadFont(String path)
 // Load an image from memory
 public Texture loadTexture(byte[] data)
-// Load an image from memory. For isLinear, pass false for pixel art, pass true for normal art or directly use the overload above.
+// Load an image from memory; for isLinear, pass false for pixel art, true for normal style, or directly use the overload above
 public Texture loadTexture(byte[] data, boolean isLinear)
 // Load an image from disk
 public Texture loadTexture(String path)
 // Load an image from disk
 public Texture loadTexture(String path, boolean isLinear)
-// Load a nine-slice texture from memory. stretchInner determines whether the center texture is stretched or tiled.
+// Load a nice-slice texture from memory; stretchInner determines whether the center texture is stretched/tiled
 public Texture loadNiceSliceTexture(byte[] data, NiceSliceType type, boolean stretchInner, int left, int right, int top, int bottom)
-// Load a nine-slice texture from memory
+// Load a nice-slice texture from memory
 public Texture loadNiceSliceTexture(byte[] data, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom)
-// Load a nine-slice texture from disk
+// Load a nice-slice texture from disk
 public Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, int left, int right, int top, int bottom)
-// Load a nine-slice texture from disk
+// Load a nice-slice texture from disk
 public Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom)
 ```
 
 !!! info
 
-    The timing of `render()` calls is generally determined by when the host calls the `render()` method of the NodeRoot instance. As long as your parent does not change the delta parameter of render dispatch, `delta` always represents the number of milliseconds between this render and the previous render.
+    The timing of `render()` calls is generally determined by when the host calls the `render()` method of the `NodeRoot` instance. As long as your parent does not change the `delta` parameter of render dispatch, `delta` always represents the number of milliseconds between this render and the previous render.
 
-Example: A rectangle node that does not draw the default background and has different colors at the four corners. It is only used to demonstrate the mechanism; in practice, you can achieve this using Frame's properties.
+Example: A rectangle node that does not draw the default background and has different colors at the four corners. It is only for demonstrating the mechanism; in practice, you can implement it using `Frame` properties.
 ```java
 public class DemoNode extends GuiNode<DemoNode> {
     @Override

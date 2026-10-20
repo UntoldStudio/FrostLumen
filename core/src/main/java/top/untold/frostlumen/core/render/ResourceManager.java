@@ -24,9 +24,21 @@ public interface ResourceManager {
     Texture loadTexture(String path, boolean isLinear);
     Texture loadTexture(byte[] data);
     Texture loadTexture(byte[] data, boolean isLinear);
+    void unloadTexture(Texture texture);
+    default void unloadTexture(Texture... textures) {
+        for (Texture texture : textures) {
+            unloadTexture(texture);
+        }
+    }
     Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, int left, int right, int top, int bottom);
     Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom);
     Texture loadNiceSliceTexture(byte[] data, NiceSliceType type, boolean stretchInner, int left, int right, int top, int bottom);
     Texture loadNiceSliceTexture(byte[] data, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom);
     Font loadFont(String path);
+    void unloadFont(Font font);
+    default void unloadFont(Font... fonts) {
+        for (Font font : fonts) {
+            unloadFont(font);
+        }
+    }
 }

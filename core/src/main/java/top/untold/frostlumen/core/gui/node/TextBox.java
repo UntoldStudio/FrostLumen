@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 
 public class TextBox extends TextNode<TextBox> implements HasDrawBackground<TextBox> {
     private static final RGBA DEFAULT_SELECTED_COLOR = new RGBA(33, 66, 131, 255);
+    private static final RGBA DEFAULT_CURSOR_COLOR = new RGBA(10, 132, 255, 255);
     private final OneArgListenerRegistry<String> onUserInputEndListenerRegistry = new OneArgListenerRegistry<>();
     private final TextRenderDescription noInput = new TextRenderDescription();
     private final BoxNormalRenderDescription normal = new BoxNormalRenderDescription();
@@ -44,7 +45,7 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
     private int selectedPixelEnd;
     private boolean selected;
     private RGBA selectedColor = DEFAULT_SELECTED_COLOR;
-    private RGBA cursorColor = RGBA.WHITE;
+    private RGBA cursorColor = DEFAULT_CURSOR_COLOR;
     private boolean shouldDisplayCursor = false;
     private long cursorSwitchVisibleTime = 30;
     private long displayCursorTimer = 30;
@@ -148,6 +149,8 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
 
         if (newNode != this && isSelected()) {
             selected = false;
+            selectedStart = 0;
+            selectedEnd = 0;
         }
     }
 
@@ -299,8 +302,12 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
     protected void onRelayout() {
         super.onRelayout();
 
-        this.selectedPixelStart = getPixelPositionAt(selectedStart);
-        this.selectedPixelEnd = getPixelPositionAt(selectedEnd);
+        if (isSelected()) {
+            this.selectedPixelStart = getPixelPositionAt(selectedStart);
+            this.selectedPixelEnd = getPixelPositionAt(selectedEnd);
+        }
+
+        setPreeditRegion();
     }
 
     @Override
@@ -318,9 +325,13 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
 
         normal.operationCursorPosition();
 
-        root.getWindow().setPreeditRegion(cursorWithoutPreeditPixelPosition, normal.textRenderPositionY, cursorWidth, textHeight);
+        setPreeditRegion();
 
         event.cancel();
+    }
+
+    private void setPreeditRegion() {
+        root.getWindow().setPreeditRegion(cursorWithoutPreeditPixelPosition, normal.textRenderPositionY, cursorWidth, textHeight);
     }
 
     private void deleteCursorChars(int count) {
@@ -360,6 +371,8 @@ public class TextBox extends TextNode<TextBox> implements HasDrawBackground<Text
         cursorPosition = selectedEnd;
         deleteCursorChars(selectedEnd - selectedStart);
         selected = false;
+        selectedStart = 0;
+        selectedEnd = 0;
         return true;
     }
 

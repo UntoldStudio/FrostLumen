@@ -19,6 +19,7 @@ ParentNode(sealed)
         -TextNode
             -TextLabel
             -TextBox
+            ...
         -ImageNode
             -ImageLabel
             -ImageButton
@@ -26,6 +27,7 @@ ParentNode(sealed)
         -LayoutBox
             -VerticalBox
             -HorizontalBox
+            ...
         ...
 ```
 
@@ -55,7 +57,7 @@ They all have self-referential generics and are not builders. All setters return
 
 ## ScaleOffset
 
-ScaleOffset is a relatively important class in this library. It is an immutable record class. Almost all node constructors require `position` and `size` of type ScaleOffset. It is defined as:
+ScaleOffset is a relatively important class in this library. It is an immutable record class, and the constructors of almost all nodes require `position` and `size` of type ScaleOffset. It is defined as:
 
 ```java
 public record ScaleOffset(double xScale, int xOffset, double yScale, int yOffset) {...}

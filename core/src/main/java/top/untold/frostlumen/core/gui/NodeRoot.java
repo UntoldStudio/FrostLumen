@@ -29,9 +29,9 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 public final class NodeRoot extends ParentNode<NodeRoot> {
     private static final long TICK_NANOS_INTERVAL = 1_000_000_000L / 60;
     private final Window window;
-    private final GuiRender render;
     private final Deque<Runnable> tasks = new ConcurrentLinkedDeque<>();
     private final TweenScheduler tweenScheduler = new TweenScheduler();
+    private GuiRender render;
     private long externalSettingCursor = -1;
     private boolean isLastMouseMoveEventCanceled = false;
     private long tickCount = 0;
@@ -58,16 +58,20 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
         realSizeY = event.newHeight();
         realPositionMaxX = event.newWidth();
         realPositionMaxY = event.newHeight();
-        render.onFrameBufferSizeChange(realPositionMaxX, realPositionMaxY);
+        runTask(() -> render.onFrameBufferSizeChange(realPositionMaxX, realPositionMaxY));
         super.dispatchFrameBufferSizeChangeEvent(event);
+    }
+
+    public void runAllTasksOnCurrentThread() {
+        while (!tasks.isEmpty()) {
+            tasks.poll().run();
+        }
     }
 
     public void render() {
         render.beginFrame();
 
-        while (!tasks.isEmpty()) {
-            tasks.poll().run();
-        }
+        runAllTasksOnCurrentThread();
 
         if (externalSettingCursor != -1 && !isLastMouseMoveEventCanceled) {
             render.setCursorShape(externalSettingCursor);
@@ -139,9 +143,12 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
         this.externalSettingCursor = handle;
     }
 
-    public NodeRoot(Window window, GuiRender render) {
-        this.window = window;
+    void setRender(GuiRender render) {
         this.render = render;
+    }
+
+    public NodeRoot(Window window) {
+        this.window = window;
 
         size = ScaleOffset.fromScale(1, 1);
         position = ScaleOffset.ZERO;

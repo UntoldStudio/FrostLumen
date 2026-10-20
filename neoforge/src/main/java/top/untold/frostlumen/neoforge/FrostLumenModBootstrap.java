@@ -34,7 +34,8 @@ public class FrostLumenModBootstrap {
     public void onClientSetup(FMLClientSetupEvent event) {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.execute(() -> {
-            Window window = Window.from(minecraft.getWindow().handle(), RenderProviderType.OPENGL);
+            Window window = Window.from(minecraft.getWindow().handle());
+            window.init(RenderProviderType.OPENGL);
             NodeRoot root = window.getNodeRoot();
 
             root.runTask(() -> {

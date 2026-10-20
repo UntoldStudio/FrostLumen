@@ -105,6 +105,7 @@ protected void onWindowMoveEvent(WindowMoveEvent event) {}
 protected void onWindowCloseEvent(WindowCloseEvent event) {}
 protected void onWindowFocusChangeEvent(WindowFocusChangeEvent event) {}
 protected void onFrameBufferSizeChangeEvent(FrameBufferSizeChangeEvent event) {}
+protected void onPreeditEvent(PreeditEvent event) {} //输入法的预编辑事件
 protected void onRelayout() {} //需要重算布局时会调用该方法
 protected void onWindowFocusNodeChangeEvent(ParentNode<?> oldFocusNode, ParentNode<?> newFocusNode) {}
 protected void tick() {} //每秒固定60次,帧数不足60会每次渲染开头补回来

@@ -57,9 +57,6 @@ public abstract class ImageNode<T extends ImageNode<T>> extends GuiNode<T> {
             render.disableScissor();
         }
 
-        /**
-         * {@link ResourceManager:getResourceManagerFromThreadLocal()}
-         */
         public ImageRenderDescription setTexture(Texture texture) {
             this.texture = texture;
             return this;

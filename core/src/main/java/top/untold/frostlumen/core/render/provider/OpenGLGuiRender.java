@@ -46,7 +46,7 @@ import static org.lwjgl.util.freetype.FreeType.*;
 
 public class OpenGLGuiRender extends GuiRender {
     private final Deque<RenderCommand> commands = new ArrayDeque<>();
-    private final Long2ObjectMap<Double2ObjectOpenHashMap<GlyphInfo>> glyphCache = new Long2ObjectOpenHashMap<>();
+    private final Map<Font, Long2ObjectMap<Double2ObjectMap<GlyphInfo>>> glyphCache = new HashMap<>();
 
     private final Matrix4f projectionMatrix = new Matrix4f();
     private final float[] projectionMatrixArray = new float[16];
@@ -650,8 +650,9 @@ public class OpenGLGuiRender extends GuiRender {
                            int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
                            int cRed, int cGreen, int cBlue, int cAlpha, int dRed, int dGreen, int dBlue, int dAlpha
     ) {
-        Double2ObjectMap<GlyphInfo> map = glyphCache.computeIfAbsent(((long) font.id() << 41) | ((long) fontSize << 28) | ((long) glyphIndex << 10) | boldStrength, _ -> new Double2ObjectOpenHashMap<>());
-        GlyphInfo info = map.get(italicDegrees);
+        Long2ObjectMap<Double2ObjectMap<GlyphInfo>> map = glyphCache.computeIfAbsent(font, _ -> new Long2ObjectOpenHashMap<>());
+        Double2ObjectMap<GlyphInfo> infoMap = map.computeIfAbsent(((long) fontSize << 28) | ((long) glyphIndex << 10) | boldStrength, _ -> new Double2ObjectOpenHashMap<>());
+        GlyphInfo info = infoMap.get(italicDegrees);
         if (info == null) {
             FT_Face face = font.face();
             if (FT_Load_Glyph(face, glyphIndex, FT_LOAD_NO_BITMAP) != 0) throw new ResourceException("Failed to load glyph!");
@@ -675,7 +676,7 @@ public class OpenGLGuiRender extends GuiRender {
 
             if (bitmap.width() == 0 || bitmap.rows() == 0) {
                 info = new GlyphInfo(0f, 0f, 0f, 0f, 0, 0, 0, 0, advanceX);
-                map.put(italicDegrees, info);
+                infoMap.put(italicDegrees, info);
                 return x + advanceX;
             }
 
@@ -703,7 +704,7 @@ public class OpenGLGuiRender extends GuiRender {
             if (bitmap.rows() > atlasRowHeight) atlasRowHeight = bitmap.rows();
 
             info = new GlyphInfo(u0, v0, u1, v1, bitmapLeft, bitmapTop, bitmap.width(), bitmap.rows(), advanceX);
-            map.put(italicDegrees, info);
+            infoMap.put(italicDegrees, info);
         }
 
         int glyphX = Maths.round(x + info.bitmapLeft);
@@ -773,6 +774,16 @@ public class OpenGLGuiRender extends GuiRender {
     }
 
     @Override
+    protected void unloadRenderTexture(int textureId) {
+        glDeleteTextures(textureId);
+    }
+
+    @Override
+    protected void unloadRenderFont(Font font) {
+        glyphCache.remove(font);
+    }
+
+    @Override
     protected void blurFramebufferRegion(int x, int y, int width, int height, float angle, int radius) {
         submitBuffer();
         saveContext();
@@ -817,12 +828,16 @@ public class OpenGLGuiRender extends GuiRender {
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, blurFbo[0]);
         glBlitFramebuffer(sourceLeft, glSourceBottom, sourceLeft + sourceWidth, glSourceTop, 0, 0, sourceHalfWidth, sourceHalfHeight, GL_COLOR_BUFFER_BIT, GL_LINEAR);
 
+        checkGLState("blur:blit");
+
         glBindVertexArray(blurVao);
         glUseProgram(blurShaderProgram);
         glUniform2f(blurTexelSizeLocation, 1.0f / blurTextureWidth, 1.0f / blurTextureHeight);
         glUniform2f(blurUVScaleLocation, (float) sourceHalfWidth / blurTextureWidth, (float) sourceHalfHeight / blurTextureHeight);
         glActiveTexture(GL_TEXTURE0);
         glUniform1i(blurSamplerLocation, 0);
+
+        checkGLState("blur:setup");
 
         float perPassRadius = Math.max(1.0f, radius * BLUR_DOWNSCALE_INV / BLUR_PASSES);
         glUniform1f(blurRadiusLocation, perPassRadius);
@@ -833,12 +848,14 @@ public class OpenGLGuiRender extends GuiRender {
             glUniform1i(blurDirectionLocation, 0);
             glBindTexture(GL_TEXTURE_2D, blurTexture[0]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            checkGLState("blur:drawA");
 
             glBindFramebuffer(GL_DRAW_FRAMEBUFFER, blurFbo[0]);
             glViewport(0, 0, sourceHalfWidth, sourceHalfHeight);
             glUniform1i(blurDirectionLocation, 1);
             glBindTexture(GL_TEXTURE_2D, blurTexture[1]);
             glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+            checkGLState("blur:drawB");
         }
 
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, drawFbo);
@@ -978,8 +995,10 @@ public class OpenGLGuiRender extends GuiRender {
             atlasCursorY = oldHeight;
             atlasRowHeight = 0;
 
-            for (Double2ObjectMap<GlyphInfo> map : glyphCache.values()) {
-                map.clear();
+            for (Long2ObjectMap<Double2ObjectMap<GlyphInfo>> map : glyphCache.values()) {
+                for (Double2ObjectMap<GlyphInfo> infoMap : map.values()) {
+                    infoMap.clear();
+                }
             }
         } finally {
             MemoryUtil.memFree(oldData);

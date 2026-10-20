@@ -41,6 +41,7 @@ nav:
       - core/node-appearance.md
       - core/resource.md
       - core/tween.md
+      - core/multi-window.md
       - core/final.md
   - Advanced:
       - advanced/custom-nodes.md

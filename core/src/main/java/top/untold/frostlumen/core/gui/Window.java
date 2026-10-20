@@ -68,6 +68,7 @@ public class Window {
     private GLFWWindowPosCallback oldWindowMoveCallback;
     private GLFWPreeditCallback oldPreeditCallback;
 
+    private Thread renderThread;
     private int windowWidth;
     private int windowHeight;
     private int frameBufferWidth;
@@ -96,24 +97,23 @@ public class Window {
     public static Window get(long windowHandle) {
         return WINDOW_MAP.get(windowHandle);
     }
-    public static Window from(long windowHandle, RenderProviderType type) {
+
+    public static Window from(long windowHandle) {
         Window window = WINDOW_MAP.get(windowHandle);
         if (window != null) return window;
-        return from(windowHandle, switch (type) {
-            case OPENGL -> new OpenGLGuiRender(windowHandle);
-            //TODO:Vulkan
-        });
+        return new Window(windowHandle);
     }
 
-    public static Window from(long windowHandle, GuiRender render) {
-        Window window = WINDOW_MAP.get(windowHandle);
-        if (window != null) return window;
-        return new Window(windowHandle, render);
-    }
-
-    private void init() {
+    public void init(GuiRender render) {
+        this.renderThread = Thread.currentThread();
+        root.setRender(render);
         root.init();
         root.dispatchFrameBufferSizeChangeEvent(new FrameBufferSizeChangeEvent(frameBufferWidth, frameBufferHeight, frameBufferWidth, frameBufferHeight));
+    }
+    public void init(RenderProviderType type) {
+        init(switch (type) {
+            case OPENGL -> new OpenGLGuiRender(windowHandle);
+        });
     }
 
     public NodeRoot getNodeRoot() {
@@ -180,7 +180,11 @@ public class Window {
         glfwSetPreeditCursorRectangle(windowHandle, x, y, width, height);
     }
 
-    private Window(long windowHandle, GuiRender render) {
+    public Thread getRenderThread() {
+        return renderThread;
+    }
+
+    private Window(long windowHandle) {
         this.windowHandle = windowHandle;
 
         mouseInWindow = glfwGetWindowAttrib(windowHandle, GLFW_HOVERED) == GLFW_TRUE;
@@ -194,175 +198,188 @@ public class Window {
         frameBufferWidth = widthArray[0];
         frameBufferHeight = heightArray[0];
 
-        root = new NodeRoot(this, render);
+        root = new NodeRoot(this);
 
         focusNode = root;
 
         keyCallback = GLFWKeyCallback.create(((currentWindow, key, scancode, action, modifiers) -> {
-            KeyEvent event = new KeyEvent(Key.fromGLFWValue(key), InputAction.fromGLFWValue(action), InputModifiers.fromGLFWValue(modifiers));
-            root.dispatchKeyEvent(event);
-            if (oldKeyCallback != null && !event.isCancel()) {
-                oldKeyCallback.invoke(currentWindow, key, scancode, action, modifiers);
-            }
+            root.runTask(() -> {
+                KeyEvent event = new KeyEvent(Key.fromGLFWValue(key), InputAction.fromGLFWValue(action), InputModifiers.fromGLFWValue(modifiers));
+                root.dispatchKeyEvent(event);
+                if (oldKeyCallback != null && !event.isCancel()) {
+                    oldKeyCallback.invoke(currentWindow, key, scancode, action, modifiers);
+                }
+            });
         }));
         mouseButtonCallback = GLFWMouseButtonCallback.create(((currentWindow, button, action, modifiers) -> {
-            MouseButtonEvent event = new MouseButtonEvent(MouseButton.fromGLFWValue(button), InputAction.fromGLFWValue(action), InputModifiers.fromGLFWValue(modifiers), mouseX, mouseY);
-            mouseClick = event.getAction() != InputAction.RELEASE;
-            root.dispatchMouseButtonEvent(event);
-            if (oldMouseButtonCallback != null && !event.isCancel()) {
-                oldMouseButtonCallback.invoke(currentWindow, button, action, modifiers);
-            }
+            root.runTask(() -> {
+                MouseButtonEvent event = new MouseButtonEvent(MouseButton.fromGLFWValue(button), InputAction.fromGLFWValue(action), InputModifiers.fromGLFWValue(modifiers), mouseX, mouseY);
+                mouseClick = event.getAction() != InputAction.RELEASE;
+                root.dispatchMouseButtonEvent(event);
+                if (oldMouseButtonCallback != null && !event.isCancel()) {
+                    oldMouseButtonCallback.invoke(currentWindow, button, action, modifiers);
+                }
+            });
         }));
         mouseMoveCallback = GLFWCursorPosCallback.create((currentWindow, x, y) -> {
-            double eventX = x * (double)frameBufferWidth / windowWidth;
-            double eventY = y * (double)frameBufferHeight / windowHeight;
+            root.runTask(() -> {
+                double eventX = x * (double)frameBufferWidth / windowWidth;
+                double eventY = y * (double)frameBufferHeight / windowHeight;
 
-            double xDelta = mouseX == -1 ? 0 : eventX - mouseX;
-            double yDelta = mouseY == -1 ? 0 : eventY - mouseY;
-            mouseX = eventX;
-            mouseY = eventY;
-            MouseMoveEvent event = new MouseMoveEvent(eventX, eventY, xDelta, yDelta);
-            root.dispatchMouseMoveEvent(event);
-            if (oldMouseMoveCallback != null && !event.isCancel()) {
-                oldMouseMoveCallback.invoke(currentWindow, x, y);
-            }
+                double xDelta = mouseX == -1 ? 0 : eventX - mouseX;
+                double yDelta = mouseY == -1 ? 0 : eventY - mouseY;
+                mouseX = eventX;
+                mouseY = eventY;
+                MouseMoveEvent event = new MouseMoveEvent(eventX, eventY, xDelta, yDelta);
+                root.dispatchMouseMoveEvent(event);
+                if (oldMouseMoveCallback != null && !event.isCancel()) {
+                    oldMouseMoveCallback.invoke(currentWindow, x, y);
+                }
+            });
         });
         mouseScrollCallback = GLFWScrollCallback.create(((currentWindow, xDelta, yDelta) -> {
-            MouseScrollEvent event = new MouseScrollEvent(mouseX, mouseY, xDelta, yDelta);
-            root.dispatchMouseScrollEvent(event);
-            if (oldMouseScrollCallback != null && !event.isCancel()) {
-                oldMouseScrollCallback.invoke(currentWindow, xDelta, yDelta);
-            }
+            root.runTask(() -> {
+                MouseScrollEvent event = new MouseScrollEvent(mouseX, mouseY, xDelta, yDelta);
+                root.dispatchMouseScrollEvent(event);
+                if (oldMouseScrollCallback != null && !event.isCancel()) {
+                    oldMouseScrollCallback.invoke(currentWindow, xDelta, yDelta);
+                }
+            });
         }));
         userInputTextCallback = GLFWCharCallback.create((currentWindow, codepoint) -> {
-            String string = new String(Character.toChars(codepoint));
-            UserInputTextEvent event = new UserInputTextEvent(string);
-            root.dispatchUserInputTextEvent(event);
-            if (oldUserInputTextCallback != null && !event.isCancel()) {
-                oldUserInputTextCallback.invoke(currentWindow, codepoint);
-            }
+            root.runTask(() -> {
+                String string = new String(Character.toChars(codepoint));
+                UserInputTextEvent event = new UserInputTextEvent(string);
+                root.dispatchUserInputTextEvent(event);
+                if (oldUserInputTextCallback != null && !event.isCancel()) {
+                    oldUserInputTextCallback.invoke(currentWindow, codepoint);
+                }
+            });
         });
         mouseEnterCallback = GLFWCursorEnterCallback.create((currentWindow, is) -> {
-            mouseInWindow = is;
-            if (is) {
-                root.dispatchMouseEnterWindowEvent(new MouseEnterWindowEvent());
-            } else {
-                root.dispatchMouseLeaveWindowEvent(new MouseLeaveWindowEvent());
-            }
-            mouseX = -1;
-            mouseY = -1;
-            if (oldMouseEnterCallback != null) {
-                oldMouseEnterCallback.invoke(currentWindow, is);
-            }
+            root.runTask(() -> {
+                mouseInWindow = is;
+                if (is) {
+                    root.dispatchMouseEnterWindowEvent(new MouseEnterWindowEvent());
+                } else {
+                    root.dispatchMouseLeaveWindowEvent(new MouseLeaveWindowEvent());
+                }
+                mouseX = -1;
+                mouseY = -1;
+                if (oldMouseEnterCallback != null) {
+                    oldMouseEnterCallback.invoke(currentWindow, is);
+                }
+            });
         });
         windowSizeChangeCallback = GLFWWindowSizeCallback.create((currentWindow, width, height) -> {
-            this.windowWidth = width;
-            this.windowHeight = height;
-            if (oldWindowSizeChangeCallback != null) {
-                oldWindowSizeChangeCallback.invoke(currentWindow, width, height);
-            }
+            root.runTask(() -> {
+                this.windowWidth = width;
+                this.windowHeight = height;
+                if (oldWindowSizeChangeCallback != null) {
+                    oldWindowSizeChangeCallback.invoke(currentWindow, width, height);
+                }
+            });
         });
         frameBufferSizeChangeCallback = GLFWFramebufferSizeCallback.create((currentWindow, width, height) -> {
-            FrameBufferSizeChangeEvent event = new FrameBufferSizeChangeEvent(frameBufferWidth, frameBufferHeight, width, height);
-            frameBufferWidth = width;
-            frameBufferHeight = height;
-            root.dispatchFrameBufferSizeChangeEvent(event);
-            if (oldFrameBufferSizeChangeCallback != null) {
-                oldFrameBufferSizeChangeCallback.invoke(currentWindow, width, height);
-            }
+            root.runTask(() -> {
+                FrameBufferSizeChangeEvent event = new FrameBufferSizeChangeEvent(frameBufferWidth, frameBufferHeight, width, height);
+                frameBufferWidth = width;
+                frameBufferHeight = height;
+                root.dispatchFrameBufferSizeChangeEvent(event);
+                if (oldFrameBufferSizeChangeCallback != null) {
+                    oldFrameBufferSizeChangeCallback.invoke(currentWindow, width, height);
+                }
+            });
         });
         windowCloseCallback = GLFWWindowCloseCallback.create((currentWindow) -> {
-            UserRequestWindowCloseEvent requestEvent = new UserRequestWindowCloseEvent();
-            root.dispatchUserRequestWindowCloseEvent(requestEvent);
-            if (!requestEvent.isCancel()) {
-                if (oldWindowCloseCallback != null) {
-                    oldWindowCloseCallback.invoke(currentWindow);
+            root.runTask(() -> {
+                UserRequestWindowCloseEvent requestEvent = new UserRequestWindowCloseEvent();
+                root.dispatchUserRequestWindowCloseEvent(requestEvent);
+                if (!requestEvent.isCancel()) {
+                    if (oldWindowCloseCallback != null) {
+                        oldWindowCloseCallback.invoke(currentWindow);
+                    }
+                    if (glfwWindowShouldClose(currentWindow)) {
+                        WindowCloseEvent closeEvent = new WindowCloseEvent();
+                        root.dispatchWindowCloseEvent(closeEvent);
+                    }
+                } else {
+                    glfwSetWindowShouldClose(currentWindow, false);
                 }
-                if (glfwWindowShouldClose(currentWindow)) {
-                    WindowCloseEvent closeEvent = new WindowCloseEvent();
-                    root.dispatchWindowCloseEvent(closeEvent);
-                }
-            } else {
-                glfwSetWindowShouldClose(currentWindow, false);
-            }
+            });
         });
         windowFocusCallback = GLFWWindowFocusCallback.create((currentWindow, focus) -> {
-            this.focus = focus;
-            WindowFocusChangeEvent event = new WindowFocusChangeEvent(focus);
-            root.dispatchWindowFocusChangeEvent(event);
-            if (oldWindowFocusCallback != null) {
-                oldWindowFocusCallback.invoke(currentWindow, focus);
-            }
+            root.runTask(() -> {
+                this.focus = focus;
+                WindowFocusChangeEvent event = new WindowFocusChangeEvent(focus);
+                root.dispatchWindowFocusChangeEvent(event);
+                if (oldWindowFocusCallback != null) {
+                    oldWindowFocusCallback.invoke(currentWindow, focus);
+                }
+            });
         });
         dropCallback = GLFWDropCallback.create((currentWindow, count, names) -> {
-            Path[] filePaths = new Path[count];
-            for (int i = 0; i < count; i++) {
-                filePaths[i] = Path.of(GLFWDropCallback.getName(names, i));
-            }
-            UserDropFilesEvent event = new UserDropFilesEvent(filePaths);
-            root.dispatchUserDropFilesEvent(event);
-            if (oldDropCallback != null) {
-                oldDropCallback.invoke(currentWindow, count, names);
-            }
+            root.runTask(() -> {
+                Path[] filePaths = new Path[count];
+                for (int i = 0; i < count; i++) {
+                    filePaths[i] = Path.of(GLFWDropCallback.getName(names, i));
+                }
+                UserDropFilesEvent event = new UserDropFilesEvent(filePaths);
+                root.dispatchUserDropFilesEvent(event);
+                if (oldDropCallback != null) {
+                    oldDropCallback.invoke(currentWindow, count, names);
+                }
+            });
         });
         minimizeCallback = GLFWWindowIconifyCallback.create((currentWindow, is) -> {
-            minimize = is;
-            WindowMinimizeEvent event = new WindowMinimizeEvent();
-            root.dispatchWindowMinimizeEvent(event);
-            if (oldMinimizeCallback != null) {
-                oldMinimizeCallback.invoke(currentWindow, is);
-            }
+            root.runTask(() -> {
+                minimize = is;
+                WindowMinimizeEvent event = new WindowMinimizeEvent();
+                root.dispatchWindowMinimizeEvent(event);
+                if (oldMinimizeCallback != null) {
+                    oldMinimizeCallback.invoke(currentWindow, is);
+                }
+            });
         });
         maximizeCallback = GLFWWindowMaximizeCallback.create((currentWindow, is) -> {
-            maximize = is;
-            WindowMaximizeEvent event = new WindowMaximizeEvent();
-            root.dispatchWindowMaximizeEvent(event);
-            if (oldMaximizeCallback != null) {
-                oldMaximizeCallback.invoke(currentWindow, is);
-            }
+            root.runTask(() -> {
+                maximize = is;
+                WindowMaximizeEvent event = new WindowMaximizeEvent();
+                root.dispatchWindowMaximizeEvent(event);
+                if (oldMaximizeCallback != null) {
+                    oldMaximizeCallback.invoke(currentWindow, is);
+                }
+            });
         });
         windowMoveCallback = GLFWWindowPosCallback.create((currentWindow, x, y) -> {
-            WindowMoveEvent event = new WindowMoveEvent(windowX, windowY, x, y);
-            windowX = x;
-            windowY = y;
-            root.dispatchWindowMoveEvent(event);
-            if (oldWindowMoveCallback != null) {
-                oldWindowMoveCallback.invoke(currentWindow, windowX, windowY);
-            }
+            root.runTask(() -> {
+                WindowMoveEvent event = new WindowMoveEvent(windowX, windowY, x, y);
+                windowX = x;
+                windowY = y;
+                root.dispatchWindowMoveEvent(event);
+                if (oldWindowMoveCallback != null) {
+                    oldWindowMoveCallback.invoke(currentWindow, windowX, windowY);
+                }
+            });
         });
         preeditCallback = GLFWPreeditCallback.create((window, preeditCount, preeditString, blockCount, blockSizes, focusedBlock, caret) -> {
-            String out;
+            root.runTask(() -> {
+                String out;
 
-            if (preeditCount <= 0) {
-                out = "";
-            } else {
-                int[] codepoints = new int[preeditCount];
-                MemoryUtil.memIntBuffer(preeditString, preeditCount).get(codepoints);
-                out = new String(codepoints, 0, preeditCount);
-            }
-            //GLFW的blockSizes基本永远是NULL,这里几乎是死代码,因此注释掉
-            /* else {
-                int[] codepoints = new int[preeditCount];
-                MemoryUtil.memIntBuffer(preeditString, preeditCount).get(codepoints);
-
-                int[] sizes = new int[blockCount];
-                MemoryUtil.memIntBuffer(blockSizes, blockCount).get(sizes);
-
-                out = new String[blockCount];
-                int offset = 0;
-                for (int i = 0; i < blockCount; i++) {
-                    int remaining = preeditCount - offset;
-                    int len = Math.clamp(sizes[i], 0, Math.max(0, remaining));
-                    out[i] = new String(codepoints, offset, len);
-                    offset += len;
+                if (preeditCount <= 0) {
+                    out = "";
+                } else {
+                    int[] codepoints = new int[preeditCount];
+                    MemoryUtil.memIntBuffer(preeditString, preeditCount).get(codepoints);
+                    out = new String(codepoints, 0, preeditCount);
                 }
-            }*/
 
-            PreeditEvent event = new PreeditEvent(out);
-            root.dispatchPreeditEvent(event);
-            if (!event.isCancel() && oldPreeditCallback != null) {
-                oldPreeditCallback.invoke(window, preeditCount, preeditString, blockCount, blockSizes, focusedBlock, caret);
-            }
+                PreeditEvent event = new PreeditEvent(out);
+                root.dispatchPreeditEvent(event);
+                if (!event.isCancel() && oldPreeditCallback != null) {
+                    oldPreeditCallback.invoke(window, preeditCount, preeditString, blockCount, blockSizes, focusedBlock, caret);
+                }
+            });
         });
         oldKeyCallback = glfwSetKeyCallback(windowHandle, keyCallback);
         oldMouseButtonCallback = glfwSetMouseButtonCallback(windowHandle, mouseButtonCallback);
@@ -381,7 +398,6 @@ public class Window {
         oldPreeditCallback = glfwSetPreeditCallback(windowHandle, preeditCallback);
 
         WINDOW_MAP.put(windowHandle, this);
-        init();
     }
 
     public boolean isMouseInRange(int minX, int minY, int maxX, int maxY) {

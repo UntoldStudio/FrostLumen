@@ -21,7 +21,7 @@ import top.untold.frostlumen.core.render.GuiRender;
 
 public class TextLabel extends TextNode<TextLabel> implements HasDrawBackground<TextLabel> {
     private final CanWrappedTextRenderDescription renderDescription = new CanWrappedTextRenderDescription();
-    private boolean drawBackground = false;
+    private boolean drawBackground = true;
 
     @Override
     protected void init(GuiRender render) {

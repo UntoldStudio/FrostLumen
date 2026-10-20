@@ -1,47 +1,56 @@
 # Tween
 
-This chapter will explain how to use Tween (tween animation) in the library.
+This chapter explains how to use Tween (tween animation) in the library.
 
 ## Core Concepts
 
-All Tweens are essentially not bound to any UI. They are essentially just a value that grows over time, and you can use them anywhere.
+Essentially, no Tween is bound to any UI. It is fundamentally just a value that grows over time, and you can use it anywhere.
 
-A Tween consists of two parts: a Tween object (the carrier of data and some operations) and a TweenFunction (the easing function, which determines how it changes over time).
+A Tween consists of two parts: a Tween object (the carrier of data and some operations) and a TweenFunction (the easing function, which determines how the value changes over time).
 
 ## Tween Scheduler
 
-The Tween scheduler is a container that schedules a bunch of Tweens. In our library, NodeRoot has a Tween scheduler, which you can get via `getTweenScheduler`.
+The Tween scheduler is a carrier that schedules a bunch of Tweens. In our library, NodeRoot has a Tween scheduler, which you can obtain via `getTweenScheduler`.
 
-Each time the scheduler's `step()` method is called, it calls `step(delta)` on every registered Tween. A Tween only advances its value when it is stepped.
+Each time the scheduler's `step()` method is called, it calls `step(delta)` on every registered Tween. A Tween only advances its value when stepped.
+
+You can register/unregister Tweens with the scheduler using the following methods:
+
+```java
+public void registerTween(Tween tween) {...}
+public void registerTweens(Tween... tweens) {...}
+public void unregisterTween(Tween tween) {...}
+public void unregisterTweens(Tween... tweens) {...}
+```
 
 !!! warning
 
-    NodeRoot automatically steps its own Tween scheduler during rendering; you do not need to step it manually.
+    NodeRoot automatically steps its own Tween scheduler when rendering; you do not need to step it manually.
 
-## Tween Object
+## Tween Objects
 
-A Tween object is a data-carrying entity whose value grows over time. Currently, the library has three primitive-type Tween objects: `DoubleTween`, `FloatTween`, and `IntTween`, and two composite-type Tween objects: `ScaleOffsetTween` and `RGBATween`.
+A Tween object is a carrier that holds data and grows its value over time. Currently, the library has three basic-type Tween objects: `DoubleTween`, `FloatTween`, and `IntTween`, and two composite-type Tween objects: `ScaleOffsetTween` and `RGBATween`.
 
 A Tween object should have a method that returns its own value, such as the `getCurrentValue` method of the five objects listed above.
 
 The Tween base class has methods such as `pause()`, `resume()`, `reset()`, and `play()`.
 
-`pause`: Pause the Tween
+pause: pause the Tween
 
-`resume`: Resume the Tween
+resume: resume the Tween
 
-`reset`: Reset the Tween's playback progress
+reset: reset the Tween playback progress
 
-`play`: Calls `reset()` and `resume()`
+play: calls `reset()` and `resume()`
 
-You can call `setAlwaysRepeat` to set whether it repeats forever, and `setRemainingRepeatCount` to set how many times the Tween repeats (excluding the first time).
+You can call `setAlwaysRepeat` to set whether to repeat forever, and call `setRemainingRepeatCount` to set how many times the Tween repeats (not including the first time).
 
 !!! warning
 
     The time unit of a Tween object is milliseconds.
-    A Tween does not automatically call `play()` when created; you need to call it manually.
+    A newly created Tween will not automatically `play()`; you need to call it manually.
 
-Example: DoubleTween's setter-binding method (`bindSetter`)
+Example: DoubleTween's setter binding method (`bindSetter`)
 
 ```java
 --8<-- "core/src/main/java/top/untold/frostlumen/core/tween/DoubleTween.java:getCurrentValue"
@@ -49,31 +58,31 @@ Example: DoubleTween's setter-binding method (`bindSetter`)
 --8<-- "core/src/main/java/top/untold/frostlumen/core/tween/DoubleTween.java:bindSetter"
 ```
 
-The last parameter of all Tween object constructors generally determines whether it is automatically removed by the Tween scheduler after it finishes playing.
+The last parameter of the constructor of all Tween objects generally determines whether it is automatically removed by the Tween scheduler after it finishes playing.
 
-Example: Create a `ScaleOffsetTween` that smoothly moves from Scale coordinate `(0, 0)` to `(1, 1)` over 5 seconds, applies it to some node's position, and is automatically removed by the scheduler after playback finishes.
+Example: Create a `ScaleOffsetTween` that smoothly moves from Scale coordinate (0, 0) to (1, 1) over 5 seconds, and have some node's position apply it; it will be automatically removed by the scheduler after playback finishes.
 
 ```java
 ScaleOffsetTween scaleOffsetTween = new ScaleOffsetTween(ScaleOffset.ZERO, ScaleOffset.fromScale(1, 1), 5000L, TweenFunctions.LINEAR, true);
 
 scaleOffsetTween.bindSetter(node::setPosition);
-// If it has not been registered with the scheduler yet
+// If it has not yet been registered with the scheduler
 nodeRoot.getTweenScheduler().registerTween(scaleOffsetTween);
 
 scaleOffsetTween.play();
 ```
 
-Example: Play a tween repeatedly forever
+Example: Make a tween repeat forever
 
 ```java
 tween.setAlwaysRepeat(true);
 ```
 
-## TweenFunction
+## Easing Functions (TweenFunction)
 
-TweenFunction is the easing function. It determines the output value (ratio) at a given progress (range 0-1).
+TweenFunction is an easing function. It determines what value (ratio) is output at a given progress (range 0-1).
 
-TweenFunction is also a functional interface in our library, defined as:
+In our library, TweenFunction is also a functional interface, defined as:
 
 ```java
 @FunctionalInterface
@@ -82,11 +91,11 @@ public interface TweenFunction {
 }
 ```
 
-Here, `percent` is always 0-1, representing the current Tween percentage progress. The return value represents the mapped progress, generally 0-1. For example, Linear directly returns `percent`, meaning no change; QUAD_IN squares it once and then returns it. You can also exceed or fall below this value to create advanced effects (such as Back, which overshoots and then returns).
+Here, `percent` is always 0-1, representing the current Tween percentage progress. The return value represents the mapped progress, generally 0-1. For example, Linear directly returns `percent`, meaning no change; QUAD_IN squares it once before returning. You can also go above/below this range for advanced effects (such as Back, which overshoots and then returns).
 
 ### Built-in Easing Function Library (TweenFunctions)
 
-TweenFunctions is our prebuilt tween animation library. It has more than thirty types, which you can freely use and combine.
+TweenFunctions is our preset tween animation library. It has more than thirty types, which you can use and combine freely.
 
 ??? All Types
 
@@ -114,17 +123,17 @@ TweenFunctions is our prebuilt tween animation library. It has more than thirty 
 	| Circ | `CIRC_IN` | Circular ease-in |
 	| Circ | `CIRC_OUT` | Circular ease-out |
 	| Circ | `CIRC_IN_OUT` | Circular ease-in-out |
-	| Back | `BACK_IN` | Pulls back a bit first, then moves forward |
-	| Back | `BACK_OUT` | Overshoots on arrival, then settles back |
+	| Back | `BACK_IN` | Pulls back a bit at the start before moving forward |
+	| Back | `BACK_OUT` | Overshoots on arrival then returns |
 	| Back | `BACK_IN_OUT` | Pullback at both ends |
-	| Elastic | `ELASTIC_IN` | Elastic ease-in |
-	| Elastic | `ELASTIC_OUT` | Elastic ease-out |
-	| Elastic | `ELASTIC_IN_OUT` | Elastic ease-in-out |
+	| Elastic | `ELASTIC_IN` | Elastic oscillation ease-in |
+	| Elastic | `ELASTIC_OUT` | Elastic oscillation ease-out |
+	| Elastic | `ELASTIC_IN_OUT` | Elastic oscillation at both ends |
 	| Bounce | `BOUNCE_IN` | Bounce ease-in |
 	| Bounce | `BOUNCE_OUT` | Bounce ease-out |
-	| Bounce | `BOUNCE_IN_OUT` | Bounce ease-in-out |
-	| Other | `SMOOTHSTEP` | Smoothstep |
-	| Other | `SMOOTHERSTEP` | Smootherstep |
+	| Bounce | `BOUNCE_IN_OUT` | Bounce at both ends |
+	| Other | `SMOOTHSTEP` | Smooth step |
+	| Other | `SMOOTHERSTEP` | Smoother step |
 	
 	| Suffix | Meaning |
 	|---|---|
@@ -134,7 +143,7 @@ TweenFunctions is our prebuilt tween animation library. It has more than thirty 
 
 ### CustomTweenFunction
 
-CustomTweenFunction is an important class among TweenFunctions. It implements the TweenFunction interface, so it can be passed to anywhere a TweenFunction is needed.
+CustomTweenFunction is an important class in TweenFunction. It implements the TweenFunction interface, so it can be passed to any place that needs a TweenFunction.
 
 It has two constructors:
 
@@ -171,15 +180,15 @@ It has three core methods:
 
 !!! warning
 
-    The `start` and `end` above must be within 0-1; otherwise, they may never be called.
+    The `start` and `end` above must be within 0-1; otherwise they may never be called.
 
-Among them, the first method `setSegment` has parameters: the start value of the interval, the end value of the interval, and which easing function to use for the interval. It returns `this` to facilitate chaining.
+Among them, the first method `setSegment`'s parameters are: the start value of the interval, the end value of the interval, which easing function to use for the interval; returns `this` for convenient chaining.
 
-The third method `setNestedSegment` creates a new nested CustomTweenFunction and stores it in itself. Its parameters are: the start value of the interval, the end value of the interval, the function called by the new CustomTweenFunction if some interval to be used has not been registered, and the configuration function of the new CustomTweenFunction (you can continue to call these three methods on it to achieve nesting). It returns `this` to facilitate chaining.
+The third method `setNestedSegment` creates a new nested `CustomTweenFunction` and stores it in itself. Its parameters are: the start value of the interval, the end value of the interval, the function called when some interval to be used by the new `CustomTweenFunction` has not been registered, and the configuration function for the new `CustomTweenFunction` (you can continue calling these three methods on it to achieve nesting); returns `this` for convenient chaining.
 
-The second method is a convenience overload of the third method; the function called by the new CustomTweenFunction if some interval to be used has not been registered is always LINEAR.
+The second method is a convenience overload of the third method; the function called when some interval to be used by the new `CustomTweenFunction` has not been registered is always LINEAR.
 
-Example 1: Construct an easing function with LINEAR in the first half and QUAD_IN in the second half.
+Example 1: Construct an easing function whose first half is LINEAR and second half is QUAD_IN
 
 ```java
 CustomTweenFunction tweenFunction1 = new CustomTweenFunction()
@@ -187,7 +196,7 @@ CustomTweenFunction tweenFunction1 = new CustomTweenFunction()
                 .setSegment(0.5, 1, TweenFunctions.QUAD_IN);
 ```
 
-Example 2: Register `tweenFunction1` from Example 1 into the first half of another CustomFunction, and use CUBIC_IN in the second half.
+Example 2: Register `tweenFunction1` from Example 1 into the first half of another CustomFunction, and use CUBIC_IN for the second half
 
 ```java
 CustomTweenFunction tweenFunction2 = new CustomTweenFunction()
@@ -197,7 +206,7 @@ CustomTweenFunction tweenFunction2 = new CustomTweenFunction()
 
 The expected effect of Example 2 is: 0-0.5 enters `tweenFunction1`; 0-0.25 (`tweenFunction1`'s 0-0.5) enters LINEAR; 0.25-0.5 (`tweenFunction1`'s 0.5-1) enters QUAD_IN; 0.5-1 enters CUBIC_IN.
 
-Example 3: Rewrite the TweenFunction ultimately combined from Examples 1 and 2 as a directly constructed chain call.
+Example 3: Rewrite the final combined TweenFunction from Examples 1 and 2 as a direct chained construction
 
 ```java
 CustomTweenFunction tweenFunction3 = new CustomTweenFunction()
@@ -211,11 +220,11 @@ CustomTweenFunction tweenFunction3 = new CustomTweenFunction()
 
 ### NumberTween
 
-NumberTween is an abstract class. Primitive-type Tween classes generally directly inherit from it. It helps you manage the target time, easing function, etc. Subclasses only need to manage their own values and update their values by overriding the `applyEased(double eased)` method (generally you only need `startValue + (endValue - startValue) * eased`), reset their values by overriding `resetTween`, and provide the `getCurrentValue` method and the `bindSetter` method.
+NumberTween is an abstract class. Basic-type Tween classes generally inherit directly from it. It helps you manage target time, easing functions, etc. Subclasses only need to manage their own value and update their value by overriding the `applyEased(double eased)` function (generally you only need `startValue + (endValue - startValue) * eased`), reset their value by overriding `resetTween`, and provide `getCurrentValue` and `bindSetter` methods.
 
 !!! warning
 
-    You generally need to call the parent class's `triggerOnUpdateCallback` method when the value is updated in the `applyEased` method; otherwise, registered update callbacks will not be triggered.
+    You generally need to call the parent class's `triggerOnUpdateCallback` method in the `applyEased` method when the value is updated; otherwise, registered update callbacks will not be triggered.
 
 Example: IntTween class
 
@@ -225,7 +234,7 @@ Example: IntTween class
 
 ### CompositeTween
 
-CompositeTween is an abstract class. Composite-type Tween classes generally directly inherit from it. It helps you manage children, update callbacks, and manage bound setters, etc. Subclasses generally only need to register their child Tween objects with the parent class (using the parent class's `addChildren` or `addChild` methods), provide the `getCurrentValue` method, and fill the parent class's generic parameter with the type of the Tween's value.
+CompositeTween: composite-type Tween classes generally inherit directly from it. It helps you manage children, update callbacks, manage bound setters, etc. Subclasses generally only need to register their child Tween objects with the parent class (using the parent class's `addChildren` or `addChild` methods), provide a `getCurrentValue` method, and fill the parent class's generic parameter with the type of the Tween's value.
 
 Example: ScaleOffsetTween class
 

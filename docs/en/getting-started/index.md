@@ -1,29 +1,21 @@
 # First Use
 
-This chapter will demonstrate initializing the library, embedding it into the render loop, and displaying a full-screen white rectangle on the screen.
+This chapter will demonstrate initializing the library, embedding it into a render loop, and displaying a full-screen white rectangle on the screen.
 
 This UI library does not have its own render loop; it is usually embedded directly into the host program.
 
-When you have created a window and hold the window handle, you can do this to initialize the library:
+When you have created a window and hold its window handle, you can do this to initialize the library:
 
 ```java
-Window window = Window.from(windowHandle, RenderProviderType.OPENGL); // Currently we only have an OpenGL backend
+Window window = Window.from(windowHandle); // Will register GLFW callbacks
+window.init(RenderProviderType.OPENGL); // Will initialize the rendering backend
 ```
 
 !!! warning
 
-    This library does not currently support multiple windows.
+    You should call `Window.from` on the thread that calls `glfwPollEvent`, and call `window.init` on the rendering thread.
 
-Internally, it will:
-
-Register GLFW callbacks
-Initialize the rendering backend
-
-!!! warning
-
-    You should call `Window.from()` on the rendering thread.
-
-    And do not register any GLFW callbacks after `Window.from()`; your callbacks should be registered before `Window.from()`.
+    Also, do not register any GLFW callbacks after `Window.from`. Your callbacks should be registered before `Window.from`.
 
 After initializing the Window, you can get the GUI node root:
 

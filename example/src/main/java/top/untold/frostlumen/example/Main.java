@@ -16,41 +16,62 @@
 package top.untold.frostlumen.example;
 
 import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryUtil;
 import top.untold.frostlumen.core.data.*;
 import top.untold.frostlumen.core.gui.NodeRoot;
 import top.untold.frostlumen.core.gui.Window;
 import top.untold.frostlumen.core.gui.node.*;
 import top.untold.frostlumen.core.render.ResourceManager;
 import top.untold.frostlumen.core.render.RenderProviderType;
+import top.untold.frostlumen.core.texture.Texture;
 import top.untold.frostlumen.core.tween.CustomTweenFunction;
 import top.untold.frostlumen.core.tween.ScaleOffsetTween;
 import top.untold.frostlumen.core.tween.TweenFunctions;
 import top.untold.frostlumen.core.tween.TweenScheduler;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL32.*;
 
 // --8<-- [start:classDefinition]
 public class Main {
-    public static void main(String[] args) {
+    private static final AtomicBoolean shouldClose = new AtomicBoolean(false);
+
+    private static long createWindow(int width, int height, String title, Window shared) {
+        return glfwCreateWindow(width, height, title, MemoryUtil.NULL, shared == null ? MemoryUtil.NULL : shared.getWindowHandle());
+    }
+
+    public static void main(String[] args) throws InterruptedException {
         if (!glfwInit()) {
             throw new RuntimeException("Unable to initialize GLFW");
         }
 
-        long windowHandle = glfwCreateWindow(800, 600, "Test", 0, 0);
-
-        glfwMakeContextCurrent(windowHandle);
+        long windowHandle1 = createWindow(800, 600, "Test1", null);
+        glfwMakeContextCurrent(windowHandle1);
         GL.createCapabilities();
+        glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+        Window window1 = Window.from(windowHandle1);
+        window1.init(RenderProviderType.OPENGL);
+        NodeRoot root1 = window1.getNodeRoot();
+        ResourceManager resourceManager1 = root1.getResourceManager();
 
-        Window window = Window.from(windowHandle, RenderProviderType.OPENGL);
+        long windowHandle2 = createWindow(800, 600, "Test2", window1);
+        glfwMakeContextCurrent(windowHandle2);
+        glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+        Window window2 = Window.from(windowHandle2);
+        window2.init(RenderProviderType.OPENGL);
+        NodeRoot root2 = window2.getNodeRoot();
+        ResourceManager resourceManager2 = root2.getResourceManager();
 
-        NodeRoot root = window.getNodeRoot();
-        ResourceManager resourceManager = root.getResourceManager();
+        Texture oiiacatBlue = resourceManager1.loadTexture("/oiiaioiiai-blue.jpg");
+        Texture oiiacatRed = resourceManager1.loadTexture("/oiiaioiiai-red.jpg");
+        Texture oiiacatGreen =  resourceManager1.loadTexture("/oiiaioiiai-green.jpg");
 
-        ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-blue.jpg"), ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+        ImageButton button = new ImageButton(oiiacatBlue, ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
                 .normal().setImageAlignment(ImageAlignment.FILL).getNode()
-                .onHover().setTexture(resourceManager.loadTexture("/oiiaioiiai-red.jpg")).getNode()
-                .onClick().setTexture(resourceManager.loadTexture("/oiiaioiiai-green.jpg")).getNode()
+                .onHover().setTexture(oiiacatRed).getNode()
+                .onClick().setTexture(oiiacatGreen).getNode()
                 .setAnchor(0.5, 0.5)
                 .setAngle(20)
                 .setDrawBackground(true)
@@ -114,28 +135,42 @@ public class Main {
                 .setColor(RGBA.GRAY)
                 .getNode();
         box.addChildren(frame, frame3);
-        root.addChildren(box, button, blurBox, textBox, label);
-        TweenScheduler tweenScheduler = root.getTweenScheduler();
+        root1.addChildren(box, button, blurBox, textBox, label);
+        TweenScheduler tweenScheduler = root1.getTweenScheduler();
         tweenScheduler.registerTween(scaleOffsetTween);
         tweenScheduler.registerTween(scaleOffsetTween1);
         scaleOffsetTween.bindSetter(button::setPosition);
         scaleOffsetTween1.bindSetter(button::setPosition);
         scaleOffsetTween.play();
 
+        ImageLabel window2ImageLabel = new ImageLabel(oiiacatGreen, ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+                .setAnchor(0.5, 0.5)
+                ;
+        TextBox window2TextBox = new TextBox(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
+                ;
+
+        root2.addChildren(window2ImageLabel, window2TextBox);
+
         long previousTime = System.nanoTime();
         int frameCount = 0;
 
+        Window otherWindow = runOtherWindowInOtherThread(800, 600, "Test3");
+        Thread thread = otherWindow.getRenderThread();
+
         glfwSwapInterval(0);
 
-        while (!glfwWindowShouldClose(windowHandle)) {
+        while (!shouldClose.get() && !glfwWindowShouldClose(windowHandle1) && !glfwWindowShouldClose(windowHandle2)) {
             glfwPollEvents();
 
-            glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+            glfwMakeContextCurrent(windowHandle1);
             glClear(GL_COLOR_BUFFER_BIT);
+            root1.render();
+            glfwSwapBuffers(windowHandle1);
 
-            root.render();
-
-            glfwSwapBuffers(windowHandle);
+            glfwMakeContextCurrent(windowHandle2);
+            glClear(GL_COLOR_BUFFER_BIT);
+            root2.render();
+            glfwSwapBuffers(windowHandle2);
 
             frameCount++;
             long currentTime = System.nanoTime();
@@ -149,7 +184,63 @@ public class Main {
             }
         }
 
-        window.close();
+        shouldClose.set(true);
+
+        thread.join();
+
+        resourceManager1.unloadTexture(oiiacatBlue, oiiacatRed, oiiacatGreen);
+
+        window1.close();
+        window2.close();
+        otherWindow.close();
+
+        glfwTerminate();
+    }
+
+    private static Window runOtherWindowInOtherThread(int width, int height, String title) {
+        long handle = createWindow(width, height, title, null);
+        Window window = Window.from(handle);
+        Thread thread = new Thread(() -> {
+            glfwMakeContextCurrent(handle);
+            GL.createCapabilities();
+            window.init(RenderProviderType.OPENGL);
+            NodeRoot root = window.getNodeRoot();
+
+            TextLabel label = new TextLabel("Hello from other thread!", ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5));
+            TextBox box = new TextBox(ScaleOffset.fromScale(0, 0), ScaleOffset.fromScale(0.5, 0.5)).setZIndex(100);
+
+            ScaleOffsetTween tween1 = new ScaleOffsetTween(ScaleOffset.ZERO, ScaleOffset.fromScale(1, 1), 10000L, TweenFunctions.LINEAR, false);
+            ScaleOffsetTween tween2 = new ScaleOffsetTween(ScaleOffset.fromScale(1, 1), ScaleOffset.ZERO, 10000L, TweenFunctions.LINEAR, false);
+
+            tween1.bindSetter(label::setPosition);
+            tween2.bindSetter(label::setPosition);
+
+            tween1.onComplete(tween2::play);
+            tween2.onComplete(tween1::play);
+
+            root.addChildren(label, box);
+
+            root.getTweenScheduler().registerTweens(tween1, tween2);
+
+            tween1.play();
+
+            glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+
+            while (!shouldClose.get()) {
+                if (glfwWindowShouldClose(handle)) {
+                    root.runAllTasksOnCurrentThread();
+                }
+                glClear(GL_COLOR_BUFFER_BIT);
+                root.render();
+                glfwSwapBuffers(handle);
+                if (glfwWindowShouldClose(handle)) {
+                    break;
+                }
+            }
+            shouldClose.set(true);
+        });
+        thread.start();
+        return window;
     }
 }
 // --8<-- [end:classDefinition]

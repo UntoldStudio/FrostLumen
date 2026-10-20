@@ -32,6 +32,20 @@ node.setClipChildren(true);
 
 如果你没看到背景,且节点有drawBackground属性,优先考虑将它设为true
 
+## ZIndex
+
+类型:int
+
+默认值:0
+
+顾名思义,他决定节点渲染/事件分发在同一父项下分发的顺序,数字越大,渲染越靠上,事件越先收到
+
+示例:把node的ZIndex设置为100
+
+```java
+node.setZIndex(100);
+```
+
 ## Background
 
 background是每个节点都会有的字段,但是如果子类未暴露出绘制背景的能力则设置他无效

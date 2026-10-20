@@ -14,6 +14,8 @@ GuiNode继承ParentNode,因此也有children列表.它还拥有parent字段与ro
 
 NodeRoot继承ParentNode,因此它也有children列表.与GuiNode不同,它作为节点根,没有parent,root就是他自己.
 
+NodeRoot实例拥有`runTask(Runnable task)`方法,注册的任务将会在下次渲染前执行
+
 ## Children
 
 当你调用了ParentNode的某个实例的addChild方法并传入了某node实例的时候,它会做这些事:
@@ -48,7 +50,12 @@ ParentNode还有一个removeChildren便捷重载,它也使用变长参数(GuiNod
 
 鼠标点击,键盘输入等可取消事件按反序遍历children(子节点先处理,父节点再处理,目的:最上层节点能优先接收到鼠标事件,键盘事件等,否则用户点击鼠标是在最底层渲染的节点响应很反直觉)
 
-注意:zIndex只影响同一个父项下所有子节点的排序
+
+!!! warn
+
+    zIndex只影响同一个父项下所有子节点的排序
+
+    所有GLFW事件都会使用runTask调度到渲染线程来处理
 
 以下是一个演示用的节点树
 

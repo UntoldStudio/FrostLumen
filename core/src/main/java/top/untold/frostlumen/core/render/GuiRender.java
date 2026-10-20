@@ -55,7 +55,6 @@ public abstract class GuiRender implements ResourceManager {
     protected final Map<Font, Int2FloatMap> ascenderCache = new HashMap<>();
     protected final Map<Double, FT_Matrix> italicDegreesCache = new LruCacheMap<>(128, (_, value) -> value.free());
     protected final long windowHandle;
-    protected final Map<String, Font> fontMap = new HashMap<>();
     protected long ftLibrary;
     protected long cursorShapeInThisFrame;
     protected int cursorModeInThisFrame;
@@ -68,7 +67,8 @@ public abstract class GuiRender implements ResourceManager {
             float cosineOfAngle, float sineOfAngle,
             float cornerTopLeft, float cornerTopRight,
             float cornerBottomLeft, float cornerBottomRight
-    ) {}
+    ) {
+    }
 
     public void drawRectangle(int minX, int minY, int maxX, int maxY, float angle, int red, int green, int blue, int alpha) {
         drawRectangle(minX, minY, maxX, maxY, angle, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha);
@@ -109,6 +109,7 @@ public abstract class GuiRender implements ResourceManager {
 
         drawTriangle(ax, ay, bx, by, cx, cy, centerX, centerY, angle, aRed, aGreen, aBlue, aAlpha, bRed, bGreen, bBlue, bAlpha, cRed, cGreen, cBlue, cAlpha);
     }
+
     public abstract void drawTriangle(int ax, int ay, int bx, int by, int cx, int cy, int centerX, int centerY, float angle,
                                       int aRed, int aGreen, int aBlue, int aAlpha,
                                       int bRed, int bGreen, int bBlue, int bAlpha,
@@ -137,8 +138,10 @@ public abstract class GuiRender implements ResourceManager {
                                      boolean stretchInner
     ) {
         switch (type) {
-            case PROPORTIONAL -> drawNiceSliceTextureProportional(textureId, textureWidth, textureHeight, borderLeft, borderRight, borderTop, borderBottom, targetMinX, targetMinY, targetMaxX, targetMaxY, angle, textureU0, textureV0, textureU3, textureV3, aRed, aGreen, aBlue, aAlpha, bRed, bGreen, bBlue, bAlpha, cRed, cGreen, cBlue, cAlpha, dRed, dGreen, dBlue, dAlpha, stretchInner);
-            case FIXED_BORDER -> drawNiceSliceTextureFixed(textureId, textureWidth, textureHeight, borderLeft, borderRight, borderTop, borderBottom, targetMinX, targetMinY, targetMaxX, targetMaxY, angle, textureU0, textureV0, textureU3, textureV3, aRed, aGreen, aBlue, aAlpha, bRed, bGreen, bBlue, bAlpha, cRed, cGreen, cBlue, cAlpha, dRed, dGreen, dBlue, dAlpha, stretchInner);
+            case PROPORTIONAL ->
+                    drawNiceSliceTextureProportional(textureId, textureWidth, textureHeight, borderLeft, borderRight, borderTop, borderBottom, targetMinX, targetMinY, targetMaxX, targetMaxY, angle, textureU0, textureV0, textureU3, textureV3, aRed, aGreen, aBlue, aAlpha, bRed, bGreen, bBlue, bAlpha, cRed, cGreen, cBlue, cAlpha, dRed, dGreen, dBlue, dAlpha, stretchInner);
+            case FIXED_BORDER ->
+                    drawNiceSliceTextureFixed(textureId, textureWidth, textureHeight, borderLeft, borderRight, borderTop, borderBottom, targetMinX, targetMinY, targetMaxX, targetMaxY, angle, textureU0, textureV0, textureU3, textureV3, aRed, aGreen, aBlue, aAlpha, bRed, bGreen, bBlue, bAlpha, cRed, cGreen, cBlue, cAlpha, dRed, dGreen, dBlue, dAlpha, stretchInner);
         }
     }
 
@@ -148,6 +151,7 @@ public abstract class GuiRender implements ResourceManager {
                 red, green, blue, alpha, red, green, blue, alpha
         );
     }
+
     public void drawTexture(Texture texture, int minX, int minY, int maxX, int maxY, float angle, float u0, float v0, float u1, float v1,
                             int aRed, int aGreen, int aBlue, int aAlpha,
                             int bRed, int bGreen, int bBlue, int bAlpha,
@@ -626,45 +630,45 @@ public abstract class GuiRender implements ResourceManager {
 
     @Override
     public Font loadFont(String path) {
-        return fontMap.computeIfAbsent(path, fontPath -> {
-            try (MemoryStack stack = MemoryStack.stackPush()) {
-                PointerBuffer buffer = stack.mallocPointer(1);
-                int error = FT_New_Face(ftLibrary, fontPath, 0, buffer);
-                long facePointer = -1;
-                ByteBuffer fontBuffer = null;
+        try (MemoryStack stack = MemoryStack.stackPush()) {
+            PointerBuffer buffer = stack.mallocPointer(1);
+            int error = FT_New_Face(ftLibrary, path, 0, buffer);
+            long facePointer = -1;
+            ByteBuffer fontBuffer = null;
 
-                if (error != 0) {
-                    byte[] data;
-                    try {
-                        data = ResourceReader.readBytes(fontPath);
-                    } catch (IOException e) {
-                        throw new ResourceException("Cannot load font file: " + fontPath);
-                    }
-                    fontBuffer = MemoryUtil.memAlloc(data.length);
-                    fontBuffer.put(data).flip();
-                    buffer.clear();
-                    error = FT_New_Memory_Face(ftLibrary, fontBuffer, 0, buffer);
-                    if (error == 0) {
-                        facePointer = buffer.get(0);
-                    }
+            if (error != 0) {
+                byte[] data;
+                try {
+                    data = ResourceReader.readBytes(path);
+                } catch (IOException e) {
+                    throw new ResourceException("Cannot load font file: " + path);
                 }
-
-                if (facePointer == -1) {
-                    throw new ResourceException("Failed to create font face for: " + fontPath);
+                fontBuffer = MemoryUtil.memAlloc(data.length);
+                fontBuffer.put(data).flip();
+                buffer.clear();
+                error = FT_New_Memory_Face(ftLibrary, fontBuffer, 0, buffer);
+                if (error == 0) {
+                    facePointer = buffer.get(0);
                 }
-
-                FT_Face face = FT_Face.create(facePointer);
-                return new Font(face, fontPath, fontBuffer);
             }
-        });
+
+            if (facePointer == -1) {
+                throw new ResourceException("Failed to create font face for: " + path);
+            }
+
+            FT_Face face = FT_Face.create(facePointer);
+            return new Font(face, path, fontBuffer);
+        }
     }
 
     public void drawString(String text, Font font, int startDrawX, int startDrawY, float angle, int fontSize, double italicDegrees, int boldStrength, int red, int green, int blue, int alpha) {
         drawString(text, font, startDrawX, startDrawY, angle, fontSize, italicDegrees, boldStrength, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha);
     }
+
     public void drawString(String text, Font font, int startDrawX, int startDrawY, int centerX, int centerY, float angle, int fontSize, double italicDegrees, int boldStrength, int red, int green, int blue, int alpha) {
         drawString(text, font, startDrawX, startDrawY, centerX, centerY, angle, fontSize, italicDegrees, boldStrength, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha, red, green, blue, alpha);
     }
+
     public void drawString(String text, Font font, int startDrawX, int startDrawY, int centerX, int centerY, float angle,
                            int fontSize, double italicDegrees, int boldStrength,
                            int aRed, int aGreen, int aBlue, int aAlpha, int bRed, int bGreen, int bBlue, int bAlpha,
@@ -776,6 +780,7 @@ public abstract class GuiRender implements ResourceManager {
             }
         }
     }
+
     public void drawString(String text, Font font, int startDrawX, int startDrawY, float angle,
                            int fontSize, double italicDegrees, int boldStrength,
                            int aRed, int aGreen, int aBlue, int aAlpha,
@@ -832,6 +837,7 @@ public abstract class GuiRender implements ResourceManager {
             throw new ResourceException("Load texture failed: " + e.getMessage());
         }
     }
+
     private Texture loadTexture(byte[] bytes, boolean isNiceGrid, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer widthBuffer = stack.mallocInt(1);
@@ -858,14 +864,33 @@ public abstract class GuiRender implements ResourceManager {
     public Texture loadTexture(byte[] data) {
         return loadTexture(data, true);
     }
+
+    @Override
+    public void unloadTexture(Texture texture) {
+        unloadRenderTexture(texture.textureId());
+    }
+
+    @Override
+    public void unloadFont(Font font) {
+        FT_Done_Face(font.face());
+        MemoryUtil.memFree(font.data());
+
+        unloadRenderFont(font);
+    }
+
+    protected abstract void unloadRenderTexture(int textureId);
+    protected abstract void unloadRenderFont(Font font);
+
     @Override
     public Texture loadTexture(byte[] data, boolean isLinear) {
         return loadTexture(data, false, null, true, isLinear, -1, -1, -1, -1);
     }
+
     @Override
     public Texture loadTexture(String path) {
         return loadTexture(path, true);
     }
+
     @Override
     public Texture loadTexture(String path, boolean isLinear) {
         return loadTexture(path, false, null, true, isLinear, -1, -1, -1, -1);
@@ -875,14 +900,17 @@ public abstract class GuiRender implements ResourceManager {
     public Texture loadNiceSliceTexture(byte[] data, NiceSliceType type, boolean stretchInner, int left, int right, int top, int bottom) {
         return loadNiceSliceTexture(data, type, stretchInner, true, left, right, top, bottom);
     }
+
     @Override
     public Texture loadNiceSliceTexture(byte[] data, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom) {
         return loadTexture(data, true, type, stretchInner, isLinear, left, right, top, bottom);
     }
+
     @Override
     public Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, int left, int right, int top, int bottom) {
         return loadNiceSliceTexture(path, type, stretchInner, true, left, right, top, bottom);
     }
+
     @Override
     public Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom) {
         return loadTexture(path, true, type, stretchInner, isLinear, left, right, top, bottom);
@@ -891,12 +919,15 @@ public abstract class GuiRender implements ResourceManager {
     public void setCursorShape(CursorShape cursorShapeInThisFrame) {
         this.cursorShapeInThisFrame = cursorShapeMap.get(cursorShapeInThisFrame.getGLFWValue());
     }
+
     public void setCursorMode(int cursorModeInThisFrame) {
         this.cursorModeInThisFrame = cursorModeInThisFrame;
     }
+
     public void setCursorMode(CursorMode cursorModeInThisFrame) {
         this.cursorModeInThisFrame = cursorModeInThisFrame.getGLFWValue();
     }
+
     public void setCursorShape(long cursorShapeInThisFrame) {
         this.cursorShapeInThisFrame = cursorShapeInThisFrame;
     }
@@ -913,9 +944,14 @@ public abstract class GuiRender implements ResourceManager {
         int radius = Maths.round(strength * 100);
         blurFramebufferRegion(x, y, width, height, angle, radius);
     }
+
     protected abstract void blurFramebufferRegion(int x, int y, int width, int height, float angle, int radius);
 
     public GuiRender(long windowHandle) {
+        if (glfwGetCurrentContext() != windowHandle) {
+            throw new IllegalStateException("GuiRender must be created with the target context current");
+        }
+
         this.windowHandle = windowHandle;
 
         for (CursorShape shape : CursorShape.values()) {

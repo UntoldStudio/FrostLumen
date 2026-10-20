@@ -14,6 +14,15 @@ Tween调度器是一个调度一堆Tween的载体.在我们的库中,NodeRoot就
 
 调度器每次被调用step()方法的时候都会调用注册的每个Tween的step(delta),Tween只有被step才会推进值
 
+你可以通过以下几个方法来注册/取消注册Tween到调度器
+
+```java
+public void registerTween(Tween tween) {...}
+public void registerTweens(Tween... tweens) {...}
+public void unregisterTween(Tween tween) {...}
+public void unregisterTweens(Tween... tweens) {...}
+```
+
 !!! warning
 
     NodeRoot在渲染时会自动步进它自己的Tween调度器,你不需要手动步进

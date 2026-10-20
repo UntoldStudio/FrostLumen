@@ -51,7 +51,7 @@ public abstract class TextNode<T extends TextNode<T>> extends GuiNode<T> {
         protected int boldStrength = 0;
         protected HorizontalAlignment horizontalAlignment = HorizontalAlignment.CENTER;
         protected VerticalAlignment verticalAlignment = VerticalAlignment.CENTER;
-        protected RGBA color = RGBA.WHITE;
+        protected RGBA color = RGBA.BLACK;
 
         public void render(GuiRender render) {
             if (font == null) return;

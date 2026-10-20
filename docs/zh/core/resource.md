@@ -4,7 +4,7 @@
 
 ## ResourceManager
 
-所有资源的加载都应该通过ResourceManager.加载资源的调用应该在渲染线程使用,并且必须在Window.from调用之后
+所有资源的加载都应该通过ResourceManager.加载资源的调用应该在渲染线程使用(其他线程可以使用`root.runTask`调度到渲染线程),并且必须在`window.init`调用之后
 
 你可以通过`NodeRoot`的`getResourceManager`方法获取ResourceManager实例.
 
@@ -24,7 +24,9 @@ Font loadFont(String path);
 
 ### 加载字体
 
-加载字体仅需通过loadFont(String path)即可获取Font实例,字体有缓存
+注意:**他们都不会缓存,每次都会重新上传,返回新的Font**
+
+加载字体仅需通过loadFont(String path)即可获取Font实例
 
 Font实例可以传给各种需要Font的节点,如TextLabel
 
@@ -95,3 +97,28 @@ ImageButton button = new ImageButton(resourceManager.loadTexture("/oiiaioiiai-bl
                 .setCornerRadius(10)
                 .getNode();
 ```
+
+### 卸载资源
+
+卸载资源的方法有这些:
+
+```java
+void unloadTexture(Texture texture);
+default void unloadTexture(Texture... textures) {
+    for (Texture texture : textures) {
+        unloadTexture(texture);
+    }
+}
+void unloadFont(Font font);
+default void unloadFont(Font... fonts) {
+    for (Font font : fonts) {
+        unloadFont(font);
+    }
+}
+```
+
+它们都会释放部分内存资源,另一部分根据底层渲染器实现不同,GPU资源根据底层渲染器实现不同也不一样
+
+!!! warn
+
+    请在你加载资源的ResourceMangaer卸载资源,不要用别的窗口的ResourceMangaer卸载
