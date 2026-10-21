@@ -18,14 +18,17 @@ package top.untold.frostlumen.core.gui.node;
 import top.untold.frostlumen.core.data.NiceSliceType;
 import top.untold.frostlumen.core.data.RGBA;
 import top.untold.frostlumen.core.data.ScaleOffset;
+import top.untold.frostlumen.core.event.MouseButtonEvent;
 import top.untold.frostlumen.core.event.MouseScrollEvent;
 import top.untold.frostlumen.core.gui.GuiNode;
-import top.untold.frostlumen.core.gui.ParentNode;
+import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
 import top.untold.frostlumen.core.render.GuiRender;
 import top.untold.frostlumen.core.texture.Texture;
 import top.untold.frostlumen.core.tool.Maths;
 
-public class ScrollFrame extends GuiNode<ScrollFrame> {
+import java.util.function.Consumer;
+
+public class ScrollFrame extends GuiNode<ScrollFrame> implements InputBlocker<ScrollFrame> {
     private RGBA scrollBarColor = RGBA.WHITE;
     private boolean canScroll = true;
     private boolean scrollBarVisible = true;
@@ -37,6 +40,32 @@ public class ScrollFrame extends GuiNode<ScrollFrame> {
     private int scrollBarWidth = 6;
     private int scrollBarYSize;
     private Texture scrollBarTexture;
+    private final OneArgListenerRegistry<MouseButtonEvent> mouseButtonEventListenerRegistry = new OneArgListenerRegistry<>();
+    private boolean blockInput = false;
+
+    public ScrollFrame registerMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+        mouseButtonEventListenerRegistry.register(callback);
+        return this;
+    }
+
+    public ScrollFrame unregisterMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+        mouseButtonEventListenerRegistry.unregister(callback);
+        return this;
+    }
+
+    @Override
+    protected void onMouseButtonEvent(MouseButtonEvent event) {
+        mouseButtonEventListenerRegistry.trigger(event);
+    }
+
+    public ScrollFrame setBlockInput(boolean blockInput) {
+        this.blockInput = blockInput;
+        return this;
+    }
+
+    public boolean isBlockInput() {
+        return this.blockInput;
+    }
 
     @Override
     protected void init(GuiRender render) {

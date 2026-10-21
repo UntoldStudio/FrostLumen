@@ -16,12 +16,42 @@
 package top.untold.frostlumen.core.gui.node;
 
 import top.untold.frostlumen.core.data.ScaleOffset;
+import top.untold.frostlumen.core.event.MouseButtonEvent;
 import top.untold.frostlumen.core.font.Font;
+import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
 import top.untold.frostlumen.core.render.GuiRender;
 
-public class TextLabel extends TextNode<TextLabel> implements HasDrawBackground<TextLabel> {
+import java.util.function.Consumer;
+
+public class TextLabel extends TextNode<TextLabel> implements HasDrawBackground<TextLabel>, InputBlocker<TextLabel> {
     private final CanWrappedTextRenderDescription renderDescription = new CanWrappedTextRenderDescription();
+    private final OneArgListenerRegistry<MouseButtonEvent> mouseButtonEventListenerRegistry = new OneArgListenerRegistry<>();
     private boolean drawBackground = true;
+    private boolean blockInput = false;
+
+    public TextLabel registerMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+        mouseButtonEventListenerRegistry.register(callback);
+        return this;
+    }
+
+    public TextLabel unregisterMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+        mouseButtonEventListenerRegistry.unregister(callback);
+        return this;
+    }
+
+    @Override
+    protected void onMouseButtonEvent(MouseButtonEvent event) {
+        mouseButtonEventListenerRegistry.trigger(event);
+    }
+
+    public TextLabel setBlockInput(boolean blockInput) {
+        this.blockInput = blockInput;
+        return this;
+    }
+
+    public boolean isBlockInput() {
+        return this.blockInput;
+    }
 
     @Override
     protected void init(GuiRender render) {

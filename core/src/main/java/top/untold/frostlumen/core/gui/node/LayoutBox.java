@@ -17,18 +17,47 @@ package top.untold.frostlumen.core.gui.node;
 
 import org.jetbrains.annotations.NotNull;
 import top.untold.frostlumen.core.data.ScaleOffset;
+import top.untold.frostlumen.core.event.MouseButtonEvent;
 import top.untold.frostlumen.core.gui.GuiNode;
-import top.untold.frostlumen.core.gui.ParentNode;
+import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
 import top.untold.frostlumen.core.render.GuiRender;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.function.Consumer;
 
-public abstract class LayoutBox<T extends LayoutBox<T>> extends GuiNode<T> {
+public abstract class LayoutBox<T extends LayoutBox<T>> extends GuiNode<T> implements InputBlocker<T> {
     protected List<GuiNode<?>> sortedNodeList = new ArrayList<>();
     protected int nodeStartSpacing = 0;
     protected int nodeSpacing = 0;
+    private final OneArgListenerRegistry<MouseButtonEvent> mouseButtonEventListenerRegistry = new OneArgListenerRegistry<>();
+    private boolean blockInput = false;
+
+    public T registerMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+        mouseButtonEventListenerRegistry.register(callback);
+        return self;
+    }
+
+    public T unregisterMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+        mouseButtonEventListenerRegistry.unregister(callback);
+        return self;
+    }
+
+    @Override
+    protected void onMouseButtonEvent(MouseButtonEvent event) {
+        mouseButtonEventListenerRegistry.trigger(event);
+    }
+
+    public T setBlockInput(boolean blockInput) {
+        this.blockInput = blockInput;
+        return self;
+    }
+
+    public boolean isBlockInput() {
+        return this.blockInput;
+    }
+
     protected abstract void sortNodes();
 
     private void sortList() {

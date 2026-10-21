@@ -35,6 +35,7 @@ public class ImageButton extends ImageNode<ImageButton> implements HasDrawBackgr
     private final ImageRenderDescription onHover = new ImageRenderDescription();
     private final ImageRenderDescription onClick = new ImageRenderDescription();
     private boolean drawBackground = false;
+    private boolean changeCursorShape = true;
 
     public ImageButton addCanTriggerMouseButton(MouseButton button) {
         canTriggerMouseButtons.add(button);
@@ -54,14 +55,14 @@ public class ImageButton extends ImageNode<ImageButton> implements HasDrawBackgr
             } else {
                 normal.render(render);
             }
-            render.setCursorShape(CursorShape.HAND);
+            if (changeCursorShape) render.setCursorShape(CursorShape.HAND);
         } else if (mouseInNode) {
             if (onHover.canRender()) {
                 onHover.render(render);
             } else {
                 normal.render(render);
             }
-            render.setCursorShape(CursorShape.HAND);
+            if (changeCursorShape) render.setCursorShape(CursorShape.HAND);
         } else {
             normal.render(render);
         }
@@ -97,6 +98,15 @@ public class ImageButton extends ImageNode<ImageButton> implements HasDrawBackgr
     }
     public ImageRenderDescription onClick() {
         return onClick;
+    }
+
+    public ImageButton setChangeCursorShape(boolean changeCursorShape) {
+        this.changeCursorShape = changeCursorShape;
+        return this;
+    }
+
+    public boolean isChangeCursorShape() {
+        return changeCursorShape;
     }
 
     @Override
