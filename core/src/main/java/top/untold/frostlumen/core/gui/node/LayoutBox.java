@@ -25,38 +25,11 @@ import top.untold.frostlumen.core.render.GuiRender;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Consumer;
 
-public abstract class LayoutBox<T extends LayoutBox<T>> extends GuiNode<T> implements InputBlocker<T> {
+public abstract class LayoutBox<T extends LayoutBox<T>> extends AbstractInputBlocker<T> implements InputBlocker<T> {
     protected List<GuiNode<?>> sortedNodeList = new ArrayList<>();
     protected int nodeStartSpacing = 0;
     protected int nodeSpacing = 0;
-    private final OneArgListenerRegistry<MouseButtonEvent> mouseButtonEventListenerRegistry = new OneArgListenerRegistry<>();
-    private boolean blockInput = false;
-
-    public T registerMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
-        mouseButtonEventListenerRegistry.register(callback);
-        return self;
-    }
-
-    public T unregisterMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
-        mouseButtonEventListenerRegistry.unregister(callback);
-        return self;
-    }
-
-    @Override
-    protected void onMouseButtonEvent(MouseButtonEvent event) {
-        mouseButtonEventListenerRegistry.trigger(event);
-    }
-
-    public T setBlockInput(boolean blockInput) {
-        this.blockInput = blockInput;
-        return self;
-    }
-
-    public boolean isBlockInput() {
-        return this.blockInput;
-    }
 
     protected abstract void sortNodes();
 

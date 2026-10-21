@@ -16,7 +16,6 @@
 package top.untold.frostlumen.core.gui.node;
 
 import top.untold.frostlumen.core.data.ScaleOffset;
-import top.untold.frostlumen.core.gui.ParentNode;
 import top.untold.frostlumen.core.render.GuiRender;
 import top.untold.frostlumen.core.texture.Texture;
 

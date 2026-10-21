@@ -15,7 +15,10 @@
  */
 package top.untold.frostlumen.core.gui.node;
 
+import top.untold.frostlumen.core.event.KeyEvent;
 import top.untold.frostlumen.core.event.MouseButtonEvent;
+import top.untold.frostlumen.core.event.MouseMoveEvent;
+import top.untold.frostlumen.core.event.MouseScrollEvent;
 import top.untold.frostlumen.core.gui.GuiNode;
 
 import java.util.function.Consumer;
@@ -25,5 +28,12 @@ public interface InputBlocker<T extends GuiNode<T>> {
     boolean isBlockInput();
 
     T registerMouseButtonEventListener(Consumer<MouseButtonEvent> callback);
+    T registerMouseMoveEventListener(Consumer<MouseMoveEvent> callback);
+    T registerMouseScrollEventListener(Consumer<MouseScrollEvent> callback);
+    T registerKeyEventListener(Consumer<KeyEvent> callback);
+
     T unregisterMouseButtonEventListener(Consumer<MouseButtonEvent> callback);
+    T unregisterMouseMoveEventListener(Consumer<MouseMoveEvent> callback);
+    T unregisterMouseScrollEventListener(Consumer<MouseScrollEvent> callback);
+    T unregisterKeyEventListener(Consumer<KeyEvent> callback);
 }

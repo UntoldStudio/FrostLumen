@@ -16,41 +16,9 @@
 package top.untold.frostlumen.core.gui.node;
 
 import top.untold.frostlumen.core.data.ScaleOffset;
-import top.untold.frostlumen.core.event.MouseButtonEvent;
-import top.untold.frostlumen.core.gui.GuiNode;
-import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
 import top.untold.frostlumen.core.render.GuiRender;
 
-import java.util.function.Consumer;
-
-public class Frame extends GuiNode<Frame> implements InputBlocker<Frame> {
-    private final OneArgListenerRegistry<MouseButtonEvent> mouseButtonEventListenerRegistry = new OneArgListenerRegistry<>();
-    private boolean blockInput = false;
-
-    public Frame registerMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
-        mouseButtonEventListenerRegistry.register(callback);
-        return this;
-    }
-
-    public Frame unregisterMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
-        mouseButtonEventListenerRegistry.unregister(callback);
-        return this;
-    }
-
-    @Override
-    protected void onMouseButtonEvent(MouseButtonEvent event) {
-        mouseButtonEventListenerRegistry.trigger(event);
-    }
-
-    public Frame setBlockInput(boolean blockInput) {
-        this.blockInput = blockInput;
-        return this;
-    }
-
-    public boolean isBlockInput() {
-        return this.blockInput;
-    }
-
+public class Frame extends AbstractInputBlocker<Frame> implements InputBlocker<Frame> {
     @Override
     protected void render(GuiRender render, double delta) {
         background.render(render);
