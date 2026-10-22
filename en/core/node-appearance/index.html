@@ -990,12 +990,12 @@
 
 
 <h1 id="node-appearance">Node Appearance<a class="headerlink" href="#node-appearance" title="Permanent link">&para;</a></h1>
-<p>This chapter explains the common properties that every GuiNode has.</p>
+<p>This chapter will explain the common properties that every GuiNode has.</p>
 <h2 id="clipchildren">ClipChildren<a class="headerlink" href="#clipchildren" title="Permanent link">&para;</a></h2>
 <p>Type: boolean</p>
 <p>Default: false</p>
 <p>When enabled, all children will be restricted to render only within the parent's border. ClipChildren takes the node's corner radius into account and will rotate the clipping region along with the node's angle.</p>
-<p>When enabled, hit testing will also consider this factor along the parent chain. In other words, if the player's mouse is not actually over a visible part of the node, hit testing will return false.</p>
+<p>When enabled, hit testing will also consider this factor along the parent chain. In other words, as long as the player's mouse is not actually over a visible part of the node, hit testing will return false.</p>
 <p>Example:</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">node</span><span class="p">.</span><span class="na">setClipChildren</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
 </span></code></pre></div>
@@ -1018,10 +1018,10 @@
 Background configuration items are accessed through the <code>background()</code> method of the GuiNode base class. You can return to the node via the background configuration's <code>getNode()</code> method.</p>
 <p>Example: Configure the background</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">Frame</span><span class="w"> </span><span class="n">frame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">new</span><span class="w"> </span><span class="n">Frame</span><span class="p">(</span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">),</span><span class="w"> </span><span class="n">ScaleOffset</span><span class="p">.</span><span class="na">fromScale</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="w"> </span><span class="mf">0.5</span><span class="p">))</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">                </span><span class="p">.</span><span class="na">background</span><span class="p">()</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">                </span><span class="p">.</span><span class="na">setColor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">RGBA</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span><span class="w"> </span><span class="mi">230</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">,</span><span class="w"> </span><span class="mi">90</span><span class="p">))</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">                </span><span class="p">.</span><span class="na">setCornerRadius</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">                </span><span class="p">.</span><span class="na">getNode</span><span class="p">();</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">        </span><span class="p">.</span><span class="na">background</span><span class="p">()</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">        </span><span class="p">.</span><span class="na">setColor</span><span class="p">(</span><span class="k">new</span><span class="w"> </span><span class="n">RGBA</span><span class="p">(</span><span class="mi">210</span><span class="p">,</span><span class="w"> </span><span class="mi">230</span><span class="p">,</span><span class="w"> </span><span class="mi">255</span><span class="p">,</span><span class="w"> </span><span class="mi">90</span><span class="p">))</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="p">.</span><span class="na">setCornerRadius</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">        </span><span class="p">.</span><span class="na">getNode</span><span class="p">();</span>
 </span></code></pre></div>
 <h3 id="backgroundblurstrength">BackgroundBlurStrength<a class="headerlink" href="#backgroundblurstrength" title="Permanent link">&para;</a></h3>
 <p>Type: double</p>
@@ -1073,10 +1073,6 @@ Background configuration items are accessed through the <code>background()</code
 <code>rightBottomCornerRadius</code></p>
 <p>(They must be &gt;=0; otherwise, unexpected behavior may occur. The default values are all 0, and the unit is the corner radius in pixels.)</p>
 <p>(If you do not want to call the setters one by one, you can use <code>setCornerRadius(int radius)</code> to set all four at once.)</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Hit testing does not take corner radius into account.</p>
-</div>
 <p>Example: Set the top-left corner radius to 5, bottom-right to 20, top-right to 30, bottom-left to 0, using the chained API</p>
 <div class="language-java highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">background</span><span class="p">.</span><span class="na">setLeftTopCornerRadius</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="p">.</span><span class="na">setRightTopCornerRadius</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>

@@ -912,7 +912,7 @@
 
 
 <h1 id="node-tree">Node Tree<a class="headerlink" href="#node-tree" title="Permanent link">&para;</a></h1>
-<p>This chapter explains the library's internal node tree model.</p>
+<p>This chapter will explain the library's internal node tree model.</p>
 <h2 id="parentnode">ParentNode<a class="headerlink" href="#parentnode" title="Permanent link">&para;</a></h2>
 <p>All nodes, including the root node, directly or indirectly inherit from ParentNode. It holds a children list. Therefore, all nodes can have children; a leaf node is simply a node without children.</p>
 <h2 id="guinode">GuiNode<a class="headerlink" href="#guinode" title="Permanent link">&para;</a></h2>
@@ -927,9 +927,6 @@
 <p>If the node already has a parent: call the parent's removeChild method, passing in the node.</p>
 </li>
 <li>
-<p>Recursively set the node's root field to its own root field.</p>
-</li>
-<li>
 <p>Set node.parent to this.</p>
 </li>
 <li>
@@ -939,13 +936,19 @@
 <p>Sort the children list in ascending order by the children's zIndex (smaller zIndex comes first; if zIndex is the same, insertion order is used).</p>
 </li>
 <li>
+<p>Recursively set the root of the children and the children's children to this node's root.</p>
+</li>
+<li>
 <p>Have the node recalculate its own position.</p>
 </li>
+<li>
+<p>Dispatch the init event (each node determines for itself whether it has been initialized; if it has, the event is not triggered).</p>
+</li>
 </ol>
-<p>If you look at the source code, you will find that ParentNode does not have the behavior of step 2, but its only two sealed subclasses both override this method to recursively set root.</p>
+<p>If you look at the source code, you will find that ParentNode does not have the behavior of step 5, but its only two sealed subclasses both override this method to recursively set root.</p>
 <p>ParentNode also has a convenience overload, addChildren, which uses varargs (GuiNode...) and iterates over the varargs list calling addChild.</p>
 <p>When you call the removeChild method on an instance of ParentNode and pass in a node instance, it only does the following:</p>
-<p>If it really has this child, then remove the node from the children list, set the node.parent field to null, and recursively set the root of it and its children to null.</p>
+<p>If it really has this child, then remove the node from the children list and set the node.parent field to null.</p>
 <p>ParentNode also has a convenience overload, removeChildren, which also uses varargs (GuiNode...) and iterates over the varargs list calling removeChild.</p>
 <p>Externally, the child node list can be obtained via getChildren() (an immutable view wrapped by Collections.unmodifiableList).</p>
 <h2 id="order-in-which-various-events-are-triggered-on-the-node-tree">Order in Which Various Events Are Triggered on the Node Tree<a class="headerlink" href="#order-in-which-various-events-are-triggered-on-the-node-tree" title="Permanent link">&para;</a></h2>

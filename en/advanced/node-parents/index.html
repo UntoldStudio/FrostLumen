@@ -607,6 +607,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#other-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other Interfaces
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inputblocker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InputBlocker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#buttonnode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ButtonNode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hasdrawbackground" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HasDrawBackground
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#others" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -678,6 +728,56 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#other-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Other Interfaces
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Other Interfaces">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inputblocker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        InputBlocker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#buttonnode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ButtonNode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hasdrawbackground" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HasDrawBackground
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -808,6 +908,13 @@
 <p class="admonition-title">Info</p>
 <p>TextLabel uses CanWrappedTextRenderDescription, while TextBox's input field uses TextRenderDescription.</p>
 </div>
+<h2 id="other-interfaces">Other Interfaces<a class="headerlink" href="#other-interfaces" title="Permanent link">&para;</a></h2>
+<h3 id="inputblocker">InputBlocker<a class="headerlink" href="#inputblocker" title="Permanent link">&para;</a></h3>
+<p>Indicates that the user can accept events themselves. The <code>AbstractInputBlocker</code> base class provides a default implementation.</p>
+<h3 id="buttonnode">ButtonNode<a class="headerlink" href="#buttonnode" title="Permanent link">&para;</a></h3>
+<p>Indicates that this node is a button.</p>
+<h3 id="hasdrawbackground">HasDrawBackground<a class="headerlink" href="#hasdrawbackground" title="Permanent link">&para;</a></h3>
+<p>Indicates that this node has a <code>drawBackground</code> field. In other words, drawing the background is optional.</p>
 <h2 id="others">Others<a class="headerlink" href="#others" title="Permanent link">&para;</a></h2>
 <p>You may wonder: I cannot inherit from both TextNode and ImageNode at the same time, so how do I make a node that has both Text and Image?</p>
 <p>The answer is: if you really need to render both at the same time, we recommend using a composite node approach.</p>
