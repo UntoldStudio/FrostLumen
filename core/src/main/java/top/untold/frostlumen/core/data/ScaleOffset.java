@@ -20,6 +20,7 @@ import top.untold.frostlumen.core.tool.Maths;
 
 public record ScaleOffset(double xScale, int xOffset, double yScale, int yOffset) {
     public static final ScaleOffset ZERO = new ScaleOffset(0, 0, 0, 0);
+    public static final ScaleOffset FILL_PARENT = new ScaleOffset(1, 0, 1, 0);
 
     public int getXPixelFromParentRealSize(ParentNode<?> node){
         return Maths.round(xScale * node.getRealSizeX()) + xOffset;

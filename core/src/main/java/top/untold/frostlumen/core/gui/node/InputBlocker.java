@@ -21,19 +21,19 @@ import top.untold.frostlumen.core.event.MouseMoveEvent;
 import top.untold.frostlumen.core.event.MouseScrollEvent;
 import top.untold.frostlumen.core.gui.GuiNode;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public interface InputBlocker<T extends GuiNode<T>> {
     T setBlockInput(boolean blockInput);
     boolean isBlockInput();
 
-    T registerMouseButtonEventListener(Consumer<MouseButtonEvent> callback);
-    T registerMouseMoveEventListener(Consumer<MouseMoveEvent> callback);
-    T registerMouseScrollEventListener(Consumer<MouseScrollEvent> callback);
-    T registerKeyEventListener(Consumer<KeyEvent> callback);
+    T registerMouseButtonEventListener(BiConsumer<T, MouseButtonEvent> callback);
+    T registerMouseMoveEventListener(BiConsumer<T, MouseMoveEvent> callback);
+    T registerMouseScrollEventListener(BiConsumer<T, MouseScrollEvent> callback);
+    T registerKeyEventListener(BiConsumer<T, KeyEvent> callback);
 
-    T unregisterMouseButtonEventListener(Consumer<MouseButtonEvent> callback);
-    T unregisterMouseMoveEventListener(Consumer<MouseMoveEvent> callback);
-    T unregisterMouseScrollEventListener(Consumer<MouseScrollEvent> callback);
-    T unregisterKeyEventListener(Consumer<KeyEvent> callback);
+    T unregisterMouseButtonEventListener(BiConsumer<T, MouseButtonEvent> callback);
+    T unregisterMouseMoveEventListener(BiConsumer<T, MouseMoveEvent> callback);
+    T unregisterMouseScrollEventListener(BiConsumer<T, MouseScrollEvent> callback);
+    T unregisterKeyEventListener(BiConsumer<T, KeyEvent> callback);
 }

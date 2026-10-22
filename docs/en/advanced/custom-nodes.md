@@ -1,6 +1,6 @@
 # Custom Nodes
 
-Custom nodes are suitable for drawing that cannot be expressed by built-in nodes. If you can combine existing nodes to achieve it, do not create a custom node.
+Custom nodes are suitable for drawing that built-in nodes cannot express. If you can compose existing nodes to achieve it, do not create a custom node.
 
 This chapter will introduce how to inherit from `GuiNode`, how to call `GuiRender` methods, and how to respond to events. Which scenarios are worth customizing depends on your project. If a requirement is common enough, the library will provide a built-in node.
 
@@ -79,7 +79,7 @@ Example: A certain Button's `onMouseButtonEvent` method
     protected void onMouseButtonEvent(MouseButtonEvent event) {
         if (!Collections.disjoint(canTriggerMouseButtons, currentMouseClickButtons)) { // canTriggerMouseButtons is the node's own field
             event.cancel();
-            mouseButtonEventListenerRegistry.trigger(event);
+            mouseButtonEventListenerRegistry.trigger(self, event); // self is a field inherited from ParentNode, of type T
         }
     }
 ```
@@ -109,11 +109,12 @@ protected void onPreeditEvent(PreeditEvent event) {} // IME preedit event
 protected void onRelayout() {} // Called when layout needs to be recalculated
 protected void onWindowFocusNodeChangeEvent(ParentNode<?> oldFocusNode, ParentNode<?> newFocusNode) {}
 protected void tick() {} // Fixed 60 times per second; if the frame rate is below 60, it will catch up at the beginning of each render
+protected void init(GuiRender render) {} // Triggered when the node first joins the node tree; at this point parent and root will absolutely not be null, and this event will not be triggered a second time
 ```
 
 !!! warning
 
-    Some parent nodes such as `TextNode` and `ImageNode` override `onRelayout` themselves, so please call `super.onRelayout()` once.
+    Some parent nodes such as `TextNode`, `ImageNode`, and `LayoutBox` override `onRelayout` themselves, so please call `super.onRelayout()` once.
 
 ## GuiRender
 
@@ -237,6 +238,10 @@ public Texture loadNiceSliceTexture(byte[] data, NiceSliceType type, boolean str
 public Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, int left, int right, int top, int bottom)
 // Load a nice-slice texture from disk
 public Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom)
+// Unload texture resources
+public void unloadTexture(Texture texture)
+// Unload font resources
+public void unloadFont(Font font)
 ```
 
 !!! info

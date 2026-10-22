@@ -17,9 +17,7 @@ package top.untold.frostlumen.core.gui.node;
 
 import org.jetbrains.annotations.NotNull;
 import top.untold.frostlumen.core.data.ScaleOffset;
-import top.untold.frostlumen.core.event.MouseButtonEvent;
 import top.untold.frostlumen.core.gui.GuiNode;
-import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
 import top.untold.frostlumen.core.render.GuiRender;
 
 import java.util.ArrayList;

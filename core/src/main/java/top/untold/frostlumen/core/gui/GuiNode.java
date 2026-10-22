@@ -15,18 +15,19 @@
  */
 package top.untold.frostlumen.core.gui;
 
+import org.jetbrains.annotations.NotNull;
 import top.untold.frostlumen.core.data.*;
 import top.untold.frostlumen.core.event.*;
-import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
+import top.untold.frostlumen.core.listener.TwoArgListenerRegistry;
 import top.untold.frostlumen.core.render.GuiRender;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNode<T> {
-    protected final OneArgListenerRegistry<MouseMoveEvent> mouseEnterListenerRegistry = new OneArgListenerRegistry<>();
-    protected final OneArgListenerRegistry<MouseMoveEvent> mouseLeaveListenerRegistry = new OneArgListenerRegistry<>();
+    protected final TwoArgListenerRegistry<T, MouseMoveEvent> mouseEnterListenerRegistry = new TwoArgListenerRegistry<>();
+    protected final TwoArgListenerRegistry<T, MouseMoveEvent> mouseLeaveListenerRegistry = new TwoArgListenerRegistry<>();
     protected final Background background = new Background();
     protected NodeRoot root;
     protected ParentNode<?> parent;
@@ -44,22 +45,22 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         return background;
     }
 
-    public T registerMouseEnterListener(Consumer<MouseMoveEvent> listener) {
+    public T registerMouseEnterListener(BiConsumer<T, MouseMoveEvent> listener) {
         mouseEnterListenerRegistry.register(listener);
         return self;
     }
 
-    public T unregisterMouseEnterListener(Consumer<MouseMoveEvent> listener) {
+    public T unregisterMouseEnterListener(BiConsumer<T, MouseMoveEvent> listener) {
         mouseEnterListenerRegistry.unregister(listener);
         return self;
     }
 
-    public T registerMouseLeaveListener(Consumer<MouseMoveEvent> listener) {
+    public T registerMouseLeaveListener(BiConsumer<T, MouseMoveEvent> listener) {
         mouseLeaveListenerRegistry.register(listener);
         return self;
     }
 
-    public T unregisterMouseLeaveListener(Consumer<MouseMoveEvent> listener) {
+    public T unregisterMouseLeaveListener(BiConsumer<T, MouseMoveEvent> listener) {
         mouseLeaveListenerRegistry.unregister(listener);
         return self;
     }
@@ -146,12 +147,15 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
             } else {
                 root.getWindow().cancelFocused(this);
             }
-        } else if (event.getAction() == InputAction.RELEASE) {
-            currentMouseClickButtons.remove(event.getButton());
         }
+
         super.dispatchMouseButtonEvent(event);
         if (event.isCancel()) return;
         onMouseButtonEvent(event);
+
+        if (event.getAction() == InputAction.RELEASE) {
+            currentMouseClickButtons.remove(event.getButton());
+        }
     }
 
     @Override
@@ -160,9 +164,9 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
 
         if (current != mouseInNode) {
             if (current) {
-                mouseEnterListenerRegistry.trigger(event);
+                mouseEnterListenerRegistry.trigger(self, event);
             } else {
-                mouseLeaveListenerRegistry.trigger(event);
+                mouseLeaveListenerRegistry.trigger(self, event);
             }
 
             mouseInNode = current;
@@ -333,19 +337,23 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
     }
 
     @Override
-    public T addChild(GuiNode<?> child) {
-        setChildRootToThisRoot(child);
+    public T addChild(@NotNull GuiNode<?> child) {
         super.addChild(child);
+        setChildRootToThisRoot(child);
         return self;
     }
 
     private void setChildRootToThisRoot(GuiNode<?> child) {
-        child.root = this.root;
-        if (root != null) {
-            child.dispatchInit(root.getRender());
+        if (child.root != null && child.root != this.root) {
+            throw new IllegalStateException("Cannot move a node between different NodeRoots");
         }
+        child.root = this.root;
         for (GuiNode<?> node : child.children) {
             setChildRootToThisRoot(node);
+        }
+        if (root != null) {
+            child.operationPosition();
+            child.dispatchInit(root.getRender());
         }
     }
 
@@ -451,17 +459,13 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         double mouseX = root.getWindow().getMouseX();
         double mouseY = root.getWindow().getMouseY();
 
-        if (this.realAngle == 0 || this.realAngle == 180) {
-            if (!root.getWindow().isMouseInRange(realPositionX, realPositionY, realPositionMaxX, realPositionMaxY)) {
-                return false;
-            }
-        } else if (isPointNotInNodeRect(this, mouseX, mouseY)) {
+        if (isPointNotInRoundedRect(this, mouseX, mouseY)) {
             return false;
         }
 
         GuiNode<?> ancestor = parent instanceof GuiNode<?> parentGuiNode ? parentGuiNode : null;
         while (ancestor != null) {
-            if (ancestor.clipChildren && isPointNotInNodeRect(ancestor, mouseX, mouseY)) {
+            if (ancestor.clipChildren && isPointNotInRoundedRect(ancestor, mouseX, mouseY)) {
                 return false;
             }
             ancestor = ancestor.parent instanceof GuiNode<?> nextAncestor ? nextAncestor : null;
@@ -469,18 +473,73 @@ public abstract non-sealed class GuiNode<T extends GuiNode<T>> extends ParentNod
         return true;
     }
 
-    private static boolean isPointNotInNodeRect(GuiNode<?> node, double mouseX, double mouseY) {
+    private static boolean isPointNotInRoundedRect(GuiNode<?> node, double mouseX, double mouseY) {
         int centerX = (node.realPositionX + node.realPositionMaxX) / 2;
         int centerY = (node.realPositionY + node.realPositionMaxY) / 2;
 
-        double dx = mouseX - centerX;
-        double dy = mouseY - centerY;
+        double deltaX = mouseX - centerX;
+        double deltaY = mouseY - centerY;
         double radians = Math.toRadians(-node.realAngle);
         double cosine = Math.cos(radians);
         double sine = Math.sin(radians);
-        double localX = centerX + dx * cosine - dy * sine;
-        double localY = centerY + dx * sine + dy * cosine;
-        return !(localX >= node.realPositionX) || !(localX <= node.realPositionMaxX) || !(localY >= node.realPositionY) || !(localY <= node.realPositionMaxY);
+
+        double localX = centerX + deltaX * cosine - deltaY * sine;
+        double localY = centerY + deltaX * sine + deltaY * cosine;
+
+        double left = node.realPositionX;
+        double right = node.realPositionMaxX;
+        double top = node.realPositionY;
+        double bottom = node.realPositionMaxY;
+
+        if (localX < left || localX > right || localY < top || localY > bottom) {
+            return true;
+        }
+
+        int leftTopCornerRadius = node.background.getLeftTopCornerRadius();
+        int rightTopCornerRadius = node.background.getRightTopCornerRadius();
+        int leftBottomCornerRadius = node.background.getLeftBottomCornerRadius();
+        int rightBottomCornerRadius = node.background.getRightBottomCornerRadius();
+
+        boolean hasRoundedCorner = leftTopCornerRadius != 0 || rightTopCornerRadius != 0 || leftBottomCornerRadius != 0 || rightBottomCornerRadius != 0;
+        if (!hasRoundedCorner) {
+            return false;
+        }
+
+        double cornerCenterX = 0;
+        double cornerCenterY = 0;
+        int cornerRadius = 0;
+        boolean inCornerRegion = false;
+
+        if (localX < left + leftTopCornerRadius && localY < top + leftTopCornerRadius) {
+            cornerCenterX = left + leftTopCornerRadius;
+            cornerCenterY = top + leftTopCornerRadius;
+            cornerRadius = leftTopCornerRadius;
+            inCornerRegion = true;
+        } else if (localX > right - rightTopCornerRadius && localY < top + rightTopCornerRadius) {
+            cornerCenterX = right - rightTopCornerRadius;
+            cornerCenterY = top + rightTopCornerRadius;
+            cornerRadius = rightTopCornerRadius;
+            inCornerRegion = true;
+        } else if (localX < left + leftBottomCornerRadius && localY > bottom - leftBottomCornerRadius) {
+            cornerCenterX = left + leftBottomCornerRadius;
+            cornerCenterY = bottom - leftBottomCornerRadius;
+            cornerRadius = leftBottomCornerRadius;
+            inCornerRegion = true;
+        } else if (localX > right - rightBottomCornerRadius && localY > bottom - rightBottomCornerRadius) {
+            cornerCenterX = right - rightBottomCornerRadius;
+            cornerCenterY = bottom - rightBottomCornerRadius;
+            cornerRadius = rightBottomCornerRadius;
+            inCornerRegion = true;
+        }
+
+        if (!inCornerRegion) {
+            return false;
+        }
+
+        double distanceX = localX - cornerCenterX;
+        double distanceY = localY - cornerCenterY;
+        double distanceSquared = distanceX * distanceX + distanceY * distanceY;
+        return distanceSquared > (double) cornerRadius * cornerRadius;
     }
 
     public GuiNode(ScaleOffset position, ScaleOffset size) {

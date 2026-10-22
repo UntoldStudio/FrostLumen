@@ -19,17 +19,17 @@ import top.untold.frostlumen.core.data.CursorShape;
 import top.untold.frostlumen.core.data.MouseButton;
 import top.untold.frostlumen.core.data.ScaleOffset;
 import top.untold.frostlumen.core.event.MouseButtonEvent;
-import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
+import top.untold.frostlumen.core.listener.TwoArgListenerRegistry;
 import top.untold.frostlumen.core.render.GuiRender;
 import top.untold.frostlumen.core.texture.Texture;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
-public class ImageButton extends ImageNode<ImageButton> implements HasDrawBackground<ImageButton> {
-    private final OneArgListenerRegistry<MouseButtonEvent> mouseButtonEventListenerRegistry = new OneArgListenerRegistry<>();
+public class ImageButton extends ImageNode<ImageButton> implements HasDrawBackground<ImageButton>, ButtonNode<ImageButton> {
+    private final TwoArgListenerRegistry<ImageButton, MouseButtonEvent> mouseButtonEventListenerRegistry = new TwoArgListenerRegistry<>();
     private final Set<MouseButton> canTriggerMouseButtons = new HashSet<>();
     private final ImageRenderDescription normal;
     private final ImageRenderDescription onHover = new ImageRenderDescription();
@@ -49,7 +49,7 @@ public class ImageButton extends ImageNode<ImageButton> implements HasDrawBackgr
     @Override
     protected void render(GuiRender render, double delta) {
         if (drawBackground) background.render(render);
-        if (!Collections.disjoint(canTriggerMouseButtons, currentMouseClickButtons)) {
+        if (!Collections.disjoint(canTriggerMouseButtons, currentMouseClickButtons) && mouseInNode) {
             if (onClick.canRender()) {
                 onClick.render(render);
             } else {
@@ -68,11 +68,11 @@ public class ImageButton extends ImageNode<ImageButton> implements HasDrawBackgr
         }
     }
 
-    public ImageButton registerMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+    public ImageButton registerMouseButtonEventListener(BiConsumer<ImageButton, MouseButtonEvent> callback) {
         mouseButtonEventListenerRegistry.register(callback);
         return this;
     }
-    public ImageButton unregisterMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+    public ImageButton unregisterMouseButtonEventListener(BiConsumer<ImageButton, MouseButtonEvent> callback) {
         mouseButtonEventListenerRegistry.unregister(callback);
         return this;
     }
@@ -81,7 +81,7 @@ public class ImageButton extends ImageNode<ImageButton> implements HasDrawBackgr
     protected void onMouseButtonEvent(MouseButtonEvent event) {
         if (!Collections.disjoint(canTriggerMouseButtons, currentMouseClickButtons)) {
             event.cancel();
-            mouseButtonEventListenerRegistry.trigger(event);
+            mouseButtonEventListenerRegistry.trigger(this, event);
         }
     }
 

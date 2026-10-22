@@ -22,23 +22,25 @@ NodeRoot实例拥有`runTask(Runnable task)`方法,注册的任务将会在下�
 
 1.如果node已有父项:调用父项的removeChild方法,传入node
 
-2.递归将node的root字段设置为自己的root字段
+2.把node的parent设置为this
 
-3.把node.parent设置为this
+3.把node添加进children列表
 
-4.把node添加进children列表
+4.按子项的zIndex升序(zIndex小的在前面,zIndex一样则按插入顺序)排序children列表
 
-5.按子项的zIndex升序(zIndex小的在前面,zIndex一样则按插入顺序)排序children列表
+5.递归设置子项以及子项的root为this的root
 
 6.让node重新计算自己的位置
 
-如果你翻看源码会发现ParentNode没有第二步的行为,但是它通过sealed的唯二子类都重写了这个方法递归设置root
+7.分发init事件(各个节点自己判断有没有init过,如果init过了就不触发)
+
+如果你翻看源码会发现ParentNode没有第5步的行为,但是它通过sealed的唯二子类都重写了这个方法递归设置root
 
 ParentNode还有一个addChildren便捷重载,它使用变长参数(GuiNode...),遍历这个变长参数列表调用addChild
 
 当你调用了ParentNode的某个实例的removeChild方法并传入了某node实例后,它只会做这些:
 
-如果自己真的有这个子项,那么将node从children列表移除,node.parent字段置空,递归设置它和它的子项的root为null
+如果自己真的有这个子项,那么将node从children列表移除,node.parent字段置空
 
 ParentNode还有一个removeChildren便捷重载,它也使用变长参数(GuiNode...),遍历这个变长参数列表调用removeChild
 

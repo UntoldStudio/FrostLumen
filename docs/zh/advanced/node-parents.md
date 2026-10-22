@@ -66,6 +66,17 @@ CanWrappedTextRenderDescription增加了`wrap`字段,`setWrap`与`isWrap`方法,
 
     TextLabel使用了CanWrappedTextRenderDescription,而TextBox的输入框则使用了TextRenderDescription
 
+## 其他接口
+
+### InputBlocker
+表示用户可以自己接受事件,有AbstractInputBlocker基类提供默认实现
+
+### ButtonNode
+表示本节点是个按钮
+
+### HasDrawBackground
+表示本节点拥有drawBackground字段,换句话说画背景是可选的
+
 ## 其他
 
 你可能会疑惑,我无法同时继承TextNode和ImageNode,那我怎么制作又有Text又有Image的节点?

@@ -18,6 +18,13 @@ package top.untold.frostlumen.core.data;
 import java.nio.ByteBuffer;
 
 public record RGBA(int red, int green, int blue, int alpha) {
+    public RGBA {
+        check("Red", red);
+        check("Green", green);
+        check("Blue", blue);
+        check("Alpha", alpha);
+    }
+
     public float getRedFloat(){
         return red / 255f;
     }
@@ -52,6 +59,12 @@ public record RGBA(int red, int green, int blue, int alpha) {
         buffer.put((byte)blue);
         buffer.put((byte)alpha);
         return buffer;
+    }
+
+    private static void check(String name, int value) {
+        if (value < 0 || value > 255) {
+            throw new IllegalArgumentException(name + " out of range [0, 255]: " + value);
+        }
     }
 
     public static final RGBA WHITE = new RGBA(255, 255, 255, 255);

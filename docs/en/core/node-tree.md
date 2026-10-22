@@ -1,6 +1,6 @@
 # Node Tree
 
-This chapter explains the library's internal node tree model.
+This chapter will explain the library's internal node tree model.
 
 ## ParentNode
 
@@ -22,23 +22,25 @@ When you call the addChild method on an instance of ParentNode and pass in a nod
 
 1. If the node already has a parent: call the parent's removeChild method, passing in the node.
 
-2. Recursively set the node's root field to its own root field.
+2. Set node.parent to this.
 
-3. Set node.parent to this.
+3. Add the node to the children list.
 
-4. Add the node to the children list.
+4. Sort the children list in ascending order by the children's zIndex (smaller zIndex comes first; if zIndex is the same, insertion order is used).
 
-5. Sort the children list in ascending order by the children's zIndex (smaller zIndex comes first; if zIndex is the same, insertion order is used).
+5. Recursively set the root of the children and the children's children to this node's root.
 
 6. Have the node recalculate its own position.
 
-If you look at the source code, you will find that ParentNode does not have the behavior of step 2, but its only two sealed subclasses both override this method to recursively set root.
+7. Dispatch the init event (each node determines for itself whether it has been initialized; if it has, the event is not triggered).
+
+If you look at the source code, you will find that ParentNode does not have the behavior of step 5, but its only two sealed subclasses both override this method to recursively set root.
 
 ParentNode also has a convenience overload, addChildren, which uses varargs (GuiNode...) and iterates over the varargs list calling addChild.
 
 When you call the removeChild method on an instance of ParentNode and pass in a node instance, it only does the following:
 
-If it really has this child, then remove the node from the children list, set the node.parent field to null, and recursively set the root of it and its children to null.
+If it really has this child, then remove the node from the children list and set the node.parent field to null.
 
 ParentNode also has a convenience overload, removeChildren, which also uses varargs (GuiNode...) and iterates over the varargs list calling removeChild.
 

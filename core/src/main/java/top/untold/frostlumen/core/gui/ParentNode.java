@@ -15,6 +15,7 @@
  */
 package top.untold.frostlumen.core.gui;
 
+import org.jetbrains.annotations.NotNull;
 import top.untold.frostlumen.core.data.ScaleOffset;
 import top.untold.frostlumen.core.event.*;
 import top.untold.frostlumen.core.listener.GuiRenderAndDoubleListenerRegistry;
@@ -167,45 +168,35 @@ public sealed abstract class ParentNode<T extends ParentNode<T>> permits NodeRoo
         forwardFor(node -> node.dispatchWindowFocusNodeChangeEvent(oldFocusNode, newFocusNode), null);
     }
 
-    public T addChild(GuiNode<?> child) {
+    public T addChild(@NotNull GuiNode<?> child) {
         if (child.parent != null) {
             child.parent.removeChild(child);
         }
         child.parent = this;
         children.add(child);
         sortChildren();
-        child.operationPosition();
         return self;
     }
 
-    public T addChildren(GuiNode<?>... children) {
+    public T addChildren(@NotNull GuiNode<?>... children) {
         for (GuiNode<?> child : children) {
             addChild(child);
         }
         return self;
     }
 
-    public T removeChild(GuiNode<?> child) {
+    public T removeChild(@NotNull GuiNode<?> child) {
         if (children.remove(child)) {
             child.parent = null;
-            setChildRootToNull(child);
         }
         return self;
     }
 
-    public T removeChildren(GuiNode<?>... children) {
+    public T removeChildren(@NotNull GuiNode<?>... children) {
         for (GuiNode<?> child : children) {
             removeChild(child);
         }
         return self;
-    }
-
-    private static void setChildRootToNull(GuiNode<?> node) {
-        node.root = null;
-        for (GuiNode<?> child : node.children) {
-            child.root = null;
-            setChildRootToNull(child);
-        }
     }
 
     public List<GuiNode<?>> getChildren() {

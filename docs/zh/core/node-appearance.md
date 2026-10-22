@@ -152,9 +152,6 @@ background.setBorderThickness(5)
 
 (如果你不想一个个调用setter,可以使用`setCornerRadius(int radius)`一键设置四个)
 
-!!! warning
-
-    命中测试不会考虑圆角
 
 示例:设置左上角圆角半径为5,右下角为20,右上角为30,左下角为0,使用链式API
 

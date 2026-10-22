@@ -19,6 +19,7 @@ ParentNode(sealed)
         -TextNode
             -TextLabel
             -TextBox
+            -TextButton
             ...
         -ImageNode
             -ImageLabel
@@ -173,7 +174,7 @@ RGBA is an immutable record class, defined as:
 public record RGBA(int red, int green, int blue, int alpha) {...}
 ```
 
-Note: The range of these four values must all be 0-255; otherwise, unexpected behavior may occur.
+Note: The range of these four values must all be 0-255.
 
 Alpha is roughly equivalent to opacity. A value of 0 is completely transparent, and a value of 255 is completely opaque; the range is simply changed from 0-1 to 0-255.
 

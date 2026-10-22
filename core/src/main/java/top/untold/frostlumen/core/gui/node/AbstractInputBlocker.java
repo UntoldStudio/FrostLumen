@@ -21,58 +21,58 @@ import top.untold.frostlumen.core.event.MouseButtonEvent;
 import top.untold.frostlumen.core.event.MouseMoveEvent;
 import top.untold.frostlumen.core.event.MouseScrollEvent;
 import top.untold.frostlumen.core.gui.GuiNode;
-import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
+import top.untold.frostlumen.core.listener.TwoArgListenerRegistry;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public abstract class AbstractInputBlocker<T extends GuiNode<T>> extends GuiNode<T> implements InputBlocker<T> {
-    private final OneArgListenerRegistry<MouseButtonEvent> mouseButtonEventListenerRegistry = new OneArgListenerRegistry<>();
-    private final OneArgListenerRegistry<MouseMoveEvent> mouseMoveEventListenerRegistry = new OneArgListenerRegistry<>();
-    private final OneArgListenerRegistry<MouseScrollEvent> mouseScrollEventListenerRegistry = new OneArgListenerRegistry<>();
-    private final OneArgListenerRegistry<KeyEvent> keyEventListenerRegistry = new OneArgListenerRegistry<>();
+    private final TwoArgListenerRegistry<T, MouseButtonEvent> mouseButtonEventListenerRegistry = new TwoArgListenerRegistry<>();
+    private final TwoArgListenerRegistry<T, MouseMoveEvent> mouseMoveEventListenerRegistry = new TwoArgListenerRegistry<>();
+    private final TwoArgListenerRegistry<T, MouseScrollEvent> mouseScrollEventListenerRegistry = new TwoArgListenerRegistry<>();
+    private final TwoArgListenerRegistry<T, KeyEvent> keyEventListenerRegistry = new TwoArgListenerRegistry<>();
     private boolean blockInput;
 
-    public T registerMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+    public T registerMouseButtonEventListener(BiConsumer<T, MouseButtonEvent> callback) {
         mouseButtonEventListenerRegistry.register(callback);
         return self;
     }
-    public T registerMouseScrollEventListener(Consumer<MouseScrollEvent> callback) {
+    public T registerMouseScrollEventListener(BiConsumer<T, MouseScrollEvent> callback) {
         mouseScrollEventListenerRegistry.register(callback);
         return self;
     }
-    public T registerKeyEventListener(Consumer<KeyEvent> callback) {
+    public T registerKeyEventListener(BiConsumer<T, KeyEvent> callback) {
         keyEventListenerRegistry.register(callback);
         return self;
     }
-    public T registerMouseMoveEventListener(Consumer<MouseMoveEvent> callback) {
+    public T registerMouseMoveEventListener(BiConsumer<T, MouseMoveEvent> callback) {
         mouseMoveEventListenerRegistry.register(callback);
         return self;
     }
 
-    public T unregisterMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+    public T unregisterMouseButtonEventListener(BiConsumer<T, MouseButtonEvent> callback) {
         mouseButtonEventListenerRegistry.unregister(callback);
         return self;
     }
-    public T unregisterMouseScrollEventListener(Consumer<MouseScrollEvent> callback) {
+    public T unregisterMouseScrollEventListener(BiConsumer<T, MouseScrollEvent> callback) {
         mouseScrollEventListenerRegistry.unregister(callback);
         return self;
     }
-    public T unregisterMouseMoveEventListener(Consumer<MouseMoveEvent> callback) {
+    public T unregisterMouseMoveEventListener(BiConsumer<T, MouseMoveEvent> callback) {
         mouseMoveEventListenerRegistry.unregister(callback);
         return self;
     }
-    public T unregisterKeyEventListener(Consumer<KeyEvent> callback) {
+    public T unregisterKeyEventListener(BiConsumer<T, KeyEvent> callback) {
         keyEventListenerRegistry.unregister(callback);
         return self;
     }
 
     @Override
     protected void onMouseButtonEvent(MouseButtonEvent event) {
-        mouseButtonEventListenerRegistry.trigger(event);
+        mouseButtonEventListenerRegistry.trigger(self, event);
     }
     @Override
     protected void onMouseMoveEvent(MouseMoveEvent event) {
-        mouseMoveEventListenerRegistry.trigger(event);
+        mouseMoveEventListenerRegistry.trigger(self, event);
     }
 
     public T setBlockInput(boolean blockInput) {

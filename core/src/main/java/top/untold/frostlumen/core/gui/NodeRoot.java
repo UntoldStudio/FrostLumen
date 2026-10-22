@@ -15,6 +15,7 @@
  */
 package top.untold.frostlumen.core.gui;
 
+import org.jetbrains.annotations.NotNull;
 import top.untold.frostlumen.core.data.CursorShape;
 import top.untold.frostlumen.core.data.ScaleOffset;
 import top.untold.frostlumen.core.event.FrameBufferSizeChangeEvent;
@@ -110,18 +111,19 @@ public final class NodeRoot extends ParentNode<NodeRoot> {
     }
 
     @Override
-    public NodeRoot addChild(GuiNode<?> child) {
-        setChildRootToThis(child);
+    public NodeRoot addChild(@NotNull GuiNode<?> child) {
         super.addChild(child);
+        setChildRootToThis(child);
         return self;
     }
 
     private void setChildRootToThis(GuiNode<?> child) {
         child.root = this;
-        child.dispatchInit(render);
         for (GuiNode<?> node : child.children) {
             setChildRootToThis(node);
         }
+        child.operationPosition();
+        child.dispatchInit(render);
     }
 
     public Window getWindow() {

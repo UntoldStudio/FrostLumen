@@ -79,7 +79,7 @@ onXxx是给你的自定义节点重写用的钩子,dispatchXxx(包括dispatchRen
     protected void onMouseButtonEvent(MouseButtonEvent event) {
         if (!Collections.disjoint(canTriggerMouseButtons, currentMouseClickButtons)) { //canTriggerMouseButtons是该节点自己的字段
             event.cancel();
-            mouseButtonEventListenerRegistry.trigger(event);
+            mouseButtonEventListenerRegistry.trigger(self, event); //self是ParentNode继承来的字段,类型为T
         }
     }
 ```
@@ -109,11 +109,12 @@ protected void onPreeditEvent(PreeditEvent event) {} //输入法的预编辑事�
 protected void onRelayout() {} //需要重算布局时会调用该方法
 protected void onWindowFocusNodeChangeEvent(ParentNode<?> oldFocusNode, ParentNode<?> newFocusNode) {}
 protected void tick() {} //每秒固定60次,帧数不足60会每次渲染开头补回来
+protected void init(GuiRender render) {} //节点第一次加入节点树时触发,此时parent,root绝对不会是null,该事件不会触发第二次
 ```
 
 !!! warning
 
-    某些父节点如TextNode与ImageNode自己就重写了onRelayout,因此请你调用一次`super.onRelayout()`
+    某些父节点如TextNode,ImageNode,LayoutBox自己就重写了onRelayout,因此请你调用一次`super.onRelayout()`
 
 ## GuiRender
 
@@ -237,6 +238,10 @@ public Texture loadNiceSliceTexture(byte[] data, NiceSliceType type, boolean str
 public Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, int left, int right, int top, int bottom)
 //从硬盘加载九宫格纹理
 public Texture loadNiceSliceTexture(String path, NiceSliceType type, boolean stretchInner, boolean isLinear, int left, int right, int top, int bottom)
+//卸载纹理资源
+public void unloadTexture(Texture texture)
+//卸载字体资源
+public void unloadFont(Font font)
 ```
 
 !!! info

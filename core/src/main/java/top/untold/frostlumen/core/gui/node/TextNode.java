@@ -33,6 +33,12 @@ public abstract class TextNode<T extends TextNode<T>> extends GuiNode<T> {
     private final Set<AbstractTextRenderDescription<?>> selfRenderDescriptions = new HashSet<>();
 
     @Override
+    protected void init(GuiRender render) {
+        for (AbstractTextRenderDescription<?> description : selfRenderDescriptions) {
+            description.init(render);
+        }
+    }
+    @Override
     protected void onRelayout() {
         for (AbstractTextRenderDescription<?> renderDescription : selfRenderDescriptions) {
             renderDescription.operationTextRenderPosition();

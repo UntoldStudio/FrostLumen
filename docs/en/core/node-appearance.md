@@ -1,6 +1,6 @@
 # Node Appearance
 
-This chapter explains the common properties that every GuiNode has.
+This chapter will explain the common properties that every GuiNode has.
 
 ## ClipChildren
 
@@ -10,7 +10,7 @@ Default: false
 
 When enabled, all children will be restricted to render only within the parent's border. ClipChildren takes the node's corner radius into account and will rotate the clipping region along with the node's angle.
 
-When enabled, hit testing will also consider this factor along the parent chain. In other words, if the player's mouse is not actually over a visible part of the node, hit testing will return false.
+When enabled, hit testing will also consider this factor along the parent chain. In other words, as long as the player's mouse is not actually over a visible part of the node, hit testing will return false.
 
 Example:
 
@@ -55,10 +55,10 @@ Example: Configure the background
 
 ```java
 Frame frame = new Frame(ScaleOffset.fromScale(0.5, 0.5), ScaleOffset.fromScale(0.5, 0.5))
-                .background()
-                .setColor(new RGBA(210, 230, 255, 90))
-                .setCornerRadius(10)
-                .getNode();
+        .background()
+        .setColor(new RGBA(210, 230, 255, 90))
+        .setCornerRadius(10)
+        .getNode();
 ```
 
 ### BackgroundBlurStrength
@@ -151,10 +151,6 @@ It consists of 4 independent components of type int:
 (They must be >=0; otherwise, unexpected behavior may occur. The default values are all 0, and the unit is the corner radius in pixels.)
 
 (If you do not want to call the setters one by one, you can use `setCornerRadius(int radius)` to set all four at once.)
-
-!!! warning
-
-    Hit testing does not take corner radius into account.
 
 Example: Set the top-left corner radius to 5, bottom-right to 20, top-right to 30, bottom-left to 0, using the chained API
 

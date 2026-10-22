@@ -21,61 +21,61 @@ import top.untold.frostlumen.core.event.MouseButtonEvent;
 import top.untold.frostlumen.core.event.MouseMoveEvent;
 import top.untold.frostlumen.core.event.MouseScrollEvent;
 import top.untold.frostlumen.core.font.Font;
-import top.untold.frostlumen.core.listener.OneArgListenerRegistry;
+import top.untold.frostlumen.core.listener.TwoArgListenerRegistry;
 import top.untold.frostlumen.core.render.GuiRender;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class TextLabel extends TextNode<TextLabel> implements HasDrawBackground<TextLabel>, InputBlocker<TextLabel> {
     private final CanWrappedTextRenderDescription renderDescription = new CanWrappedTextRenderDescription();
     private boolean drawBackground = true;
-    private final OneArgListenerRegistry<MouseButtonEvent> mouseButtonEventListenerRegistry = new OneArgListenerRegistry<>();
-    private final OneArgListenerRegistry<MouseMoveEvent> mouseMoveEventListenerRegistry = new OneArgListenerRegistry<>();
-    private final OneArgListenerRegistry<MouseScrollEvent> mouseScrollEventListenerRegistry = new OneArgListenerRegistry<>();
-    private final OneArgListenerRegistry<KeyEvent> keyEventListenerRegistry = new OneArgListenerRegistry<>();
+    private final TwoArgListenerRegistry<TextLabel, MouseButtonEvent> mouseButtonEventListenerRegistry = new TwoArgListenerRegistry<>();
+    private final TwoArgListenerRegistry<TextLabel, MouseMoveEvent> mouseMoveEventListenerRegistry = new TwoArgListenerRegistry<>();
+    private final TwoArgListenerRegistry<TextLabel, MouseScrollEvent> mouseScrollEventListenerRegistry = new TwoArgListenerRegistry<>();
+    private final TwoArgListenerRegistry<TextLabel, KeyEvent> keyEventListenerRegistry = new TwoArgListenerRegistry<>();
     private boolean blockInput;
 
-    public TextLabel registerMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+    public TextLabel registerMouseButtonEventListener(BiConsumer<TextLabel, MouseButtonEvent> callback) {
         mouseButtonEventListenerRegistry.register(callback);
         return self;
     }
-    public TextLabel registerMouseScrollEventListener(Consumer<MouseScrollEvent> callback) {
+    public TextLabel registerMouseScrollEventListener(BiConsumer<TextLabel, MouseScrollEvent> callback) {
         mouseScrollEventListenerRegistry.register(callback);
         return self;
     }
-    public TextLabel registerKeyEventListener(Consumer<KeyEvent> callback) {
+    public TextLabel registerKeyEventListener(BiConsumer<TextLabel, KeyEvent> callback) {
         keyEventListenerRegistry.register(callback);
         return self;
     }
-    public TextLabel registerMouseMoveEventListener(Consumer<MouseMoveEvent> callback) {
+    public TextLabel registerMouseMoveEventListener(BiConsumer<TextLabel, MouseMoveEvent> callback) {
         mouseMoveEventListenerRegistry.register(callback);
         return self;
     }
 
-    public TextLabel unregisterMouseButtonEventListener(Consumer<MouseButtonEvent> callback) {
+    public TextLabel unregisterMouseButtonEventListener(BiConsumer<TextLabel, MouseButtonEvent> callback) {
         mouseButtonEventListenerRegistry.unregister(callback);
         return self;
     }
-    public TextLabel unregisterMouseScrollEventListener(Consumer<MouseScrollEvent> callback) {
+    public TextLabel unregisterMouseScrollEventListener(BiConsumer<TextLabel, MouseScrollEvent> callback) {
         mouseScrollEventListenerRegistry.unregister(callback);
         return self;
     }
-    public TextLabel unregisterMouseMoveEventListener(Consumer<MouseMoveEvent> callback) {
+    public TextLabel unregisterMouseMoveEventListener(BiConsumer<TextLabel, MouseMoveEvent> callback) {
         mouseMoveEventListenerRegistry.unregister(callback);
         return self;
     }
-    public TextLabel unregisterKeyEventListener(Consumer<KeyEvent> callback) {
+    public TextLabel unregisterKeyEventListener(BiConsumer<TextLabel, KeyEvent> callback) {
         keyEventListenerRegistry.unregister(callback);
         return self;
     }
 
     @Override
     protected void onMouseButtonEvent(MouseButtonEvent event) {
-        mouseButtonEventListenerRegistry.trigger(event);
+        mouseButtonEventListenerRegistry.trigger(self, event);
     }
     @Override
     protected void onMouseMoveEvent(MouseMoveEvent event) {
-        mouseMoveEventListenerRegistry.trigger(event);
+        mouseMoveEventListenerRegistry.trigger(self, event);
     }
 
     public TextLabel setBlockInput(boolean blockInput) {
@@ -85,11 +85,6 @@ public class TextLabel extends TextNode<TextLabel> implements HasDrawBackground<
 
     public boolean isBlockInput() {
         return this.blockInput;
-    }
-
-    @Override
-    protected void init(GuiRender render) {
-        renderDescription.init(render);
     }
 
     public CanWrappedTextRenderDescription description() {
@@ -118,5 +113,6 @@ public class TextLabel extends TextNode<TextLabel> implements HasDrawBackground<
     public TextLabel(String text, Font font, ScaleOffset position, ScaleOffset size) {
         super(position, size);
         this.renderDescription.setText(text).setFont(font);
+
     }
 }

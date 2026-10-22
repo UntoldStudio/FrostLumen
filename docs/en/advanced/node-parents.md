@@ -66,6 +66,20 @@ If you want to render them, call `render(GuiRender render)`.
 
     TextLabel uses CanWrappedTextRenderDescription, while TextBox's input field uses TextRenderDescription.
 
+## Other Interfaces
+
+### InputBlocker
+
+Indicates that the user can accept events themselves. The `AbstractInputBlocker` base class provides a default implementation.
+
+### ButtonNode
+
+Indicates that this node is a button.
+
+### HasDrawBackground
+
+Indicates that this node has a `drawBackground` field. In other words, drawing the background is optional.
+
 ## Others
 
 You may wonder: I cannot inherit from both TextNode and ImageNode at the same time, so how do I make a node that has both Text and Image?

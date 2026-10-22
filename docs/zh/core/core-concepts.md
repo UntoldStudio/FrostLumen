@@ -19,6 +19,7 @@ ParentNode(sealed)
         -TextNode
             -TextLabel
             -TextBox
+            -TextButton
             ...
         -ImageNode
             -ImageLabel
@@ -172,7 +173,7 @@ RGBA是一个不可变记录类,定义为:
 public record RGBA(int red, int green, int blue, int alpha) {...}
 ```
 
-注意:这四个值的范围必须全部是0-255, 否则会出现非预期行为
+注意:这四个值的范围必须全部是0-255
 
 Alpha大致等于不透明度,值为0则完全透明,值为255则完全不透明,只是范围从0-1换成了0-255
 
